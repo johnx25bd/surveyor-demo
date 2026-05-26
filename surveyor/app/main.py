@@ -17,7 +17,9 @@ single-instance by design (§11); a multi-user deployment would key stores by se
 from __future__ import annotations
 
 import asyncio
+import queue
 import threading
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -29,12 +31,20 @@ from ..agent import events as ev
 from ..agent import loop as agent_loop
 from ..config import ConfigError
 from ..data.store import DatasetStore
+from .basemap import aclose_client
 from .basemap import router as basemap_router
 
 _ROOT = Path(__file__).resolve().parents[2]  # repo root: surveyor/app/main.py -> ../../
 _WEB_DIST = _ROOT / "web" / "dist"
 
-app = FastAPI(title="Surveyor", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    await aclose_client()  # close the basemap proxy's shared httpx client on shutdown
+
+
+app = FastAPI(title="Surveyor", version="0.1.0", lifespan=lifespan)
 app.include_router(basemap_router)
 
 # One process, one store. Handles are unique per run; the TTL evicts stale datasets.
@@ -73,14 +83,21 @@ async def query(req: QueryRequest) -> StreamingResponse:
         worker.start()
         try:
             while True:
-                frame = await asyncio.to_thread(sink.frames.get)
+                # Poll with a timeout rather than block forever: if the client disconnects, Starlette
+                # cancels this generator and we must be at an awaitable cancellation point, not parked
+                # in an un-interruptible Queue.get on a worker thread.
+                try:
+                    frame = await asyncio.to_thread(sink.frames.get, True, 1.0)
+                except queue.Empty:
+                    continue
                 if frame is None:  # the sentinel from sink.close()
                     break
                 yield frame
         finally:
-            # The worker has emitted its sentinel from finally, so it is already unwinding; join so a
-            # client disconnect doesn't orphan a thread mid-run.
-            await asyncio.to_thread(worker.join)
+            # On disconnect the agent loop can't be interrupted mid-step, but it's a daemon thread, so
+            # cap the wait: don't pin this task for the rest of a multi-call run. On the normal path
+            # the worker has already emitted its sentinel and exited, so this returns immediately.
+            await asyncio.to_thread(worker.join, 5.0)
 
     return StreamingResponse(
         frames(),
