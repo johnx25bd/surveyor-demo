@@ -27,10 +27,10 @@ Nothing here is filled in yet — that is the point. Check back as the phases la
 
 ## Phase 3 — Architecture
 
-- PR: TBD
+- PR: #12
 - Clip: TBD
-- Key commits: TBD
-- Summary: TBD
+- Key commits: `0df5225` (architecture decision doc), `cad5f5c` (revision grounded in live API validation)
+- Summary: Made the binding technical decisions for v0.1 — a Python/FastAPI backend, a hand-rolled tool-use loop on the raw Anthropic SDK, operation-granular tools that exchange server-side dataset handles, and a composable analytical operation set (filter / aggregate / normalize / rank / relate / attach) rather than a fixed pipeline. Validated every API shape against live calls to the OS NGD, ONS Nomis, and ONS/MHCLG ArcGIS services, recorded the feasible-question envelope (OS NGD's 100-features-per-page ceiling makes feature-aggregation regional, not national), and scoped build phase 1 to a CLI-tested backend.
 
 ## Phase 4 — Build phase 1
 
