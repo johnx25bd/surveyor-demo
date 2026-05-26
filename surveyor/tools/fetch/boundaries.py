@@ -57,7 +57,10 @@ class FetchBoundaries:
         feats = fc.get("features", [])
         geometry_type = feats[0]["geometry"]["type"] if feats else "Unknown"
         dataset = GeoDataset(
-            features=fc, geometry_type=geometry_type, key_property=geo.key_field
+            features=fc,
+            geometry_type=geometry_type,
+            key_property=geo.key_field,
+            name_property=geo.name_field,
         )
         handle = ctx.store.put(dataset)
         return ToolOutcome(descriptor=describe(handle, dataset))
