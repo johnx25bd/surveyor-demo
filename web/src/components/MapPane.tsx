@@ -38,6 +38,37 @@ function styleUrl(mood: Mood): string {
   return `/api/basemap/style.json?theme=${mood === "dark" ? "night" : "light"}`;
 }
 
+// A plain background so the choropleth always draws — even with no OS key, or if the basemap is down.
+function fallbackStyle(mood: Mood): maplibregl.StyleSpecification {
+  return {
+    version: 8,
+    sources: {},
+    layers: [
+      {
+        id: "bg",
+        type: "background",
+        paint: { "background-color": mood === "dark" ? "#0d1117" : "#e9edf0" },
+      },
+    ],
+  };
+}
+
+async function resolveStyle(mood: Mood): Promise<maplibregl.StyleSpecification> {
+  // The style document serves without a key; the *tiles* don't. Probe the keyed tile endpoint so a
+  // missing/invalid key falls back to a plain background (over which the choropleth still draws)
+  // rather than loading an OS style whose sources 503 and never finish.
+  try {
+    const probe = await fetch("/api/basemap/vts");
+    if (probe.ok) {
+      const r = await fetch(styleUrl(mood));
+      if (r.ok) return (await r.json()) as maplibregl.StyleSpecification;
+    }
+  } catch {
+    /* basemap unreachable — fall through to the plain background */
+  }
+  return fallbackStyle(mood);
+}
+
 export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -50,34 +81,48 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
   const [legend, setLegend] = useState<Legend | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Callbacks read live values through refs so the once-bound map handlers never go stale.
+  // Live values behind refs so the once-bound map callbacks never read stale props.
+  const moodRef = useRef(mood);
+  const hoveredRef = useRef(hovered);
+  const selectedRef = useRef(selected);
   const onHoverRef = useRef(onHover);
   const onSelectRef = useRef(onSelect);
+  moodRef.current = mood;
+  hoveredRef.current = hovered;
+  selectedRef.current = selected;
   onHoverRef.current = onHover;
   onSelectRef.current = onSelect;
 
-  // ---- Create the map once. Layer event handlers are bound here (they tolerate a not-yet-added
-  // layer), so re-adding the overlay after a basemap swap never stacks duplicate listeners. ----
+  // ---- Create the map once. Layer handlers are bound here (they tolerate a not-yet-added layer),
+  // so re-adding the overlay after a basemap swap never stacks duplicate listeners. ----
   useEffect(() => {
-    if (!containerRef.current) return;
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: styleUrl(mood),
-      center: GB_CENTER,
-      zoom: 5.1,
-      attributionControl: false,
-    });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    mapRef.current = map;
-    popupRef.current = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
+    const container = containerRef.current;
+    if (!container) return;
+    let map: maplibregl.Map | null = null;
+    let disposed = false;
 
-    map.on("styledata", addOverlay);
-    map.on("mousemove", "choro-fill", handleMove);
-    map.on("mouseleave", "choro-fill", handleLeave);
-    map.on("click", "choro-fill", handleClick);
+    void resolveStyle(moodRef.current).then((style) => {
+      if (disposed) return;
+      map = new maplibregl.Map({
+        container,
+        style,
+        center: GB_CENTER,
+        zoom: 5.1,
+        attributionControl: false,
+      });
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+      popupRef.current = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
+      mapRef.current = map;
+
+      map.on("styledata", addOverlay);
+      map.on("mousemove", "choro-fill", handleMove);
+      map.on("mouseleave", "choro-fill", handleLeave);
+      map.on("click", "choro-fill", handleClick);
+    });
 
     return () => {
-      map.remove();
+      disposed = true;
+      map?.remove();
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,13 +130,21 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
 
   // ---- Basemap theme swap. setStyle drops sources/layers; the styledata listener re-adds them. ----
   useEffect(() => {
-    mapRef.current?.setStyle(styleUrl(mood));
+    const map = mapRef.current;
+    if (!map) return;
+    let cancelled = false;
+    void resolveStyle(mood).then((style) => {
+      if (!cancelled) map.setStyle(style);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [mood]);
 
   // ---- A new choropleth view: fetch the dataset, classify it, paint, fit. ----
   useEffect(() => {
     const map = mapRef.current;
-    if (!choropleth || !map) {
+    if (!choropleth) {
       overlayRef.current = null;
       setLegend(null);
       if (map?.getSource("choro")) removeOverlay(map);
@@ -99,7 +152,7 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     }
     let cancelled = false;
     setLoading(true);
-    (async () => {
+    void (async () => {
       try {
         const ds: GeoDataset = await fetch(`/api/datasets/${choropleth.handle}`).then((r) => r.json());
         if (cancelled || ds.kind !== "geo") return;
@@ -121,7 +174,7 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
           valueCol,
         };
         addOverlay();
-        fitTo(map, ds.features);
+        if (mapRef.current) fitTo(mapRef.current, ds.features);
         setLegend({
           title: (choropleth.encoding as ChoroplethEncoding).title,
           ramp,
@@ -171,7 +224,7 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
         type: "line",
         source: "choro",
         paint: {
-          "line-color": mood === "dark" ? "#0d1117" : "#f4f0ea",
+          "line-color": moodRef.current === "dark" ? "#0d1117" : "#f4f0ea",
           "line-width": [
             "case",
             ["boolean", ["feature-state", "selected"], false],
@@ -191,15 +244,17 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     const o = overlayRef.current;
     if (!map || !o || !map.getSource("choro")) return;
     const prev = appliedRef.current;
-    if (prev.hover && prev.hover !== hovered) {
+    const h = hoveredRef.current;
+    const s = selectedRef.current;
+    if (prev.hover && prev.hover !== h) {
       map.setFeatureState({ source: "choro", id: prev.hover }, { hover: false });
     }
-    if (prev.selected && prev.selected !== selected) {
+    if (prev.selected && prev.selected !== s) {
       map.setFeatureState({ source: "choro", id: prev.selected }, { selected: false });
     }
-    if (hovered) map.setFeatureState({ source: "choro", id: hovered }, { hover: true });
-    if (selected) map.setFeatureState({ source: "choro", id: selected }, { selected: true });
-    appliedRef.current = { hover: hovered, selected };
+    if (h) map.setFeatureState({ source: "choro", id: h }, { hover: true });
+    if (s) map.setFeatureState({ source: "choro", id: s }, { selected: true });
+    appliedRef.current = { hover: h, selected: s };
   }
 
   function handleMove(e: maplibregl.MapLayerMouseEvent) {

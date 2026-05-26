@@ -61,3 +61,78 @@ body,
 .sv-sug-arrow {
   flex-shrink: 0;
 }
+
+/* ---- Long tokens (dataset handles, GSS codes) must wrap, never bleed the pane ---- */
+.sv-msg-body,
+.sv-tool-body {
+  overflow-wrap: anywhere;
+}
+
+/* ---- Markdown in the assistant answer ---- */
+.sv-markdown h1,
+.sv-markdown h2,
+.sv-markdown h3,
+.sv-markdown h4 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 10px 0 4px;
+  color: var(--sv-fg);
+}
+.sv-markdown p {
+  margin: 0 0 8px;
+}
+.sv-markdown ul,
+.sv-markdown ol {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.sv-markdown li {
+  margin: 2px 0;
+}
+.sv-markdown strong {
+  color: var(--sv-fg);
+  font-weight: 700;
+}
+.sv-markdown em {
+  font-family: inherit;
+  font-style: italic;
+  background: none;
+  padding: 0;
+}
+.sv-markdown code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--sv-surface-2);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.sv-markdown > *:last-child {
+  margin-bottom: 0;
+}
+/* Tables can be wide — let them scroll inside the pane rather than push it open. */
+.sv-markdown table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 4px 0 10px;
+}
+.sv-markdown th,
+.sv-markdown td {
+  border: 1px solid var(--sv-border);
+  padding: 4px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.sv-markdown th {
+  background: var(--sv-surface-2);
+  font-weight: 600;
+}
+
+/* ---- Ranked rows: widen the value column for real-world magnitudes (populations, counts) ---- */
+.sv-ranked-row {
+  grid-template-columns: 20px 1fr 52px 68px;
+}

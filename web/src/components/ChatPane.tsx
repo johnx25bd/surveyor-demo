@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import type { ChatItem, SurveyorState } from "../state/useSurveyor";
 import type { DatasetDescriptor } from "../lib/types";
@@ -96,11 +98,9 @@ function Item({ item }: { item: ChatItem }) {
     case "assistant":
       return (
         <div className="sv-msg sv-msg--assistant">
-          <div className="sv-msg-body">
-            <p>
-              {item.text}
-              {item.streaming && <span className="sv-streaming-cursor" aria-hidden="true" />}
-            </p>
+          <div className="sv-msg-body sv-markdown">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.text}</ReactMarkdown>
+            {item.streaming && <span className="sv-streaming-cursor" aria-hidden="true" />}
           </div>
         </div>
       );
