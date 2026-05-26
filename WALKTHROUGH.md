@@ -13,10 +13,10 @@ Nothing here is filled in yet — that is the point. Check back as the phases la
 
 ## Phase 1 — Idea-gen
 
-- PR: TBD
-- Clip: TBD
-- Key commits: TBD
-- Summary: TBD
+- PR: #10
+- Clip: [Part 1](https://youtu.be/AshYs9pfdAI), [Part 2](https://youtu.be/Qo3bWyz5MPE)
+- Key commits: `c36f2e1` (concept brief), `08c6309` (session screenshot)
+- Summary: Settled what Surveyor is — an agentic, show-your-work chat interface to UK national geospatial data (Ordnance Survey + ONS), committing to a three-pane shell while leaving visual design, interaction model, and the headline demo question deliberately open.
 
 ## Phase 2 — UI design
 
