@@ -1,0 +1,63 @@
+/* App-level layout on top of the vendored OS design system styles.
+   The design's surveyor.css owns the look; this file only makes the shell fill the viewport and
+   adapts the map pane to host a real MapLibre canvas instead of the mockup's inline SVG. */
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Real MapLibre canvas (replaces the mockup's padded SVG canvas) ---- */
+.sv-map-gl {
+  position: absolute;
+  inset: 0;
+}
+.sv-map-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* MapLibre's own popup, restyled to the OS card language. */
+.maplibregl-popup-content {
+  background: var(--sv-surface);
+  color: var(--sv-fg);
+  border: 1px solid var(--sv-border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-overlay);
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+}
+.maplibregl-popup-tip {
+  border-top-color: var(--sv-border-strong);
+  border-bottom-color: var(--sv-border-strong);
+}
+.sv-popup-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sv-fg);
+}
+.sv-popup-stat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--sv-fg-muted);
+  margin-top: 2px;
+}
+
+/* MapLibre attribution/ctrl tucked to match the foot bar; keep it subtle. */
+.sv-map-body .maplibregl-ctrl-bottom-right {
+  margin-bottom: 4px;
+}
+
+/* A clickable affordance on the ranked rows + suggestions parity. */
+.sv-sug-arrow {
+  flex-shrink: 0;
+}
