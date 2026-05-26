@@ -19,5 +19,9 @@ yarn-error.log*
 # OS
 .DS_Store
 
+# Recordings (screen captures go to the YouTube playlist, not the repo)
+*.mov
+*.mp4
+
 # Claude Code
 .claude/settings.local.json
