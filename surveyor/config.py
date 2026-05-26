@@ -23,7 +23,10 @@ def _load_env_file(name: str) -> None:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, value = line.partition("=")
-        os.environ.setdefault(key.strip(), value.strip())
+        value = value.strip()
+        if len(value) >= 2 and value[0] in "\"'" and value[-1] == value[0]:
+            value = value[1:-1]  # strip matched surrounding quotes (e.g. KEY="abc")
+        os.environ.setdefault(key.strip(), value)
 
 
 # .env.dev (local) first, then .env as a fallback; setdefault keeps real env vars authoritative.

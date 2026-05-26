@@ -86,6 +86,7 @@ def describe(handle: str, ds: Dataset) -> dict[str, Any]:
         feats = ds.features.get("features", [])
         # Sample carries properties only — geometry stays in the store, off the model's context.
         sample = [{"properties": f.get("properties", {})} for f in feats[:1]]
+        columns = list(feats[0].get("properties", {})) if feats else None
         return DatasetDescriptor(
             handle=handle,
             kind="geo",
@@ -94,6 +95,7 @@ def describe(handle: str, ds: Dataset) -> dict[str, Any]:
             geometry_type=ds.geometry_type,
             bbox=_bbox(feats),
             key_column=ds.key_property,
+            columns=columns,
             sample=sample,
         ).model_dump(exclude_none=True)
 
