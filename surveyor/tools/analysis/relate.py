@@ -40,7 +40,9 @@ class Relate:
             raise ValueError("relate needs two geo datasets: features and reference")
 
         pred, _, dist = args.predicate.partition(":")
-        feats = to_gdf(features)
+        # reset_index makes the 0..n-1 ⇄ source-list-position invariant explicit: the sjoin below
+        # preserves the left index, and we map matched rows back to the original WGS84 features by it.
+        feats = to_gdf(features).reset_index(drop=True)
         ref = to_gdf(reference)
 
         if pred in {"within", "intersects"}:

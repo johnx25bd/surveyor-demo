@@ -53,6 +53,7 @@ class Aggregate:
 
         feats = to_gdf(features)
         bounds = to_gdf(boundaries)
+        name = name if (name and name in bounds.columns) else None  # a prior filter may have dropped it
         if op in {"sum", "mean"} and field not in feats.columns:
             raise ValueError(f"field {field!r} not in features; available: {sorted(feats.columns)}")
 
@@ -78,7 +79,7 @@ class Aggregate:
         names = bounds.set_index(key)[name].to_dict() if name else {}
         rows = []
         for code in bounds[key]:
-            raw = agg.get(code, 0)
+            raw = agg[code] if code in agg.index else 0  # zero-fill boundaries with no features
             value = int(raw) if op == "count" else float(raw)
             rows.append({"code": code, "name": names.get(code), value_column: value})
 
