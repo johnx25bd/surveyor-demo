@@ -40,10 +40,10 @@ DONE = "done"
 
 
 class _Style:
-    """Minimal ANSI styling, disabled when stdout is not a TTY (so piped output stays clean)."""
+    """Minimal ANSI styling, disabled when the target stream is not a TTY (piped output stays clean)."""
 
-    def __init__(self) -> None:
-        self._on = sys.stdout.isatty()
+    def __init__(self, stream: Any) -> None:
+        self._on = stream.isatty()
 
     def __call__(self, code: str, text: str) -> str:
         return f"\033[{code}m{text}\033[0m" if self._on else text
@@ -53,11 +53,12 @@ class CliSink:
     """Prints the agent's event stream as a readable, sequential trace."""
 
     def __init__(self) -> None:
-        self._s = _Style()
+        self._out = _Style(sys.stdout)
+        self._err = _Style(sys.stderr)  # errors print to stderr; gate their colour on stderr's TTY
         self._mid_message = False  # a streamed reasoning line is currently open
 
     def emit(self, event: str, data: dict[str, Any]) -> None:
-        s = self._s
+        s = self._out
         if event == MESSAGE:
             if not self._mid_message:
                 sys.stdout.write("  ")
@@ -80,9 +81,11 @@ class CliSink:
                 + s("35", f"  {data.get('handle')}  {data.get('encoding', {})}")
             )
         elif event == ERROR:
-            print(s("1;31", f"✗ {data.get('message', '')}"), file=sys.stderr)
+            print(self._err("1;31", f"✗ {data.get('message', '')}"), file=sys.stderr)
         elif event == DONE:
             print(s("2;32", "  ✓ done"))
+        else:  # an unknown event — surface it rather than swallow (helps while developing)
+            print(f"  ? {event}: {data}", file=sys.stderr)
 
     def _close_message(self) -> None:
         if self._mid_message:

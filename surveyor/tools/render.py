@@ -36,7 +36,12 @@ class RenderChoropleth:
         if not isinstance(ds, GeoDataset):
             raise ValueError("render_choropleth needs a geo dataset (use attach to build one)")
         feats = ds.features.get("features", [])
-        if feats and args.value_column not in feats[0].get("properties", {}):
+        if not feats:
+            raise ValueError(
+                "render_choropleth got an empty GeoDataset — the attach/aggregate step produced "
+                "nothing to map; revisit the upstream steps"
+            )
+        if args.value_column not in feats[0].get("properties", {}):
             cols = sorted(feats[0].get("properties", {}))
             raise ValueError(
                 f"value_column {args.value_column!r} not on the features; available: {cols}"
@@ -72,7 +77,11 @@ class RenderChart:
         ds = ctx.store.get(args.table)
         if not isinstance(ds, TableDataset):
             raise ValueError("render_chart needs a table")
-        if ds.rows and args.value_column not in ds.rows[0]:
+        if not ds.rows:
+            raise ValueError(
+                "render_chart got an empty table — the upstream step produced no rows to chart"
+            )
+        if args.value_column not in ds.rows[0]:
             raise ValueError(
                 f"value_column {args.value_column!r} not in the table; available: {sorted(ds.rows[0])}"
             )
