@@ -75,3 +75,24 @@ METRICS: dict[str, Metric] = {
         value_column="OBS_VALUE",
     ),
 }
+
+
+@dataclass(frozen=True)
+class FeatureType:
+    collection: str  # OS NGD collection id
+    cql_filter: str  # server-side CQL — the model never authors one
+    geometry: str  # the geometry kind the collection returns
+    density: str  # "sparse" — only sparse civic types are safe for regional aggregation
+
+
+# Only SPARSE civic site types belong here: dense types blow past OS NGD's 100/page ceiling even
+# within a city-region (verified live). The cql_filter values are documented OS NGD code-list
+# strings, confirmed against live responses. Adding a type is one verified entry — no code change.
+FEATURE_TYPES: dict[str, FeatureType] = {
+    "health_centre": FeatureType(
+        collection="lus-fts-site-2",
+        cql_filter="description='Health Centre'",
+        geometry="MultiPolygon",
+        density="sparse",  # ~668 across Greater Manchester — safe for regional aggregation
+    ),
+}
