@@ -21,6 +21,7 @@ class GeoDataset(BaseModel):
     crs: str = "EPSG:4326"
     geometry_type: str  # e.g. "MultiPolygon", "Point"
     key_property: str | None = None  # the feature property holding the GSS code
+    name_property: str | None = None  # the feature property holding the human-readable name
 
     @property
     def count(self) -> int:
