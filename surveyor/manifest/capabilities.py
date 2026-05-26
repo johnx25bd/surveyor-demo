@@ -24,6 +24,7 @@ class Geography:
 class Region:
     label: str
     where: str  # ArcGIS attribute predicate, manifest-owned
+    lad_codes: tuple[str, ...] | None = None  # GSS codes, for filtering non-ArcGIS sources (Nomis)
     bbox: tuple[float, float, float, float] | None = None  # lon/lat, for OS NGD feature fetches
 
 
@@ -44,6 +45,33 @@ REGIONS: dict[str, Region] = {
     "greater_manchester": Region(
         label="Greater Manchester",
         where="LAD21CD IN (" + ", ".join(f"'{code}'" for code in _GM_CODES) + ")",
+        lad_codes=tuple(_GM_CODES),
         bbox=(-2.75, 53.32, -1.91, 53.69),
+    ),
+}
+
+
+@dataclass(frozen=True)
+class Metric:
+    source: str
+    dataset_id: str
+    geography_type: dict[str, str]  # geography level -> Nomis TYPE code (dataset/vintage-specific)
+    parent_geography: str  # Nomis parent geography id (England = 2092957699)
+    pinned_dims: dict[str, int]  # every dataset dimension pinned to one code
+    key_column: str  # GSS-code column in the response
+    name_column: str
+    value_column: str
+
+
+METRICS: dict[str, Metric] = {
+    "population": Metric(
+        source="nomis",
+        dataset_id="NM_2021_1",  # 2021 Census TS001 — usual residents
+        geography_type={"local_authority": "TYPE154"},  # 2022 local authority districts
+        parent_geography="2092957699",  # England
+        pinned_dims={"measures": 20100, "c2021_restype_3": 0},  # 20100 = count; 0 = all usual residents
+        key_column="GEOGRAPHY_CODE",
+        name_column="GEOGRAPHY_NAME",
+        value_column="OBS_VALUE",
     ),
 }
