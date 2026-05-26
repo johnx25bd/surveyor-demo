@@ -10,7 +10,265 @@
    Surveyor — three-pane app styles
    Themed by `.sv-mood--paper | --dark | --carto` on the root.
    ============================================================ */
-@import url('../colors_and_type.css');
+/* =========================================================================
+   Ordnance Survey Design System — Colour & Type Tokens
+   Sources: ordnancesurvey.co.uk osweb-styles.css + GeoDataViz Toolkit
+   ========================================================================= */
+
+/* ---- Fonts ------------------------------------------------------------- */
+/* We load Source Sans 3 from Google Fonts as a stand-in for the OS web sans.
+   Drop official OS web font files into /fonts/ and swap --font-sans below. */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* ---- Brand colour --------------------------------------------------- */
+  --os-purple:           #453c90;   /* primary brand — logo wordmark, accents */
+  --os-purple-dark:      #322d6c;
+  --os-purple-darker:    #1f1c46;
+  --os-purple-light:     #6c63b8;
+  --os-purple-tint:      #ebe9f5;
+
+  /* Magenta from the logo roundel — used as secondary accent + chat bubble */
+  --os-magenta:          #d40058;
+  --os-magenta-dark:     #a8004a;
+
+  /* Primary CTA blue — the bright royal-blue used on every solid action button */
+  --os-action:           #1149f4;
+  --os-action-dark:      #0c34b3;
+
+  /* Link blue — a slightly more reserved blue for inline links */
+  --os-blue:             #0046c5;   /* links / informational */
+  --os-blue-dark:        #00318c;
+
+  --os-green:            #118011;   /* success */
+  --os-amber:            #ffbb00;   /* warning */
+  --os-red:              #c63d54;   /* danger */
+
+  /* ---- Neutrals ------------------------------------------------------- */
+  --os-black:            #0a0a0a;
+  --os-ink:              #1a1a1a;
+  --os-grey-900:         #2a2a2a;
+  --os-grey-700:         #4a4a4a;
+  --os-grey-500:         #757575;   /* mid grey — borders + meta */
+  --os-grey-300:         #d1d1d1;
+  --os-grey-200:         #e5e5e5;
+  --os-grey-100:         #f1f1f1;
+  --os-grey-050:         #f7f7f7;   /* default page background section */
+  --os-white:            #ffffff;
+
+  /* The signature OS web background — warm cream / paper.
+     Used as the default page background across ordnancesurvey.co.uk. */
+  --os-paper:            #f4f0ea;
+  --os-paper-dark:       #e9e2d6;
+
+  /* ---- Semantic foreground ------------------------------------------- */
+  --fg-default:          var(--os-black);
+  --fg-muted:            var(--os-grey-700);
+  --fg-subtle:           var(--os-grey-500);
+  --fg-inverse:          var(--os-white);
+  --fg-link:             var(--os-blue);
+  --fg-link-hover:       var(--os-blue-dark);
+  --fg-brand:            var(--os-purple);
+  --fg-action:           var(--os-action);
+
+  /* ---- Semantic background ------------------------------------------- */
+  --bg-default:          var(--os-paper);  /* cream, not white */
+  --bg-surface:          var(--os-white);  /* white for cards on top of paper */
+  --bg-muted:            var(--os-grey-050);
+  --bg-subtle:           var(--os-grey-100);
+  --bg-inverse:          var(--os-black);
+  --bg-brand:            var(--os-purple);
+  --bg-brand-tint:       var(--os-purple-tint);
+  --bg-accent:           var(--os-magenta);
+
+  /* ---- Borders -------------------------------------------------------- */
+  --border-default:      var(--os-grey-200);
+  --border-strong:       var(--os-grey-300);
+  --border-emphasis:     var(--os-black);
+  --border-brand:        var(--os-purple);
+
+  /* ---- Status -------------------------------------------------------- */
+  --status-success:      var(--os-green);
+  --status-warning:      var(--os-amber);
+  --status-danger:       var(--os-red);
+  --status-info:         var(--os-blue);
+
+  /* ---- GeoDataViz qualitative palette (8 hues) ----------------------- */
+  --gdv-q-1: #FF1F5B;   /* magenta-red */
+  --gdv-q-2: #00CD6C;   /* green */
+  --gdv-q-3: #009ADE;   /* blue */
+  --gdv-q-4: #AF58BA;   /* purple */
+  --gdv-q-5: #FFC61E;   /* yellow */
+  --gdv-q-6: #F28522;   /* orange */
+  --gdv-q-7: #A0B1BA;   /* neutral grey */
+  --gdv-q-8: #A6761D;   /* brown */
+
+  /* ---- GeoDataViz RAG ------------------------------------------------- */
+  --gdv-rag-red:   #E9002D;
+  --gdv-rag-amber: #FFAA00;
+  --gdv-rag-green: #00B000;
+  --gdv-rag-cvd-red:   #C40F5B;
+  --gdv-rag-cvd-amber: #FD8D3C;
+  --gdv-rag-cvd-green: #089099;
+
+  /* ---- Type families ------------------------------------------------- */
+  --font-sans: "Source Sans 3", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: "JetBrains Mono", "Source Code Pro", ui-monospace,
+               SFMono-Regular, Menlo, Consolas, monospace;
+  /* Cartographic typefaces — only used when embedding actual OS maps.
+     Not webfonts; system fallbacks listed. */
+  --font-map-leisure: "Gill Sans", "Gill Sans MT", "Source Sans 3", sans-serif;
+  --font-map-os-net: "Camphor Pro", "Camphor", "Source Sans 3", sans-serif;
+  --font-map-road:   Arial, Helvetica, sans-serif;
+
+  /* ---- Type scale ---------------------------------------------------- */
+  --fs-12: 0.75rem;     /* 12 */
+  --fs-14: 0.875rem;    /* 14 */
+  --fs-16: 1rem;        /* 16 */
+  --fs-18: 1.125rem;    /* 18 — default body */
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-28: 1.75rem;
+  --fs-32: 2rem;
+  --fs-40: 2.5rem;
+  --fs-48: 3rem;
+  --fs-56: 3.5rem;
+  --fs-64: 4rem;
+
+  /* ---- Weights ------------------------------------------------------- */
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* ---- Line-height --------------------------------------------------- */
+  --lh-tight:   1.15;
+  --lh-snug:    1.25;
+  --lh-normal:  1.4;
+  --lh-relaxed: 1.5;
+  --lh-loose:   1.65;
+
+  /* ---- Tracking ------------------------------------------------------ */
+  --ls-tight:  -0.01em;
+  --ls-normal: 0;
+  --ls-wide:   0.04em;
+  --ls-caps:   0.08em;
+
+  /* ---- Spacing (8-pt grid) ------------------------------------------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /* ---- Radii --------------------------------------------------------- */
+  /* OS web is VERY square — buttons and cards use 2–4px. Pills only on chips. */
+  --radius-0:    0;
+  --radius-xs:   2px;   /* buttons, inputs */
+  --radius-sm:   4px;   /* cards (subtle) */
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-full: 9999px;  /* chips, avatar, chat FAB */
+
+  /* ---- Elevation (used sparingly) ----------------------------------- */
+  --shadow-none:    none;
+  --shadow-sticky:  0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-modal:   0 16px 48px rgba(0, 0, 0, 0.20);
+
+  /* ---- Focus --------------------------------------------------------- */
+  --focus-ring: 0 0 0 3px rgba(69, 60, 144, 0.35);
+
+  /* ---- Motion -------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:    150ms;
+  --dur-base:    200ms;
+  --dur-slow:    300ms;
+
+  /* ---- Layout -------------------------------------------------------- */
+  --container-max: 1280px;
+  --header-height: 88px;
+}
+
+/* ---- Element defaults ------------------------------------------------- */
+html { font-family: var(--font-sans); color: var(--fg-default); background: var(--bg-default); }
+
+body {
+  font-size: var(--fs-18);
+  line-height: var(--lh-relaxed);
+  font-weight: var(--fw-regular);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, .h1 { font-size: var(--fs-56); font-weight: var(--fw-bold); line-height: var(--lh-tight); letter-spacing: var(--ls-tight); margin: 0; }
+h2, .h2 { font-size: var(--fs-40); font-weight: var(--fw-bold); line-height: var(--lh-snug);  margin: 0; }
+h3, .h3 { font-size: var(--fs-28); font-weight: var(--fw-semibold); line-height: var(--lh-snug); margin: 0; }
+h4, .h4 { font-size: var(--fs-20); font-weight: var(--fw-semibold); line-height: var(--lh-normal); margin: 0; }
+h5, .h5 { font-size: var(--fs-16); font-weight: var(--fw-semibold); line-height: var(--lh-normal); text-transform: uppercase; letter-spacing: var(--ls-caps); margin: 0; }
+
+p { margin: 0 0 var(--space-4); }
+
+a {
+  color: var(--fg-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color var(--dur-fast) var(--ease-standard);
+}
+a:hover { color: var(--fg-link-hover); text-decoration-thickness: 2px; }
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9375em;
+  background: var(--bg-subtle);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-xs);
+}
+pre code { background: transparent; padding: 0; }
+
+::selection { background: var(--os-purple); color: var(--os-white); }
+
+/* ---- Utility -- buttons (canonical OS web shape) -------------------- */
+.os-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 12px 24px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-16);
+  font-weight: var(--fw-semibold);
+  line-height: 1.2;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-standard),
+              border-color var(--dur-fast) var(--ease-standard),
+              color var(--dur-fast) var(--ease-standard),
+              transform var(--dur-fast) var(--ease-standard);
+}
+.os-btn--primary   { background: var(--os-action); color: var(--os-white); border-color: var(--os-action); border-radius: var(--radius-xs); }
+.os-btn--primary:hover { background: var(--os-action-dark); border-color: var(--os-action-dark); }
+.os-btn--primary:active { transform: translateY(1px); }
+
+.os-btn--secondary { background: transparent; color: var(--os-action); border-color: var(--os-action); border-radius: var(--radius-xs); }
+.os-btn--secondary:hover { background: rgba(17, 73, 244, 0.08); }
+
+.os-btn--ghost     { background: transparent; color: var(--os-black); border-color: transparent; }
+.os-btn--ghost:hover { background: rgba(0, 0, 0, 0.06); }
+
+.os-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(17, 73, 244, 0.35); }
+
 
 /* ---- Theme variables (PAPER default) ----------------------- */
 .sv-app, .sv-app *, .sv-app *::before, .sv-app *::after { box-sizing: border-box; }
