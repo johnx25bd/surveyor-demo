@@ -20,10 +20,10 @@ Nothing here is filled in yet — that is the point. Check back as the phases la
 
 ## Phase 2 — UI design
 
-- PR: TBD
-- Clip: TBD
-- Key commits: TBD
-- Summary: TBD
+- PR: #11
+- Clip: [Design session](https://youtu.be/eAucIBhZ9F4)
+- Key commits: `9fcf90a` (UI mockup + design intent), `990c4df` (process screenshots)
+- Summary: Turned the concept brief into an interactive mockup — one three-pane shell (chat / map / evidence rail) across three app states (empty → mid-query → result), worked through a candidate question about deprivation and green space. Kept the brief's open axes (brand mood, tool-call presentation, chart type) as live toggles rather than locking them, and left the headline demo question illustrative.
 
 ## Phase 3 — Architecture
 
