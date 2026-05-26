@@ -34,10 +34,10 @@ Nothing here is filled in yet — that is the point. Check back as the phases la
 
 ## Phase 4 — Build phase 1
 
-- PR: TBD
+- PR: #14
 - Clip: TBD
-- Key commits: TBD
-- Summary: TBD
+- Key commits: `f77f351` (scaffold + data model), `71c64e5` (the §7 analytical operation set), `4f0c9d5` (the hand-rolled agent loop)
+- Summary: Built the phase-1 backend per the architecture doc — backend-first, tested from a CLI against live APIs, no UI. Three source clients (ONS/MHCLG ArcGIS, ONS Nomis, OS NGD), three fetch tools, the six composable analytical operations (filter / aggregate / normalize / rank / relate / attach), two render tools, a tool registry, and a hand-rolled Anthropic tool-use loop that streams its trace through a swappable event sink. The headline question — health-centre provision per 10,000 residents by local authority across Greater Manchester — runs end to end from `python -m surveyor`, with the agent composing the full chain autonomously; the national stat-only fallback (population by local authority) runs too. Every upstream API shape was validated against live calls before the code was written, and the build was reviewed in two parallel passes with the findings triaged before merge.
 
 ## Phase 5 — Build phase 2
 
