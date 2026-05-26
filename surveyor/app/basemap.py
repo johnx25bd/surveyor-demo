@@ -12,6 +12,7 @@ through us too. Sprites are served from public GitHub in the OS stylesheet, so t
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
@@ -20,7 +21,28 @@ from fastapi import APIRouter, HTTPException, Request, Response
 
 from ..config import ConfigError, os_maps_key
 
+log = logging.getLogger("surveyor.basemap")
+
 router = APIRouter(prefix="/api/basemap", tags=["basemap"])
+
+# One client for the life of the process: a single map render fans out to 50–200+ tile/glyph
+# requests, so connection reuse and keep-alive to api.os.uk matter. Created lazily, closed on app
+# shutdown via aclose_client().
+_client: httpx.AsyncClient | None = None
+
+
+def _get_client() -> httpx.AsyncClient:
+    global _client
+    if _client is None:
+        _client = httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=5.0))
+    return _client
+
+
+async def aclose_client() -> None:
+    global _client
+    if _client is not None:
+        await _client.aclose()
+        _client = None
 
 _STYLES_DIR = Path(__file__).parent / "basemap_styles"
 _OS_VTS_BASE = "https://api.os.uk/maps/vector/v1"
@@ -65,10 +87,11 @@ async def proxy(path: str, request: Request) -> Response:
     params = dict(request.query_params)
     params["key"] = key
     try:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=5.0)) as client:
-            upstream = await client.get(f"{_OS_VTS_BASE}/{path}", params=params)
+        upstream = await _get_client().get(f"{_OS_VTS_BASE}/{path}", params=params)
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=f"basemap upstream error: {exc}") from exc
+        # The exception's str() embeds the key-injected URL — log it server-side, never return it.
+        log.warning("basemap upstream error for %s: %s", path, type(exc).__name__)
+        raise HTTPException(status_code=502, detail="basemap upstream unavailable") from exc
 
     if upstream.status_code != 200:
         raise HTTPException(status_code=upstream.status_code, detail=f"OS VTS error for {path!r}")
