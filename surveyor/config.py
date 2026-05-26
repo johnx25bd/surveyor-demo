@@ -47,3 +47,8 @@ def anthropic_api_key() -> str:
     if not key:
         raise ConfigError("ANTHROPIC_API_KEY is not set (needed for the agent loop)")
     return key
+
+
+def model() -> str:
+    """The Claude model id the agent loop runs on; override with SURVEYOR_MODEL."""
+    return os.environ.get("SURVEYOR_MODEL", "").strip() or "claude-sonnet-4-6"

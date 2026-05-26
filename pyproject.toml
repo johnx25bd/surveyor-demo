@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Agentic chat interface to UK national geospatial data — build phase 1 backend"
 requires-python = ">=3.11"
 dependencies = [
+    "anthropic>=0.104.1",
     "geopandas>=1.1.3",
     "httpx>=0.27",
     "pydantic>=2.7",
