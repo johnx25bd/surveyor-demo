@@ -61,7 +61,7 @@ export function streamQuery(question: string, cb: StreamCallbacks): StreamHandle
   return { cancel: () => controller.abort() };
 }
 
-function parseFrame(raw: string): SurveyorEvent | null {
+export function parseFrame(raw: string): SurveyorEvent | null {
   let name = "message";
   const dataLines: string[] = [];
   for (const line of raw.split("\n")) {
