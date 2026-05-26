@@ -1,0 +1,2775 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surveyor — design exploration</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSIxMCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDQwIDEwIj48cGF0aCBmaWxsPSIjNDUzQzkwIiBkPSJtNC4xOSA5LjkzMS0uMDk4LS4wMTYtLjEwOC0uMDJBNSA1IDAgMCAxIDIuNjMgOS40bC4wMTUtLjA4N2MuMTA3LS42NzYuMjE4LTEuMzczLjQ5Ni0yLjAwNGEuNTYuNTYgMCAwIDAgLjEzNy0uMjQ0bDEuMDY1LjAzNC4yMDcuMDA0YS41LjUgMCAwIDAgLjI0Mi0uMDgxLjQ4LjQ4IDAgMCAwIC41OTYtLjA2OGMuMTk1LjA5NS4zNzguMTc2LjYxMi4xNzZoLjA1cS4zOS0uMDMyLjc2OC0uMTM2Yy4yNDYtLjA2LjUxNi0uMTMyLjc5MS0uMjE0cS0uMzExLjM0OC0uNjc0LjY0MS0uNTEuMzY5LTEuMDgxLjYzMmMtLjIwNC4xMDEtLjM5MS4yMzUtLjU1Mi4zOTZxLS4xNjIuMTc4LS4yNy4zOTNsLS4wNTMuMDk0YTMgMyAwIDAgMS0uMTE1LjE3NCAxLjUgMS41IDAgMCAwLS4yMDUuMzU3IDEwIDEwIDAgMCAwLS4xNDguNDczbC0uMDEuMDNhNSA1IDAgMCAxLS4zMTItLjA0bTIuMDM0LTEuODI4Yy4zNzguNTE1LjkzMi44MiAxLjUwMyAxLjA4NWE0Ljk4IDQuOTggMCAwIDEtMy4wMTYuODAzYy4wNDMtLjE0OC4wOS0uMzAyLjE0MS0uNDQ5cS4wNjgtLjE2NS4xNzgtLjMwNy4wNjgtLjA5LjEyNS0uMTkuMDI4LS4wNDYuMDU1LS4wOTYuMDk0LS4xOS4yMzUtLjM0OC4yMi0uMjE4LjQ5Ny0uMzU3ek0yLjgxOCAyLjQ1N0ExMi40IDEyLjQgMCAwIDAgMi42MDkuNjA5YTUgNSAwIDAgMSA1LjUuNDc1IDEgMSAwIDAgMC0uMDkxLjEwMnEtLjExMy4xNTgtLjE3NS4zNDNsLS4wNDguMTItLjA2Ni4xNTJxLS4xNjYuNDEtLjQwMi43ODFhMyAzIDAgMCAxLS40MzcuNDg4IDUgNSAwIDAgMC0uMzEzLjMycS0uMDM4LjA1Mi0uMDguMTA0TDYuMyAzLjMxN2wtLjA0NC0uMDhhLjMzLjMzIDAgMCAxLS4wNjYtLjE4Yy4wMDctLjA2NC4wOTgtLjEzNS4xNjgtLjE5M2wuMDU3LS4wNDlhLjEuMSAwIDAgMCAuMDM2LS4wNzEuMTA0LjEwNCAwIDAgMC0uMTczLS4wODRsLS4wNTEuMDQzYy0uMDk4LjA3Ni0uMjE3LjE3OC0uMjQyLjMyYS41LjUgMCAwIDAgLjA5LjMxN2wuMDExLjAyMi0uMDY0LjA5NGMtLjEuMTU2LS4xNzUuMjU3LS4yNzMuMjQ0LS4yNTUtLjA0LS4zMS4xMDUtLjM2LjI0NC0uMDUyLjEzOC0uMDkuMzMzLjE3My40NGwuMDcyLjAzMnEuMTQzLjA2NS4yOTUuMTA2LjA4NS4wMi4xNzIuMDI4bC4yMzQuMDFxLjI0My4wMTEuNDg0LjAyNy4zMzEuMDE2LjY1LjExYy4xMjguMDQuMjA4LjE3LjI3LjI4NS4wOTkuMTg4LjE5NC4zOTUuMzEuNjdxLjEyMy4yODIuMjg3LjU0M2wuMDQuMDY4cS0uMDgyLjA0NS0uMTY2LjA4LS43MTIuMjg1LTEuNDYuNDU0YTQgNCAwIDAgMS0uNzE5LjEyN2MtLjIwMi4wMTItLjM2Ni0uMDYyLS41NTEtLjE1YS41LjUgMCAwIDAgLjAxNi0uMTIxLjQyNi40MjYgMCAwIDAtLjMzNi0uNDNjLjAwNi0uMDg2LjAxMy0uMTc1LjAyMi0uMjU2cS4wMy0uMjQuMDMtLjQ4YTcgNyAwIDAgMC0uMDE0LS4yNmMtLjAwNS0uMS0uMDEzLS4yLS4wMTMtLjN2LS4wNWMwLS4yOTgtLjAwNC0uNzQyLS4zMzUtLjg5M2ExLjQ1IDEuNDUgMCAwIDAtLjcxOS0uMTAzIDIgMiAwIDAgMC0uMTg3LjAyN2MtLjEyOS4wMjMtLjI3OS4wNS0uMzYuMDA3LS4wNTItLjAyOC0uMDcyLS4xMTQtLjA4NC0uMjAzcS0uMDE3LS4xNS0uMDE0LS4zVjMuMzRxLS4wMDItLjIxMi0uMDE5LS40MTdsLS4wMS0uMTYyLS4wMTItLjE2M2ExLjggMS44IDAgMCAxIDAtLjQ4N2MuMDQ2LS4yMy4wODQtLjQ1Ny4xMTUtLjY1YS4xMDQuMTA0IDAgMSAwLS4yMDQtLjAzNGMtLjAzMy4xOTEtLjA3LjQxNy0uMTE1LjY0M3EtLjA0LjI3Mi0uMDA1LjU0M2wuMDExLjE2MmMuMDA0LjA1MS4wMTEuMTA3LjAxMS4xNjMuMDA5LjEzNC4wMTkuMjczLjAxOS40MDZ2LjA2OHEtLjAwNS4xNjMuMDE1LjMyNWMuMDEzLjA4OS4wNTIuMjgzLjE5OC4zNTdzLjMyNy4wNDEuNDg4LjAxM2EyIDIgMCAwIDEgLjE2LS4wMjRjLjIxNC0uMDI1LjQyOS4wMDYuNjI3LjA4OC4yMTcuMDk2LjIxNy40NTkuMjE3LjcwM3YuMDUycS4wMDIuMTU1LjAxNC4zMTNjLjAwNS4wODQuMDEzLjE3Mi4wMTMuMjUzcTAgLjIyNy0uMDI5LjQ1Mi0uMDEzLjEzMS0uMDIzLjI3YS40My40MyAwIDAgMC0uMzY3LjQzOXEwIC4xMTQuMDU0LjIxNWEuMjYuMjYgMCAwIDEtLjE1My4wMzFsLTEuMi0uMDQzYS41NS41NSAwIDAgMC0uMDgxLS4yNDRjLS4yOTgtLjY1LS4zNzktMS4zNzctLjQ1OS0yLjA4bC0uMDE1LS4xMThxLjA5Mi0uOTc2LjA4MS0xLjk1N20xLjE0OC4xcS0uMDA3LjEyNi4wMTMuMjUxYy4wMDYuMDUuMDQxLjI0Mi4wODYuMjY0cy4xNiAwIC4yMDYgMGguNTI1di0uNEg0LjY4di0uNTA4aC0uNTMxYy0uMDYgMC0uMDgzLS4wMTItLjExNC4wMjctLjA2LjA4LS4wNjMuMjc0LS4wNjguMzY3TTIuMzAyIDYuNDZhNDYgNDYgMCAwIDAtLjAzLjkwNmMtLjI5LS4wMzItLjU2NS0uMTY2LS41NjUtLjQ1MiAwLS4yODUuMjkzLS40MjguNTk1LS40NTRtLjI5LjAxNGEuOC44IDAgMCAxIC4yOTcuMTA2LjM4LjM4IDAgMCAxIC4yLjMzNWMwIC4yNjMtLjI0OS40MDYtLjUyNC40NDZxLjAwNi0uNDU1LjAyOC0uODg3TTguODY3IDYuMmwxLjA0NS0uMjYyYy0uMTAxLjUzLS4yODcgMS4wNC0uNTUyIDEuNTExYTUgNSAwIDAgMC0uNDIzLS41MzUuOC44IDAgMCAwLS4yMjYtLjE1IDEgMSAwIDAgMS0uMTMzLS4wODIuNS41IDAgMCAxLS4xMy0uMjE5cS4yMTgtLjEwNS40MDMtLjI2M2wuMDE3LjAwMXptLjI0Ny0uNjQ0YTIuNyAyLjcgMCAwIDEtLjM3NC40NjggMS40IDEuNCAwIDAgMS0uMTc3LjEzNWwtLjA0Mi0uMDdhNCA0IDAgMCAxLS4yNzgtLjUyIDkgOSAwIDAgMC0uMzIyLS42ODYgMSAxIDAgMCAwLS4xNDItLjIxNkw3LjYxIDIuNTI0cS4xNy0uMzEyLjMwNC0uNjRsLjA2NS0uMTVxLjAyNy0uMDY0LjA1Mi0uMTMuMDUyLS4xNTQuMTQ1LS4yOS4wNDEtLjA1LjA4OC0uMDk3QTUgNSAwIDAgMSA5Ljk1NSA0LjMybC0uMDY0LjA5NGMtLjIyNy4zMzktLjQ2LjY4OS0uNjk4IDEuMDI4LS4wMjkuMDM5LS4wNTIuMDc3LS4wOC4xMTV6TTYuODM2IDQuMzc4cS0uMjQ2LS4wMTYtLjQ5MS0uMDI5bC0uMTctLjAwOC4wNC0uMDY1cS4yMzItLjM5NS41MjItLjc1Yy4wOTMtLjEwNy4xOTgtLjIwOC4zLS4zMDZxLjIxLS4xOTQuMzktLjQxNmwuMTM0IDEuNzA1LS4wMjItLjAxYTIuOSAyLjkgMCAwIDAtLjcwMy0uMTJtMi40NDcgMS4yOTcuMDc4LS4xMTFjLjIxMy0uMzA1LjQyMS0uNjE3LjYyNS0uOTIycS4wMTMuMTc3LjAxNC4zNTkgMCAuMzU3LS4wNTEuNzEybC0uODQ0LjIxM2MuMDYzLS4wODIuMTItLjE3LjE3OC0uMjVNNi4zNyAzLjY2MmExMSAxMSAwIDAgMC0uMzMzLjUwNWwtLjA5LjE0NGEyIDIgMCAwIDEtLjIzMi0uMDg3bC0uMDctLjAzMmMtLjA5LS4wNC0uMTA3LS4wNS0uMDYtLjE3Ny4wNDgtLjEyNi4wNDgtLjEyNy4xMzgtLjExMy4yMzUuMDM0LjM3Ny0uMTguNDc4LS4zMzVsLjAyNS0uMDR6bS0zLjc3IDIuNmMuMDE2LS4zMi4wNC0uNjQ1LjA2Ny0uOTY2cS4wNzUuNTQyLjI0OSAxLjA2MWExLjEgMS4xIDAgMCAwLS4zMTUtLjA5NW0tLjkzNyAxLjA2cS4zNzYuOTE5LjYyMSAxLjg3OEE1IDUgMCAwIDEgLjI1NCA2LjU4bC4wMDUtLjAwOC4wNjItLjA0MnEuMTU3LS4wOTMuMjgtLjIyOS4xNDcuMTA5LjI5LjIzbC4yMS4xNjhxLjExMi4wODIuMjMyLjE1LjA5LjA1Mi4xNzEuMTA3Yy4wMS4xMzUuMDY3LjI2Mi4xNjEuMzZ6TS4yIDQuMDA3YTEgMSAwIDAgMC0uMDgtLjA3MSA1IDUgMCAwIDEgMS4wNDYtMi4xMzhsLjAyLjM1NGMuMDMuNTk0LjA2MSAxLjIxMS4xMiAxLjgxM2wuMDA2LjA0NmMuMDE3LjE0NS4wMTIuMTk1LS4wNDYuMjI3YS42LjYgMCAwIDEtLjIxMy4wMzljLS4wMyAwLS4wNTkuMDA2LS4wODYuMDA2cS0uMDY2LjAwOC0uMTQuMDI0Yy0uMTA4LjAyLS4yMy4wNDMtLjI4NyAwLS4xMTctLjA5My0uMjMtLjE5OC0uMzQtLjNtLS4xMy4xNjNjLjExLjEwMi4yMjQuMjA3LjM0NC4yOTlsLjAyLjAxMy4wNCAxLjI2NnEuMDAxLjA2LjAxLjEyNS4wMTUuMTEgMCAuMjJjLS4wMjEuMDk2LS4xNjcuMTk1LS4yNzQuMjY1bC0uMDE4LjAxMmE1IDUgMCAwIDEtLjEyMi0yLjJtOS4xNiAzLjQ1Ny4wMTQuMDIzYTUgNSAwIDAgMS0xLjMxOCAxLjQwOWMtLjU3NC0uMjctMS4xNDYtLjU2Mi0xLjUxNi0xLjA1NXEuMzQyLS4xOC42NS0uNDEzYTYgNiAwIDAgMCAuNzEtLjY3OHEuMTMtLjE0LjI2Mi0uMjc0LjExNC0uMDQuMjI2LS4wODZhLjY1LjY1IDAgMCAwIC4xOTUuMzAycS4wNzYuMDU2LjE2MS4wOTdhLjYuNiAwIDAgMSAuMTczLjEwOHEuMjQxLjI2OC40NDMuNTY3TTQuOCA2LjY0OWEuMjM0LjIzNCAwIDAgMSAuMjQ5LS4yNC4yNy4yNyAwIDAgMSAuMTczLjA2MS4yMi4yMiAwIDAgMSAuMDczLjE3OS4yNDguMjQ4IDAgMSAxLS40OTYgMG0tMi4yMzcuOTJhMS4yIDEuMiAwIDAgMCAuMzA2LS4wNzdxLS4xODcuNTI1LS4yODUgMS4wNzMtLjAwOS0uMTk4LS4wMTYtLjM5NS0uMDA3LS4zMDItLjAwNi0uNm0tLjMwOS0xLjk0OHEuMDI4LS4xMDUuMDU3LS4yMDNsLjA3OC0uMjY3cS0uMDQ2LjU1LS4wNzggMS4xYTEuMyAxLjMgMCAwIDAtLjMwMi4wNTdxLjA2Ny0uMTE4LjExMy0uMjQ0Yy4wNTItLjE0NS4wOTMtLjI5Ny4xMzItLjQ0M20uMDI0IDIuNTU3LjAxNS4zNzVhMTMgMTMgMCAwIDAtLjM1OS0xLjA2MnEuMTYzLjA2NS4zMzcuMDgxLS4wMDIuMzAxLjAwNy42MDZNMS4zOSAyLjEzNWwtLjAzLS41NmMuMjg5LS4zMTEuNjE2LS41ODQuOTczLS44MTJxLjE1NC44NDEuMTg0IDEuNjk4Yy4wMTYuNTg2LS4wMTggMS4xODUtLjA2NCAxLjc3NGwtLjMyMiAxLjEyNC0uMDU4LjIxYy0uMDQuMTQzLS4wNzguMjktLjEyOC40M3EtLjA2LjE1OC0uMTUuMzAybC0uMDguMTU2YS42LjYgMCAwIDAtLjE4Ni4yNjZsLS4wOTYtLjA1N2EyIDIgMCAwIDEtLjIwOS0uMTM0IDUgNSAwIDAgMS0uMjA3LS4xNjJjLS4xMDctLjA4Ny0uMjE3LS4xOC0uMzMxLS4yNnEuMDE1LS4xMyAwLS4yNTctLjAwOC0uMDU4LS4wMS0uMTFMLjY0NSA0LjUzN3EuMTEtLjAwNi4yMTYtLjAzYS42LjYgMCAwIDEgLjEyLS4wMjFsLjA4LS4wMDZxLjE1NSAwIC4yOTctLjA2Yy4xOTgtLjEwMy4xNzYtLjMwNC4xNi0uNDM3bC0uMDA0LS4wNDNjLS4wNi0uNTk5LS4wOTEtMS4yMTItLjEyMi0xLjgwNSI+PC9wYXRoPjxwYXRoIGZpbGw9IiNENDAwNTgiIGQ9Ik0xMi45MzYgOS41NWEuMjI1LjIyNSAwIDEgMSAwIC40NWMtMS4xODQgMC0yLjMxMi0uNTA3LTMuMTgtMS40M2EuMjQuMjQgMCAwIDEtLjA1MS0uMjU0LjIyNi4yMjYgMCAwIDEgLjMwMy0uMTEycS4wNDYuMDIyLjA4LjA2Yy43OC44MyAxLjc5IDEuMjg2IDIuODQ4IDEuMjg2bS45MTEtOS4xMTNWLjQ0QS4yMi4yMiAwIDAgMSAxMy44NzEgMGguMDI3YTQgNCAwIDAgMSAyLjU4MiAxLjM1Mi4yMi4yMiAwIDAgMSAwIC4yODguMjMuMjMgMCAwIDEtLjE2OC4wNzYuMjIuMjIgMCAwIDEtLjE2OS0uMDc5IDMuNTYgMy41NiAwIDAgMC0yLjI5Ni0xLjJtLjAyIDUuMjFjLS4wNzMtLjAxOC0uMTQ3LS4wMzktLjIxOS0uMDUydi0xYy4xOTYuMDQ4LjMwMy4xMzIuMzQ5LjI2NnEuMDU0LjE4LjA3My4zNjcuMDIyLjIyNi4wOTMuNDQzbC4wMTguMDQ2YTQgNCAwIDAgMS0uMzE0LS4wN20uMzkzLS44NzljLS4xMDMtLjMtLjM3LS40MDctLjYwOC0uNDU5VjMuMjg2YTMuMzkgMy4zOSAwIDAgMSAyLjk5NiAxLjc5N2wtLjE5Mi4xNTFxLS4wMzEuMDI2LS4wNjQuMDU2YTEgMSAwIDAgMS0uMDkzLjA3NWgtLjAxYy0uMDM5LS4wMTYtLjUxMi0uMjk1LS41ODMtLjM0MWEuMTA1LjEwNSAwIDAgMC0uMTYyLjA4LjEuMSAwIDAgMCAuMDQ3LjA5NGwuMDMyLjAxNS0uMTc1LjA2Mi0uMDUuMDE2YS4zLjMgMCAwIDAtLjIyLjE4MiAxIDEgMCAwIDAtLjAzNC4wOTEgMS40IDEuNCAwIDAgMS0uMDY4LjE3MWMtLjA5LjAwNS0uMzc5IDAtLjU3OCAwYTIgMiAwIDAgMS0uMDctLjE2MiAyIDIgMCAwIDEtLjA4My0uMzg2IDIgMiAwIDAgMC0uMDg0LS40MTltLjI1OCA1LjA5OC0uMDA4LjAwN2EzLjQgMy40IDAgMCAxLS40OTUuMDk0Yy0uMTIzLjAxMy0uMTgzLjA0LS4yNzQtLjAyYS4yLjIgMCAwIDEtLjA5Mi0uMTYzdi0yLjIxbC45NiAyLjExNGEyIDIgMCAwIDAtLjA5LjE3OG0xLjE1NC0xLjgxM2MuMTc4LjI3LjQ2Ni40NDMuNzA5LjU2NS0uMjA2LjI3Ni0uNDUzLjUyLS43MzIuNzIxbC0uMjAyLS4yODVhLjEwNC4xMDQgMCAwIDAtLjE1My0uMDE5bC0uNTIuNDUxLS4wMTcuMDE2LTEuMTA1LTIuNDMyVjUuODFsLjE2OC4wMzlxLjIzLjA2NC40NjguMDkzYy4xMTcuMjE3LjI3Ny40MDYuNDcyLjU1Ny4xMTcuMDg0LjM4Ny4yMzQuNjA1LjE4NmEuMzMuMzMgMCAwIDAgLjIyMS0uMTYuOC44IDAgMCAwIC4wODItLjMyNmMuMDI2LS4zMzQuMTI3LS4zNjEuMTkzLS4zMTguMTMuMDg3LjA1NS4zMDYtLjA0NS41M2wtLjAyLjA0NmEzLjEgMy4xIDAgMCAwLS4yNzIuNzg1Yy0uMDU1LjI4LS4wMDIuNTcuMTQ5LjgxMm0xLjE0Ni0yLjE3MWMuMDQ2LjAyNC4wOTMuMDQuMTQuMDYyYTMuMzMgMy4zMyAwIDAgMS0uNDI1IDIuNDQ0aC0uMDA1Yy0uMjE2LS4xMS0uNDc0LS4yNjMtLjYyMy0uNDg4YS44NC44NCAwIDAgMS0uMTA1LS42MTNxLjA3Ni0uMzczLjI0Ny0uNzEybC4wMi0uMDQ2Yy4wODgtLjE5Ni4yNjYtLjY1LS4wOS0uODYtLjYxMi0uMzU4LS40NTcuNjItLjYzNy43MjQtLjAxMi4wMDYtLjAxNC4wMi0uMDM1LjAyNC0uMDkuMDE4LS4yNzQtLjA1Ni0uMzgyLS4xMzdxLS4xOC0uMTM4LS4zMDYtLjMyNWguMTk1cS4xOC4wMS4zNTgtLjAyNGMuMDc1LS4wNDMuMTE3LS4xNDkuMTY3LS4yOTJxLjAxNS0uMDQ3LjAyOC0uMDc0Yy4wMi0uMDQ2LjAyMy0uMDQ3LjA5My0uMDdsLjA1Ny0uMDE4LjI2Ny0uMDk1LjAzNi0uMDE0Yy4wMS0uMDA1LjAzLS4wMTUuMDI1LS4wMTUuMDIuMDA0LjM1Mi4xOTkuMzUyLjE5OWwuMjQ0LjEzNHEuMDI0LjAxNC4wNTIuMDEzYS4xLjEgMCAwIDAgLjA5LS4wNTMuMTA0LjEwNCAwIDAgMC0uMDQtLjE0MmwtLjA0OC0uMDI3LjAzNS0uMDNxLjAyOC0uMDI3LjA1NS0uMDQ3bC4xNTYtLjEyN3EuMDkuMjAzLjE1Ni40MTZhLjEwMy4xMDMgMCAxIDAtLjA3Ni4xOTJ6bS0xLjM0NCAzLjU3N2EzLjQgMy40IDAgMCAxLS42ODMuMzMxLjYuNiAwIDAgMSAuMTE3LS4xNDVsLjQzMy0uMzc3ek0xMS40OTkgNC45NmwtLjc4OS0uNjlhNS43IDUuNyAwIDAgMC0uNzIzLTIuMTQybC42MTcuNTIzYS4yMy4yMyAwIDAgMSAuMDgxLjE0MnEuMDUyLjE5My4wNzMuMzkuMDIxLjE3My4wNi4zNDRjLjA1NC4yODkuMTkuNTU3LjM5Ljc3MmExLjM0IDEuMzQgMCAwIDAgLjk4LjQxM3EuMDk2IDAgLjE5My0uMDEyYy4yNDUtLjAzLjQ5LS4wNzYuNzI4LS4xMjZ2Ljg5NGwtMS4yOC0uMzUyLS4wODEtLjAyYS43LjcgMCAwIDEtLjEzOC0uMDRBLjMuMyAwIDAgMSAxMS41NCA1em0uMjc3LjM1NiAxLjMzNS4zNjd2Ljk1MmEzLjMzIDMuMzMgMCAwIDEtMi4zOTUtMS4wMjdxLjAzNy0uMzE1LjA0LS42MzQtLjAwMS0uMjAyLS4wMTYtLjRsLjYyNS41NDQuMDMzLjAzcS4wNTIuMDU3LjEyLjA5NC4wOS4wNC4xODguMDU3LjAzNS4wMS4wNy4wMTh6bTEuMTMtNS4zMTNjLjIyMS0uMDEyLjIwNS4yMzcuMjA1LjIzN3Y0LjA1NmExMCAxMCAwIDAgMS0uNzYyLjEzMyAxLjA4IDEuMDggMCAwIDEtLjkzOC0uMzE2IDEuMyAxLjMgMCAwIDEtLjMxNy0uNjQ0IDMgMyAwIDAgMS0uMDU0LS4zMDZsLjAxNS4wMWMuMTAyLjA3OS4yMjQuMTI4LjM1Mi4xNGEuNDYuNDYgMCAwIDAgLjIzOC0uMDY2Yy4wNjEtLjAzNC4wOS0uMDQxLjExNy0uMDM0YTEgMSAwIDAgMSAuMjguMTVjLjA0Ni4wMzUuMDUxLjA0LS4wMjQuMTc5bC0uMDIuMDM3YS4xNC4xNCAwIDAgMCAuMTI0LjIwNC4xNC4xNCAwIDAgMCAuMTItLjA3M2wuMDE5LS4wMzRjLjA2Ni0uMTI2LjE5LS4zNTItLjA1NS0uNTMzYTEuMiAxLjIgMCAwIDAtLjM2Ni0uMi40Mi40MiAwIDAgMC0uMzE2LjA1Mi4yLjIgMCAwIDEtLjExMy4wNGMtLjE3NC0uMDE4LS40LS4yMDItLjQyNS0uMjAyLS4wMS0uMDQzLS4wMi0uMDcyLS4wMzItLjExNGEuNS41IDAgMCAwLS4xNjgtLjI3NGwtLjYzLS41MzdhLjE0LjE0IDAgMCAwLS4wNTgtLjAyN2MuMjE2LS40NDQuNTI2LS44MzQuOTEtMS4xNDRsLjAwNS4wMTJhLjEwNS4xMDUgMCAwIDAgLjEzOC4wNTIuMTA1LjEwNSAwIDAgMCAuMDU0LS4xMzhMMTEuMTguNjFhMy4zMyAzLjMzIDAgMCAxIDEuNzI3LS42MDVtMi4xMTYgNC42MDFhLjEuMSAwIDAgMC0uMDI3LjA3Ni4xLjEgMCAwIDAgLjAzNS4wNzFxLjEwNS4wOTUuMjEyLjE4Ny4wMjkuMDIzLjA2Ny4wMjRhLjEwNS4xMDUgMCAwIDAgLjA2OC0uMTg0cS0uMTA2LS4wOS0uMjA3LS4xODJhLjEwNC4xMDQgMCAwIDAtLjE0OC4wMDhtLS4zMjUtLjQ4MmEuMTEuMTEgMCAwIDAtLjEwOC0uMDQ0LjEwNS4xMDUgMCAwIDAtLjA2Ni4xNjIgMSAxIDAgMCAwIC4wNjguMDhsLjA4MS4wODMuMDUuMDUzYS4xLjEgMCAwIDAgLjA3Ni4wMzJxLjA0MiAwIC4wNzMtLjAyOGEuMTA1LjEwNSAwIDAgMCAuMDA0LS4xNDhsLS4wNS0uMDUzcS0uMDQzLS4wMzgtLjA4Mi0uMDgxYTEgMSAwIDAgMS0uMDQ2LS4wNTZtLS40ODEtLjYzMmEuMTAzLjEwMyAwIDAgMC0uMDE3LjE0NXEuMDc4LjEuMTMuMjE4YS4xMS4xMSAwIDAgMCAuMDkzLjA1OC4xMDQuMTA0IDAgMCAwIC4wOTUtLjE1IDEuMyAxLjMgMCAwIDAtLjE1Ni0uMjU4LjEuMSAwIDAgMC0uMDctLjA0LjEuMSAwIDAgMC0uMDc1LjAyN20tMi44MTMtMi4wMzZxLjAyLjAwMi4wNC0uMDA0YS4xMDQuMTA0IDAgMCAwIC4wNTQtLjEzN2wtLjA1My0uMTIzLS4wNi0uMTQyYS4xMDUuMTA1IDAgMCAwLS4xMzgtLjA1MS4xLjEgMCAwIDAtLjA2LjA5OXEwIC4wMi4wMDkuMDRsLjA2Mi4xMzdjLjAxOC4wMzYuMDM0LjA3OC4wNTIuMTE3YS4xLjEgMCAwIDAgLjA5NS4wNjRtLjM4My42MDdhLjEwNC4xMDQgMCAwIDAgLjAyNi0uMTQ2IDMgMyAwIDAgMS0uMTQyLS4yMjguMTEuMTEgMCAwIDAtLjEwMi0uMDU2LjEwNS4xMDUgMCAwIDAtLjA4My4xNTNsLjAzLjA1N3EuMDYxLjEwMi4xMjUuMTk1YS4xLjEgMCAwIDAgLjA4Ni4wNDYuMS4xIDAgMCAwIC4wNi0uMDJtLjU1OC40NGEuMS4xIDAgMCAwLS4wMDgtLjA4LjEuMSAwIDAgMC0uMDYzLS4wNWwtLjEwMy0uMDM0YS40LjQgMCAwIDEtLjExMy0uMDVsLS4wMjEtLjAyM2EuMS4xIDAgMCAwLS4wNzEtLjA0Ni4xMDQuMTA0IDAgMCAwLS4wOS4xNzYuMy4zIDAgMCAwIC4wNTguMDYuNi42IDAgMCAwIC4xOC4wOGwuMDM0LjAxMS4wMjYuMDA5LjA0My4wMTNhLjEuMSAwIDAgMCAuMDcxIDAgLjEuMSAwIDAgMCAuMDU3LS4wNjVtLjYxNC4yNTFhLjEwNS4xMDUgMCAwIDAtLjA2LS4xMzZsLS4yNjItLjEwNGEuMTA1LjEwNSAwIDEgMC0uMDc4LjE5NmwuMjY1LjEwM2EuMS4xIDAgMCAwIC4wOTgtLjAxLjEuMSAwIDAgMCAuMDM4LS4wNDl6Ij48L3BhdGg+PHBhdGggZmlsbD0iIzQ1M0M5MCIgZD0iTTI1LjkwNCA0LjQxNGExLjEgMS4xIDAgMCAxLS44MTQuMzU4Yy0uNzMgMC0xLjI1OS0uNTc0LTEuMjU5LTEuMzYyIDAtLjg0Mi42NTQtMS4zNjIgMS4yNTktMS4zNjJhMS4wOCAxLjA4IDAgMCAxIC44MTQuMzUyVjEuMDJhLjA0My4wNDMgMCAwIDEgLjA0NC0uMDQzaC40M2EuMDQ0LjA0NCAwIDAgMSAuMDQ0LjA0M3YzLjYzM2EuMDQ0LjA0NCAwIDAgMS0uMDQ1LjA0M2gtLjQzYS4wNDQuMDQ0IDAgMCAxLS4wNDMtLjA0M3pNMjQuMzQ3IDMuNDFjMCAuNDQuMjAyLjkxNS43NzkuOTE4LjQ4NyAwIC43NzgtLjQ2OS43NzgtLjkxOCAwLS41NzUtLjI5LS45MTgtLjc3OC0uOTE4LS41MzctLjAwMi0uNzc5LjQ3NC0uNzc5LjkxN3ptMi42MDEgMS4yODdhLjA0LjA0IDAgMCAxLS4wMy0uMDEzLjA0LjA0IDAgMCAxLS4wMTMtLjAzVjIuMTU5YS4wNDMuMDQzIDAgMCAxIC4wNDMtLjA0M2guMzkzYS4wNDMuMDQzIDAgMCAxIC4wNDQuMDRsLjAyNS4yNDZhMS4wNiAxLjA2IDAgMCAxIC44Mi0uMzU4Yy42NDcgMCAuOTc3LjQyMy45NzcgMS4yNTR2MS4zNTRhLjA0NC4wNDQgMCAwIDEtLjA0NC4wNDNoLS40M2EuMDQuMDQgMCAwIDEtLjA0LS4wMjZsLS4wMDQtLjAxN1YzLjQxYzAtLjIxNyAwLS40NTYtLjA3LS42MzMtLjA3NS0uMTk1LS4yMTktLjI4Ni0uNDYtLjI4Ni0uMjk4IDAtLjc0Mi4yNTEtLjc0Mi41OTh2MS41NjRhLjA0NC4wNDQgMCAwIDEtLjA0NC4wNDN6bTYuODI1IDEuNjE3YS4wNDMuMDQzIDAgMCAxIC4wNC4wNDF2LjAyTDMyLjY5NCA5LjA2Yy0uMjIuNTA4LS41Ny44MjktLjk4Ny45YS4wNS4wNSAwIDAgMS0uMDM0LS4wMTVsLS4yMzUtLjI4NGEuMDQ0LjA0NCAwIDAgMSAuMDA0LS4wNi4xLjEgMCAwIDEgLjAyLS4wMTFjLjQwNC0uMS42MzktLjMyMi43ODMtLjc0MmwtMS4wNC0yLjQ3N2EuMDQuMDQgMCAwIDEgMC0uMDM5LjA1LjA1IDAgMCAxIC4wMzctLjAxOWguNDQ4YS4wNC4wNCAwIDAgMSAuMDQxLjAyOGwuNzc1IDEuOTg4Ljc5NC0xLjk4OGEuMDQuMDQgMCAwIDEgLjA0LS4wMjh6TTIwLjIzLjk3N2MuOTkgMCAxLjc5NC44NSAxLjc5NCAxLjg5NHMtLjgwNiAxLjktMS43OTQgMS45LTEuNzkzLS44NTUtMS43OTMtMS45UzE5LjI0My45NzcgMjAuMjMuOTc3bTEuMjc4IDEuODk0YzAtLjgtLjU3My0xLjQ1MS0xLjI3OC0xLjQ1MXMtMS4yNzguNjUtMS4yNzggMS40NTFjMCAuODAyLjU3MyAxLjQ1MyAxLjI3OCAxLjQ1M3MxLjI3OC0uNjUyIDEuMjc4LTEuNDUzbTIuNTczIDMuNDQyYS4wNC4wNCAwIDAgMSAuMDQuMDI2bC4wMDQuMDE3djIuNDkzYS4wNC4wNCAwIDAgMS0uMDEzLjAzLjA0LjA0IDAgMCAxLS4wMzEuMDEzaC0uMzkzYS4wNC4wNCAwIDAgMS0uMDQzLS4wNGwtLjAyNi0uMjQ2YTEuMDYgMS4wNiAwIDAgMS0uODIuMzU3Yy0uNjQ4IDAtLjk3Ny0uNDIxLS45NzctMS4yNTRWNi4zNTZxMC0uMDEuMDAzLS4wMTdhLjA0LjA0IDAgMCAxIC4wMjQtLjAyM2wuMDE3LS4wMDNoLjQzcS4wMTcgMCAuMDMuMDEybC4wMS4wMTRxLjAwMy4wMDguMDAzLjAxN3YxLjI0NmMwIC4yMjYgMCAuNDU2LjA2OC42MzMuMDc3LjE5NS4yMi4yODUuNDYyLjI4NS4yOTggMCAuNzQyLS4yNS43NDItLjU5N1Y2LjM1NmEuMDQuMDQgMCAwIDEgLjAyNy0uMDRsLjAxNy0uMDAzem00Ljc0LjAxOWEuMDQuMDQgMCAwIDEgLjAwMy4wNDFMMjcuNzYgOC44NjdhLjA0LjA0IDAgMCAxLS4wMzkuMDI2aC0uNDEzYS4wNC4wNCAwIDAgMS0uMDM5LS4wMjZsLTEuMDUtMi40OTNhLjA0LjA0IDAgMCAxIC4wMDUtLjAzOS4wNC4wNCAwIDAgMSAuMDM2LS4wMTloLjQ0N2EuMDQuMDQgMCAwIDEgLjA0MS4wMjhsLjc2NiAxLjk2My43OTQtMS45NjRhLjA0LjA0IDAgMCAxIC4wNC0uMDI3aC40MzZhLjA0LjA0IDAgMCAxIC4wMzcuMDE2bTEuMjI4LS4wOWMuNzY1IDAgMS4xODcuNTAzIDEuMTg3IDEuNDJhLjA0LjA0IDAgMCAxLS4wMTMuMDMuMDQuMDQgMCAwIDEtLjAzLjAxM2gtMS44ODRjLjAzMi40MDMuMjQuODE4Ljc0LjgxOC4zNjcgMCAuNjk1LS4xMTIuODk5LS4zMDZhLjA1LjA1IDAgMCAxIC4wMzktLjAxMS4wNC4wNCAwIDAgMSAuMDMuMDI3bC4xMjYuMzM3YS4wNS4wNSAwIDAgMS0uMDEyLjA0OWMtLjMzNy4yODYtLjc3NS4zNDctMS4wODMuMzQ3LS43NTIgMC0xLjI1OS0uNTQ3LTEuMjU5LTEuMzYyIDAtLjc5LjUzLTEuMzYzIDEuMjYtMS4zNjNtLS43MzUgMS4wOTNoMS4zOThjLS4wNzUtLjQ0LS4yODctLjY0Ny0uNjY0LS42NDctLjM3NiAwLS42NTguMjUyLS43MzQuNjQ3bS02LjkwNS0yLjY0YS4wNDMuMDQzIDAgMCAxLS4wNDMtLjA0M1YyLjE2M2EuMDQzLjA0MyAwIDAgMSAuMDQzLS4wNDNoLjM5NGEuMDQ0LjA0NCAwIDAgMSAuMDQzLjAzOWwuMDIyLjIyNmEuNzcuNzcgMCAwIDEgLjYzNi0uMzM5cS4xMzkuMDAzLjI3My4wNGEuMDQuMDQgMCAwIDEgLjAzNC4wNDJ2LjM5YS4wNDMuMDQzIDAgMCAxLS4wNjUuMDQuNC40IDAgMCAwLS4yNjQtLjA2NmMtLjU1NyAwLS42LjYyLS42LjgxdjEuMzVhLjA0LjA0IDAgMCAxLS4wMTMuMDMxLjA0LjA0IDAgMCAxLS4wMzEuMDEyem0xNi40MDQtMi42NDljLjc2NSAwIDEuMTg3LjUwMyAxLjE4NyAxLjQxN2EuMDQzLjA0MyAwIDAgMS0uMDQzLjA0M2gtMS44ODRjLjAzMi40MDQuMjQuODE4Ljc0LjgxOC4zNzIgMCAuNjk0LS4xMTQuODk4LS4zMDZhLjA0My4wNDMgMCAwIDEgLjA1OS0uMDAycS4wMDguMDA3LjAxMi4wMThsLjEyNi4zMzZhLjA0LjA0IDAgMCAxLS4wMTQuMDUzYy0uMzM2LjI4OC0uNzczLjM0OC0xLjA4Mi4zNDgtLjc1MyAwLTEuMjU5LS41NDctMS4yNTktMS4zNjIuMDAxLS43OTIuNTMtMS4zNjMgMS4yNi0xLjM2M20tLjczNSAxLjA5aDEuMzk5Yy0uMDc2LS40NC0uMjg4LS42NDctLjY2NC0uNjQ3cy0uNjYuMjUzLS43MzUuNjQ3TTIwLjMwNSA2LjcxM2MuNzc5LjIwNSAxLjE3NC42IDEuMTcyIDEuMTc0LS4wMDQuNjM0LS40OTIgMS4wNzYtMS4xODcgMS4wNzYtLjUyLS4wMDUtLjk4OS0uMTc4LTEuMjU0LS40NjNhLjA0LjA0IDAgMCAxIDAtLjA1NGwuMjI0LS4zMjFhLjA1LjA1IDAgMCAxIC4wMzItLjAxOC4wNC4wNCAwIDAgMSAuMDMzLjAxMWMuMjYzLjI0NS42MDYuMzg4Ljk2NS40YS42MTMuNjEzIDAgMCAwIC42MzYtLjYzM2MuMDA0LS40MzItLjMzOS0uNTYtLjc1NC0uNjcyLS42NjYtLjE4Mi0xLjAzMS0uNTY0LTEuMDMxLTEuMDcyIDAtLjY2NC41OTctLjk3IDEuMTUtLjk3LjMxOC4wMDIuNjMuMDkyLjg5OS4yNmEuMDQuMDQgMCAwIDEgLjAxOS4wMjguMDQuMDQgMCAwIDEtLjAwNy4wMzNsLS4yMi4zMTJhLjA0NS4wNDUgMCAwIDEtLjA1Ny4wMTQgMS40NiAxLjQ2IDAgMCAwLS42MzUtLjJjLS4zMTMgMC0uNjM0LjE2Mi0uNjM0LjUyNi0uMDA4LjM1LjM2Ny40ODguNjUuNTY5em01LjcxNi0uNDM2YS4wNDUuMDQ1IDAgMCAxIC4wMzQuMDQ0di4zOWEuMDQ0LjA0NCAwIDAgMS0uMDQ1LjA0NS4xLjEgMCAwIDEtLjAyMS0uMDA2LjQuNCAwIDAgMC0uMjY1LS4wNjVjLS41NTYgMC0uNTk5LjYyLS41OTkuODFWOC44NWEuMDQuMDQgMCAwIDEtLjAxMi4wMy4wNC4wNCAwIDAgMS0uMDMxLjAxM2gtLjQzYS4wNC4wNCAwIDAgMS0uMDMtLjAxMmwtLjAxLS4wMTQtLjAwNC0uMDE3VjYuMzU2YS4wNC4wNCAwIDAgMSAuMDI3LS4wNGwuMDE3LS4wMDNoLjM5M2EuMDQ0LjA0NCAwIDAgMSAuMDQ0LjAzOWwuMDIyLjIyNWEuNzcuNzcgMCAwIDEgLjYzNi0uMzM5cS4xMzkuMDA0LjI3NC4wNG0xMS4yMTEtMi4yMDVhLjA0LjA0IDAgMCAxIC4wMjcuMDMybC4xMS4zMzdhLjA0LjA0IDAgMCAxLS4wMTMuMDQ3Yy0uMjI4LjE4Ny0uNTMzLjI4My0uOTA2LjI4My0uNzYyIDAtMS4yOTUtLjU3Ny0xLjI5NS0xLjM2N3MuNTQ3LTEuMzYzIDEuMy0xLjM2M2MuMTg4IDAgLjY1Mi4wMzYuODkzLjM3YS4wNC4wNCAwIDAgMSAwIC4wNWwtLjE4MS4yNjFhLjA0LjA0IDAgMCAxLS4wMzQuMDIuMDYuMDYgMCAwIDEtLjAzNi0uMDE3Yy0uMTgtLjIyMy0uMzg4LS4yNC0uNjQ0LS4yNC0uNTc0IDAtLjc3Ny40OTQtLjc3Ny45MTggMCAuNTgyLjI4My45MTcuNzc3LjkxNy4yNjcuMDEyLjUzLS4wNzQuNzM5LS4yNGEuMDQuMDQgMCAwIDEgLjA0LS4wMDhtLTYuNDk2LjY5OWMtLjczIDAtMS4yNTktLjU3Ni0xLjI1OS0xLjM2MiAwLS44NDMuNjU0LTEuMzYzIDEuMjU5LTEuMzYzYTEuMDggMS4wOCAwIDAgMSAuODI2LjM2MmwuMDI2LS4yNTNhLjA0My4wNDMgMCAwIDEgLjA0NC0uMDM5aC4zOTFhLjA0My4wNDMgMCAwIDEgLjA0NC4wNDR2Mi40OTdhLjA0My4wNDMgMCAwIDEtLjA0NC4wNDRoLS40M2EuMDQzLjA0MyAwIDAgMS0uMDQzLS4wNDR2LS4yNGExLjEgMS4xIDAgMCAxLS44MTMuMzU0em0tLjc0Mi0xLjM2MmMwIC40NC4yMDQuOTE1Ljc3Ny45MTcuNDg4IDAgLjc3OS0uNDY5Ljc3OS0uOTE3IDAtLjU3Ni0uMjkxLS45MTktLjc3OS0uOTE5LS41MzcgMC0uNzc3LjQ3Ni0uNzc3LjkxOW0zLjg4My0xLjM2M2MuNjQ4IDAgLjk3Ni40MjEuOTczIDEuMjUzdjEuMzUzYS4wNDMuMDQzIDAgMCAxLS4wNDMuMDQzaC0uNDNhLjA0LjA0IDAgMCAxLS4wMy0uMDEybC0uMDEtLjAxNC0uMDA0LS4wMTdWMy40MWMwLS4yMTcgMC0uNDU2LS4wNjgtLjYzMy0uMDc4LS4xOTUtLjIyLS4yODYtLjQ2Mi0uMjg2LS4yOTcgMC0uNzQyLjI1MS0uNzQyLjU5OHYxLjU2NGEuMDQzLjA0MyAwIDAgMS0uMDQzLjA0M2gtLjQzYS4wNDMuMDQzIDAgMCAxLS4wNDMtLjA0M1YyLjE2MWEuMDQzLjA0MyAwIDAgMSAuMDQzLS4wNDNoLjM5NmEuMDQzLjA0MyAwIDAgMSAuMDQzLjAzOWwuMDI1LjI0NmExLjA2IDEuMDYgMCAwIDEgLjgyNi0uMzU3eiI+PC9wYXRoPjwvc3ZnPg==">
+  <style>
+/* ============================================================
+   Surveyor — three-pane app styles
+   Themed by `.sv-mood--paper | --dark | --carto` on the root.
+   ============================================================ */
+@import url('../colors_and_type.css');
+
+/* ---- Theme variables (PAPER default) ----------------------- */
+.sv-app, .sv-app *, .sv-app *::before, .sv-app *::after { box-sizing: border-box; }
+.sv-app { min-width: 0; }
+.sv-chat, .sv-chat-stream, .sv-msg, .sv-msg-body { min-width: 0; }
+
+.sv-app {
+  --sv-bg:           var(--os-paper);
+  --sv-surface:      #ffffff;
+  --sv-surface-2:    #fbf7f1;
+  --sv-border:       #e8e0d0;
+  --sv-border-strong:#d4cdbf;
+  --sv-fg:           var(--os-ink);
+  --sv-fg-muted:     #4a4a4a;
+  --sv-fg-subtle:    #757575;
+  --sv-brand:        var(--os-purple);
+  --sv-brand-2:      var(--os-magenta);
+  --sv-action:       var(--os-action);
+  --sv-link:         var(--os-blue);
+  --sv-hex-empty:    #ece6d8;
+  --sv-skel:         #ece6d8;
+  --sv-overlay:      rgba(244, 240, 234, 0.75);
+
+  font-family: var(--font-sans);
+  color: var(--sv-fg);
+  background: var(--sv-bg);
+  height: 100%;
+  display: flex; flex-direction: column;
+}
+
+/* ---- DARK mood ---------------------------------------------- */
+.sv-app.sv-mood--dark {
+  --sv-bg:           #0d1117;
+  --sv-surface:      #161b22;
+  --sv-surface-2:    #1c232d;
+  --sv-border:       #2a323d;
+  --sv-border-strong:#3a4250;
+  --sv-fg:           #f3f3f3;
+  --sv-fg-muted:     #b8bdc6;
+  --sv-fg-subtle:    #8b94a3;
+  --sv-brand:        #8a7fd4;          /* lighter purple for dark */
+  --sv-brand-2:      #ff5c8a;          /* lighter magenta */
+  --sv-action:       #5d83ff;          /* lighter action blue */
+  --sv-link:         #5d83ff;
+  --sv-hex-empty:    #232a35;
+  --sv-skel:         #232a35;
+  --sv-overlay:      rgba(13, 17, 23, 0.78);
+}
+
+/* ---- CARTO mood (paper + map textures + heavier display) ---- */
+.sv-app.sv-mood--carto {
+  --sv-bg:           #efe7d5;
+  --sv-surface:      #fdf9ef;
+  --sv-surface-2:    #f6efde;
+  --sv-border:       #d3c5a3;
+  --sv-border-strong:#b8a87f;
+  --sv-fg:           #1c1a14;
+  --sv-fg-muted:     #5a5340;
+  --sv-fg-subtle:    #7d7762;
+  --sv-brand:        #4a3b1a;          /* contour-ink */
+  --sv-brand-2:      var(--os-magenta);
+  --sv-action:       #5b3a1a;          /* burnt-umber action */
+  --sv-link:         #5b3a1a;
+  --sv-hex-empty:    #e1d4af;
+  --sv-skel:         #e1d4af;
+  --sv-overlay:      rgba(239, 231, 213, 0.78);
+}
+.sv-app.sv-mood--carto {
+  background:
+    /* contour topo lines */
+    radial-gradient(ellipse 60% 30% at 30% 30%, transparent 0 49%, rgba(74,59,26,.07) 50% 50.5%, transparent 51%),
+    radial-gradient(ellipse 60% 30% at 30% 30%, transparent 0 59%, rgba(74,59,26,.05) 60% 60.5%, transparent 61%),
+    radial-gradient(ellipse 80% 50% at 70% 70%, transparent 0 49%, rgba(74,59,26,.06) 50% 50.5%, transparent 51%),
+    var(--sv-bg);
+}
+
+/* ============================================================
+   Topbar
+   ============================================================ */
+.sv-topbar {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; gap: 12px;
+  padding: 0 20px; height: 56px; flex-shrink: 0;
+  background: var(--sv-surface); border-bottom: 1px solid var(--sv-border);
+}
+.sv-topbar-l { display: flex; align-items: center; gap: 14px; }
+.sv-topbar-c { text-align: center; }
+.sv-topbar-r { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.sv-os { height: 22px; width: auto; }
+.sv-mood--dark .sv-os { filter: brightness(0) invert(1); opacity: 0.85; }
+.sv-divider { width: 1px; height: 22px; background: var(--sv-border-strong); }
+.sv-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.sv-brand-mark { color: var(--sv-brand); display: inline-flex; }
+.sv-brand-name { font-size: 16px; letter-spacing: -0.01em; }
+.sv-brand-tag {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 2px 6px; border-radius: 2px;
+  background: var(--sv-surface-2); color: var(--sv-fg-muted);
+  border: 1px solid var(--sv-border);
+}
+.sv-query-title { font-size: 14px; font-weight: 600; color: var(--sv-fg-muted); }
+.sv-iconbtn {
+  width: 32px; height: 32px; border-radius: 4px;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--sv-fg-muted); display: inline-flex; align-items: center; justify-content: center;
+}
+.sv-iconbtn:hover { background: var(--sv-surface-2); color: var(--sv-fg); }
+.sv-ghostbtn {
+  height: 32px; padding: 0 14px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  background: transparent; border: 1px solid var(--sv-border-strong); border-radius: 4px;
+  color: var(--sv-fg); cursor: pointer;
+}
+.sv-ghostbtn:hover { background: var(--sv-surface-2); }
+.sv-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--sv-brand); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px;
+  flex-shrink: 0;
+}
+.sv-avatar--sm { width: 22px; height: 22px; font-size: 11px; }
+.sv-avatar--user { background: var(--sv-fg); }
+
+/* ============================================================
+   Grid: chat | map | rail
+   ============================================================ */
+.sv-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr 360px;
+  flex: 1; min-height: 0;
+}
+
+/* ============================================================
+   Chat pane
+   ============================================================ */
+.sv-chat {
+  background: var(--sv-surface);
+  border-right: 1px solid var(--sv-border);
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;  /* contain flex/grid children */
+  overflow: hidden;
+}
+.sv-chat-stream {
+  flex: 1; overflow: auto;
+  padding: 20px 20px 12px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+
+/* Empty state */
+.sv-empty { display: flex; flex-direction: column; gap: 24px; padding-top: 12px; }
+.sv-empty-greet { display: flex; gap: 12px; align-items: flex-start; }
+.sv-empty-lead { margin: 0; font-size: 18px; font-weight: 600; color: var(--sv-fg); }
+.sv-empty-sub { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--sv-fg-muted); }
+.sv-empty-sugs { display: flex; flex-direction: column; gap: 8px; }
+.sv-empty-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sv-fg-subtle); margin-bottom: 4px; }
+.sv-sug {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 14px;
+  background: var(--sv-surface-2); border: 1px solid var(--sv-border); border-radius: 4px;
+  font-family: inherit; font-size: 13px; line-height: 1.4; text-align: left;
+  color: var(--sv-fg); cursor: pointer;
+  transition: border-color 150ms, background 150ms;
+}
+.sv-sug:hover { border-color: var(--sv-action); color: var(--sv-action); }
+.sv-sug svg { color: var(--sv-fg-subtle); flex-shrink: 0; }
+.sv-sug:hover svg { color: var(--sv-action); }
+
+/* User message */
+.sv-msg { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.sv-msg > * { min-width: 0; max-width: 100%; }
+.sv-msg--user { align-items: flex-end; }
+.sv-msg-bubble {
+  background: var(--sv-brand); color: #fff;
+  padding: 10px 14px; border-radius: 12px 12px 2px 12px;
+  max-width: 90%; font-size: 14px; line-height: 1.5;
+}
+
+/* Assistant message */
+.sv-msg--assistant { align-items: stretch; }
+.sv-msg-head { display: flex; align-items: center; gap: 8px; }
+.sv-msg-meta { font-size: 13px; font-weight: 600; color: var(--sv-fg); }
+.sv-thinking { font-size: 12px; color: var(--sv-fg-subtle); }
+.sv-thinking::after { content: "•••"; letter-spacing: 2px; animation: sv-dots 1.4s steps(4, end) infinite; }
+@keyframes sv-dots { 0%,20%{opacity:.2} 50%{opacity:.6} 100%{opacity:.2} }
+.sv-msg-body { font-size: 14px; line-height: 1.55; color: var(--sv-fg); display: flex; flex-direction: column; gap: 10px; }
+.sv-msg-body p { margin: 0; }
+.sv-msg-caveat { font-size: 12px; color: var(--sv-fg-subtle); padding: 8px 10px; background: var(--sv-surface-2); border-left: 2px solid var(--sv-border-strong); border-radius: 0 2px 2px 0; }
+.sv-msg-body strong { color: var(--sv-fg); }
+.sv-msg-body em { font-family: var(--font-mono); font-size: 0.92em; font-style: normal; background: var(--sv-surface-2); padding: 1px 4px; border-radius: 2px; }
+
+/* Streaming cursor */
+.sv-streaming { padding: 2px 0; }
+.sv-streaming-cursor {
+  display: inline-block; width: 8px; height: 14px;
+  background: var(--sv-fg); animation: sv-blink 0.9s steps(2, end) infinite;
+  vertical-align: text-bottom;
+}
+@keyframes sv-blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+/* Tool calls — INLINE style */
+.sv-tool { font-size: 12.5px; line-height: 1.4; }
+.sv-tool--inline {
+  border: 1px solid var(--sv-border);
+  border-radius: 4px;
+  background: var(--sv-surface-2);
+  overflow: hidden;
+}
+.sv-tool--inline.sv-tool--running { border-color: var(--sv-action); }
+.sv-tool-head {
+  width: 100%; padding: 8px 10px;
+  background: transparent; border: 0; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  font-family: inherit; text-align: left; color: var(--sv-fg);
+}
+.sv-tool-chevron { color: var(--sv-fg-subtle); font-size: 10px; width: 10px; flex-shrink: 0; }
+.sv-tool-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gdv-q-2); flex-shrink: 0; }
+.sv-tool--running .sv-tool-dot {
+  background: var(--sv-action);
+  box-shadow: 0 0 0 0 currentColor;
+  animation: sv-pulse 1.4s ease-out infinite;
+}
+@keyframes sv-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(17, 73, 244, .5); }
+  70%  { box-shadow: 0 0 0 8px rgba(17, 73, 244, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(17, 73, 244, 0); }
+}
+.sv-tool-name { font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: var(--sv-brand); flex-shrink: 0; padding: 0; background: transparent; }
+.sv-mood--dark .sv-tool-name { color: var(--sv-brand); }
+.sv-tool-args { font-family: var(--font-mono); font-size: 11px; color: var(--sv-fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.sv-tool-status { font-size: 11px; color: var(--sv-fg-subtle); flex-shrink: 0; }
+.sv-tool--running .sv-tool-status { color: var(--sv-action); }
+.sv-tool-body {
+  padding: 8px 10px 10px 28px;
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--sv-fg-muted);
+  border-top: 1px solid var(--sv-border);
+}
+.sv-tool-skel { color: var(--sv-fg-subtle); }
+
+/* Tool calls — DRAWER style (compact) */
+.sv-tool--drawer {
+  width: 100%; padding: 6px 10px;
+  background: var(--sv-surface-2); border: 1px solid var(--sv-border); border-radius: 4px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: inherit; text-align: left; color: var(--sv-fg); cursor: pointer;
+}
+.sv-tool--drawer .sv-tool-name { font-size: 11.5px; }
+.sv-tool--drawer .sv-tool-args { font-size: 10.5px; }
+
+/* Tool calls — TIMELINE style (rail on left) */
+.sv-tool--timeline {
+  position: relative;
+  padding: 4px 0 4px 24px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11.5px;
+  min-width: 0; max-width: 100%;
+  overflow: hidden;
+}
+.sv-tool--timeline .sv-tool-rail { position: absolute; left: 8px; top: -10px; bottom: -10px; width: 1px; background: var(--sv-border-strong); }
+.sv-tool--timeline .sv-tool-dot { position: absolute; left: 4px; top: 50%; transform: translateY(-50%); }
+.sv-tool--timeline .sv-tool-name { color: var(--sv-brand); font-weight: 700; flex-shrink: 0; }
+.sv-tool--timeline .sv-tool-args { color: var(--sv-fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+
+/* Composer */
+.sv-composer {
+  flex-shrink: 0; padding: 12px 16px 16px;
+  background: var(--sv-surface);
+  border-top: 1px solid var(--sv-border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sv-composer textarea {
+  width: 100%; padding: 10px 12px; min-height: 64px; resize: none;
+  font-family: inherit; font-size: 14px; line-height: 1.45;
+  background: var(--sv-bg); color: var(--sv-fg);
+  border: 1px solid var(--sv-border-strong); border-radius: 4px;
+  outline: none;
+}
+.sv-composer textarea:focus { border-color: var(--sv-action); box-shadow: 0 0 0 3px rgba(17,73,244,.18); }
+.sv-composer-actions { display: flex; align-items: center; justify-content: space-between; }
+.sv-composer-icon {
+  width: 32px; height: 32px; border-radius: 4px; background: transparent; border: 0; cursor: pointer;
+  color: var(--sv-fg-muted); display: inline-flex; align-items: center; justify-content: center;
+}
+.sv-composer-icon:hover { background: var(--sv-surface-2); color: var(--sv-fg); }
+.sv-composer-send {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; height: 34px;
+  background: var(--sv-action); color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  border: 0; border-radius: 4px; cursor: pointer;
+}
+.sv-composer-send:disabled { opacity: 0.6; cursor: not-allowed; }
+.sv-composer-send:hover:not(:disabled) { background: var(--os-action-dark); }
+
+/* ============================================================
+   Map pane
+   ============================================================ */
+.sv-map {
+  background: var(--sv-bg);
+  display: flex; flex-direction: column; min-height: 0;
+  position: relative;
+}
+.sv-map-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; gap: 16px;
+  border-bottom: 1px solid var(--sv-border);
+  background: var(--sv-surface);
+}
+.sv-map-title { display: flex; flex-direction: column; gap: 2px; }
+.sv-map-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sv-fg-subtle); }
+.sv-map-h1 { font-size: 16px; font-weight: 700; color: var(--sv-fg); letter-spacing: -0.01em; }
+.sv-map-controls { display: flex; gap: 4px; padding: 2px; background: var(--sv-surface-2); border-radius: 4px; }
+.sv-map-canvas {
+  flex: 1; position: relative; padding: 20px 32px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 0; min-width: 0;
+}
+.sv-map-svg { width: 100%; height: 100%; max-height: 100%; display: block; }
+.sv-map-grain { color: var(--sv-fg); opacity: 0.5; }
+.sv-mood--carto .sv-map-grain { opacity: 0.8; }
+
+/* Hexes */
+.sv-hex { cursor: pointer; }
+.sv-hex-fill {
+  transition: fill 200ms;
+  stroke: var(--sv-bg);
+  stroke-width: 2;
+}
+.sv-mood--dark .sv-hex-fill { stroke: var(--sv-bg); }
+.sv-hex--empty .sv-hex-fill { stroke: var(--sv-bg); }
+.sv-hex--thinking .sv-hex-fill { opacity: 0.4; }
+.sv-hex.is-hover .sv-hex-fill { filter: brightness(1.05); }
+.sv-hex-stroke {
+  stroke: var(--sv-fg); stroke-width: 2;
+  pointer-events: none;
+}
+.sv-hex.is-selected .sv-hex-stroke { stroke-width: 3; }
+
+/* Callout */
+.sv-hex-callout line { stroke: var(--sv-fg); stroke-width: 1.5; }
+.sv-hex-callout rect { fill: var(--sv-surface); stroke: var(--sv-fg); stroke-width: 1.5; }
+.sv-hex-callout-title { font-family: var(--font-sans); font-size: 13px; font-weight: 700; fill: var(--sv-fg); }
+.sv-hex-callout-stat  { font-family: var(--font-mono); font-size: 11px; fill: var(--sv-fg-muted); }
+
+/* Map loading overlay */
+.sv-map-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: var(--sv-overlay); backdrop-filter: blur(2px);
+}
+.sv-map-loading {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  font-size: 13px; color: var(--sv-fg-muted);
+}
+.sv-spinner {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid var(--sv-border); border-top-color: var(--sv-action);
+  animation: sv-spin 0.8s linear infinite;
+}
+@keyframes sv-spin { to { transform: rotate(360deg); } }
+
+/* Map foot */
+.sv-map-foot {
+  padding: 12px 20px; border-top: 1px solid var(--sv-border); background: var(--sv-surface);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.sv-legend { display: flex; align-items: center; gap: 10px; }
+.sv-legend-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--sv-fg-subtle); }
+.sv-legend-ramp { display: flex; height: 10px; width: 180px; border-radius: 1px; overflow: hidden; }
+.sv-legend-ramp span { flex: 1; }
+.sv-legend-scale { display: flex; justify-content: space-between; width: 180px; font-family: var(--font-mono); font-size: 10px; color: var(--sv-fg-subtle); }
+.sv-map-attribution { font-size: 10.5px; color: var(--sv-fg-subtle); }
+
+/* ============================================================
+   Right rail
+   ============================================================ */
+.sv-rail {
+  background: var(--sv-bg);
+  border-left: 1px solid var(--sv-border);
+  overflow: auto; min-height: 0;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.sv-rail-empty {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 32px 20px; color: var(--sv-fg-subtle); text-align: center;
+}
+.sv-rail-empty-icon { color: var(--sv-fg-subtle); opacity: 0.6; }
+.sv-rail-empty p { font-size: 13px; line-height: 1.5; margin: 0; max-width: 220px; }
+
+.sv-card {
+  background: var(--sv-surface); border: 1px solid var(--sv-border); border-radius: 4px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sv-card-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sv-fg-subtle); }
+.sv-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.sv-card-head h3 { font-size: 15px; font-weight: 700; line-height: 1.3; margin: 2px 0 0; color: var(--sv-fg); }
+.sv-card-foot { font-size: 11px; color: var(--sv-fg-subtle); margin-top: 4px; line-height: 1.4; }
+.sv-chip {
+  display: inline-flex; align-items: center; padding: 2px 8px;
+  font-size: 11px; font-weight: 600; color: var(--sv-fg-muted);
+  background: var(--sv-surface-2); border: 1px solid var(--sv-border); border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+/* Stat card */
+.sv-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sv-stat-n { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: var(--sv-fg); }
+.sv-stat-l { font-size: 11.5px; color: var(--sv-fg-muted); margin-top: 4px; line-height: 1.35; }
+
+/* Ranked chart */
+.sv-ranked { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.sv-ranked-row {
+  display: grid; grid-template-columns: 16px 1fr 90px 28px;
+  gap: 8px; align-items: center;
+  padding: 4px 6px; border-radius: 2px;
+  cursor: pointer;
+}
+.sv-ranked-row:hover, .sv-ranked-row.is-hover { background: var(--sv-surface-2); }
+.sv-ranked-row.is-selected { background: var(--sv-surface-2); outline: 1px solid var(--sv-fg); outline-offset: -1px; }
+.sv-ranked-rank { font-family: var(--font-mono); font-size: 11px; color: var(--sv-fg-subtle); text-align: right; }
+.sv-ranked-name { font-size: 12.5px; font-weight: 500; color: var(--sv-fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-ranked-track { position: relative; height: 14px; display: flex; align-items: center; }
+.sv-bar { height: 10px; border-radius: 1px; display: block; }
+.sv-lolli-line { position: absolute; left: 0; height: 1.5px; background: var(--sv-border-strong); }
+.sv-lolli-dot { position: absolute; transform: translate(-50%,-50%); top: 50%; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--sv-surface); }
+.sv-heat-row { display: flex; gap: 2px; width: 100%; }
+.sv-heat-cell { flex: 1; height: 10px; border-radius: 1px; }
+.sv-ranked-val { font-family: var(--font-mono); font-size: 11px; color: var(--sv-fg); text-align: right; }
+
+/* Scatter */
+.sv-scatter { width: 100%; height: auto; max-width: 100%; }
+.sv-scatter-zone { fill: var(--sv-surface-2); }
+.sv-mood--dark .sv-scatter-zone { fill: rgba(255,92,138,.06); }
+.sv-scatter-axis { stroke: var(--sv-border-strong); stroke-width: 1; }
+.sv-scatter-grid { stroke: var(--sv-border); stroke-width: 1; stroke-dasharray: 2 3; }
+.sv-scatter-lbl { font-family: var(--font-mono); font-size: 9px; fill: var(--sv-fg-subtle); }
+.sv-dot { cursor: pointer; }
+.sv-dot.is-hover circle, .sv-dot.is-selected circle { filter: brightness(1.05); }
+.sv-dot-lbl { font-family: var(--font-sans); font-size: 10px; font-weight: 600; fill: var(--sv-fg); pointer-events: none; }
+
+/* Histogram */
+.sv-hist { display: flex; align-items: flex-end; gap: 4px; height: 100px; }
+.sv-hist-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+.sv-hist-bar { width: 100%; min-height: 2px; border-radius: 1px 1px 0 0; }
+.sv-hist-c { font-family: var(--font-mono); font-size: 10px; color: var(--sv-fg-subtle); }
+
+/* Skeletons */
+.sv-card--skel { gap: 12px; }
+.sv-skel-line, .sv-skel-bar, .sv-skel-scatter {
+  background: linear-gradient(90deg, var(--sv-skel) 0%, var(--sv-surface-2) 50%, var(--sv-skel) 100%);
+  background-size: 200% 100%;
+  animation: sv-shimmer 1.6s linear infinite;
+  border-radius: 2px;
+}
+.sv-skel-line { height: 14px; }
+.sv-skel-bars { display: flex; flex-direction: column; gap: 6px; }
+.sv-skel-bar  { height: 14px; }
+.sv-skel-scatter { width: 100%; height: 160px; }
+@keyframes sv-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+</style>
+
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <style>
+    html, body, #app { height: 100%; margin: 0; }
+    body { font-family: var(--font-sans); }
+    .sv-artboard-host { width: 100%; height: 100%; overflow: hidden; display: flex; flex-direction: column; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+// data.js — fake but plausible English local-authority data
+// (real numbers would come from MHCLG IMD + ONS Open Geography)
+
+// Hex coordinates use offset row/col (odd-row offset), centred roughly on England's shape.
+// imd: 1–10 decile of deprivation (10 = most deprived)
+// green: m² of public greenspace per capita (typical UK range ~5–80)
+window.SURVEYOR_LAS = [
+  // North East
+  { id: "northumberland", name: "Northumberland",     col: 5, row: 0,  imd: 4, green: 62 },
+  { id: "newcastle",      name: "Newcastle upon Tyne",col: 5, row: 1,  imd: 9, green: 14 },
+  { id: "northtyneside",  name: "North Tyneside",     col: 6, row: 1,  imd: 6, green: 22 },
+  { id: "sunderland",     name: "Sunderland",         col: 6, row: 2,  imd: 8, green: 12 },
+  { id: "durham",         name: "County Durham",      col: 5, row: 2,  imd: 7, green: 38 },
+  { id: "hartlepool",     name: "Hartlepool",         col: 6, row: 3,  imd: 10, green: 11 },
+  { id: "middlesbrough",  name: "Middlesbrough",      col: 5, row: 3,  imd: 10, green: 10 },
+  // Yorkshire & Humber
+  { id: "scarborough",    name: "Scarborough",        col: 6, row: 4,  imd: 7, green: 28 },
+  { id: "york",           name: "York",               col: 5, row: 4,  imd: 4, green: 31 },
+  { id: "leeds",          name: "Leeds",              col: 4, row: 4,  imd: 6, green: 19 },
+  { id: "bradford",       name: "Bradford",           col: 3, row: 4,  imd: 8, green: 13 },
+  { id: "hull",           name: "Kingston upon Hull", col: 6, row: 5,  imd: 9, green: 9  },
+  { id: "doncaster",      name: "Doncaster",          col: 5, row: 5,  imd: 7, green: 18 },
+  { id: "sheffield",      name: "Sheffield",          col: 4, row: 5,  imd: 6, green: 24 },
+  { id: "barnsley",       name: "Barnsley",           col: 3, row: 5,  imd: 7, green: 21 },
+  { id: "rotherham",      name: "Rotherham",          col: 4, row: 6,  imd: 7, green: 17 },
+  // North West
+  { id: "carlisle",       name: "Carlisle",           col: 2, row: 1,  imd: 6, green: 41 },
+  { id: "lancaster",      name: "Lancaster",          col: 2, row: 3,  imd: 5, green: 35 },
+  { id: "blackpool",      name: "Blackpool",          col: 1, row: 4,  imd: 10, green: 7  },
+  { id: "preston",        name: "Preston",            col: 2, row: 4,  imd: 7, green: 16 },
+  { id: "liverpool",      name: "Liverpool",          col: 1, row: 5,  imd: 9, green: 11 },
+  { id: "wigan",          name: "Wigan",              col: 2, row: 5,  imd: 6, green: 20 },
+  { id: "bolton",         name: "Bolton",             col: 3, row: 6,  imd: 7, green: 15 },
+  { id: "manchester",     name: "Manchester",         col: 2, row: 6,  imd: 9, green: 10 },
+  { id: "salford",        name: "Salford",            col: 1, row: 6,  imd: 8, green: 13 },
+  { id: "stockport",      name: "Stockport",          col: 3, row: 7,  imd: 4, green: 27 },
+  { id: "warrington",     name: "Warrington",         col: 2, row: 7,  imd: 4, green: 22 },
+  // West Midlands
+  { id: "stoke",          name: "Stoke-on-Trent",     col: 3, row: 8,  imd: 8, green: 14 },
+  { id: "wolverhampton",  name: "Wolverhampton",      col: 2, row: 8,  imd: 8, green: 12 },
+  { id: "birmingham",     name: "Birmingham",         col: 3, row: 9,  imd: 9, green: 10 },
+  { id: "coventry",       name: "Coventry",           col: 4, row: 9,  imd: 6, green: 16 },
+  { id: "dudley",         name: "Dudley",             col: 2, row: 9,  imd: 6, green: 14 },
+  { id: "shropshire",     name: "Shropshire",         col: 2, row: 10, imd: 3, green: 58 },
+  // East Midlands
+  { id: "lincoln",        name: "Lincoln",            col: 6, row: 6,  imd: 7, green: 18 },
+  { id: "nottingham",     name: "Nottingham",         col: 5, row: 7,  imd: 9, green: 12 },
+  { id: "derby",          name: "Derby",              col: 4, row: 7,  imd: 6, green: 15 },
+  { id: "leicester",      name: "Leicester",          col: 5, row: 8,  imd: 7, green: 13 },
+  { id: "peterborough",   name: "Peterborough",       col: 6, row: 8,  imd: 6, green: 17 },
+  { id: "northampton",    name: "West Northants",     col: 5, row: 9,  imd: 4, green: 25 },
+  // East of England
+  { id: "norwich",        name: "Norwich",            col: 7, row: 7,  imd: 6, green: 21 },
+  { id: "ipswich",        name: "Ipswich",            col: 7, row: 8,  imd: 6, green: 16 },
+  { id: "cambridge",      name: "Cambridge",          col: 6, row: 9,  imd: 3, green: 33 },
+  { id: "luton",          name: "Luton",              col: 5, row: 10, imd: 7, green: 11 },
+  { id: "essex",          name: "Essex",              col: 7, row: 10, imd: 4, green: 26 },
+  // London
+  { id: "innerlondon",    name: "Inner London",       col: 6, row: 11, imd: 7, green: 16 },
+  { id: "outerlondon",    name: "Outer London",       col: 7, row: 11, imd: 5, green: 22 },
+  // South West
+  { id: "bristol",        name: "Bristol",            col: 3, row: 11, imd: 5, green: 19 },
+  { id: "swindon",        name: "Swindon",            col: 4, row: 10, imd: 4, green: 22 },
+  { id: "bournemouth",    name: "Bournemouth",        col: 4, row: 12, imd: 5, green: 18 },
+  { id: "plymouth",       name: "Plymouth",           col: 2, row: 13, imd: 6, green: 17 },
+  { id: "exeter",         name: "Exeter",             col: 3, row: 13, imd: 3, green: 29 },
+  { id: "torbay",         name: "Torbay",             col: 3, row: 14, imd: 7, green: 14 },
+  { id: "cornwall",       name: "Cornwall",           col: 1, row: 14, imd: 5, green: 48 },
+  // South East
+  { id: "southampton",    name: "Southampton",        col: 5, row: 12, imd: 6, green: 14 },
+  { id: "portsmouth",     name: "Portsmouth",         col: 6, row: 12, imd: 6, green: 8  },
+  { id: "brighton",       name: "Brighton & Hove",    col: 7, row: 12, imd: 5, green: 16 },
+  { id: "oxford",         name: "Oxford",             col: 5, row: 11, imd: 4, green: 28 },
+  { id: "reading",        name: "Reading",            col: 4, row: 11, imd: 4, green: 18 },
+  { id: "medway",         name: "Medway",             col: 7, row: 13, imd: 5, green: 17 },
+  { id: "kent",           name: "Kent",               col: 8, row: 12, imd: 4, green: 30 },
+];
+
+// Composite concern score: high IMD + low green = high concern.
+// Normalise to 0-100 for display.
+window.SURVEYOR_SCORE = function(la) {
+  // imd 1-10, green 5-80
+  const imdNorm = la.imd / 10;                         // 0..1, higher = worse
+  const greenNorm = 1 - Math.min(la.green / 50, 1);    // 0..1, higher = less green
+  return Math.round((imdNorm * 0.6 + greenNorm * 0.4) * 100);
+};
+
+// Sequential 7-stop ramp from GeoDataViz M2 — used for the concern choropleth.
+// Low concern (left) → high concern (right).
+window.SURVEYOR_RAMP = ["#FCE1A4","#FABF7B","#F08F6E","#E05C5C","#D12959","#AB1866","#6E005F"];
+
+window.SURVEYOR_BUCKET = function(score) {
+  const stops = [20, 35, 50, 60, 70, 80]; // 7 buckets
+  for (let i = 0; i < stops.length; i++) if (score < stops[i]) return i;
+  return stops.length;
+};
+
+</script>
+  <script type="text/babel">
+
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "palette": ["#D97757", "#29261b", "#f6f4ef"],
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        options={['#D97757', '#2A6FDB', '#1F8A5B', '#7A5AE0']}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakColor  label="Palette" value={t.palette}
+//                        options={[['#D97757', '#29261b', '#f6f4ef'],
+//                                  ['#475569', '#0f172a', '#f1f5f9']]}
+//                        onChange={(v) => setTweak('palette', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;box-sizing:border-box;width:100%;min-width:0;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;box-sizing:border-box;min-width:0;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+
+  .twk-chips{display:flex;gap:6px}
+  .twk-chip{position:relative;appearance:none;flex:1;min-width:0;height:46px;
+    padding:0;border:0;border-radius:6px;overflow:hidden;cursor:default;
+    box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06);
+    transition:transform .12s cubic-bezier(.3,.7,.4,1),box-shadow .12s}
+  .twk-chip:hover{transform:translateY(-1px);
+    box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.12)}
+  .twk-chip[data-on="1"]{box-shadow:0 0 0 1.5px rgba(0,0,0,.85),
+    0 2px 6px rgba(0,0,0,.15)}
+  .twk-chip>span{position:absolute;top:0;bottom:0;right:0;width:34%;
+    display:flex;flex-direction:column;box-shadow:-1px 0 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i{flex:1;box-shadow:0 -1px 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i:first-child{box-shadow:none}
+  .twk-chip svg{position:absolute;top:6px;left:6px;width:13px;height:13px;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    // Same-window signal so in-page listeners (deck-stage rail thumbnails)
+    // can react — the parent message only reaches the host, not peers.
+    window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" data-omelette-chrome=""
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  // Segments wrap mid-word once per-segment width runs out. The track is
+  // ~248px (280 panel − 28 body pad − 4 seg pad), each button loses 12px
+  // to its own padding, and 11.5px system-ui averages ~6.3px/char — so 2
+  // options fit ~16 chars each, 3 fit ~10. Past that (or >3 options), fall
+  // back to a dropdown rather than wrap.
+  const labelLen = (o) => String(typeof o === 'object' ? o.label : o).length;
+  const maxLen = options.reduce((m, o) => Math.max(m, labelLen(o)), 0);
+  const fitsAsSegments = maxLen <= ({ 2: 16, 3: 10 }[options.length] ?? 0);
+  if (!fitsAsSegments) {
+    // <select> emits strings — map back to the original option value so the
+    // fallback stays type-preserving (numbers, booleans) like the segment path.
+    const resolve = (s) => {
+      const m = options.find((o) => String(typeof o === 'object' ? o.value : o) === s);
+      return m === undefined ? s : typeof m === 'object' ? m.value : m;
+    };
+    return <TweakSelect label={label} value={value} options={options}
+                        onChange={(s) => onChange(resolve(s))} />;
+  }
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+// Relative-luminance contrast pick — checkmarks drawn over a swatch need to
+// read on both #111 and #fafafa without per-option configuration. Hex input
+// only (#rgb / #rrggbb); named or rgb()/hsl() colors fall through to "light".
+function __twkIsLight(hex) {
+  const h = String(hex).replace('#', '');
+  const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
+  const n = parseInt(x.slice(0, 6), 16);
+  if (Number.isNaN(n)) return true;
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return r * 299 + g * 587 + b * 114 > 148000;
+}
+
+const __TwkCheck = ({ light }) => (
+  <svg viewBox="0 0 14 14" aria-hidden="true">
+    <path d="M3 7.2 5.8 10 11 4.2" fill="none" strokeWidth="2.2"
+          strokeLinecap="round" strokeLinejoin="round"
+          stroke={light ? 'rgba(0,0,0,.78)' : '#fff'} />
+  </svg>
+);
+
+// TweakColor — curated color/palette picker. Each option is either a single
+// hex string or an array of 1-5 hex strings; the card adapts — a lone color
+// renders solid, a palette renders colors[0] as the hero (left ~2/3) with the
+// rest stacked in a sharp column on the right. onChange emits the
+// option in the shape it was passed (string stays string, array stays array).
+// Without options it falls back to the native color input for back-compat.
+function TweakColor({ label, value, options, onChange }) {
+  if (!options || !options.length) {
+    return (
+      <div className="twk-row twk-row-h">
+        <div className="twk-lbl"><span>{label}</span></div>
+        <input type="color" className="twk-swatch" value={value}
+               onChange={(e) => onChange(e.target.value)} />
+      </div>
+    );
+  }
+  // Native <input type=color> emits lowercase hex per the HTML spec, so
+  // compare case-insensitively. String() guards JSON.stringify(undefined),
+  // which returns the primitive undefined (no .toLowerCase).
+  const key = (o) => String(JSON.stringify(o)).toLowerCase();
+  const cur = key(value);
+  return (
+    <TweakRow label={label}>
+      <div className="twk-chips" role="radiogroup">
+        {options.map((o, i) => {
+          const colors = Array.isArray(o) ? o : [o];
+          const [hero, ...rest] = colors;
+          const sup = rest.slice(0, 4);
+          const on = key(o) === cur;
+          return (
+            <button key={i} type="button" className="twk-chip" role="radio"
+                    aria-checked={on} data-on={on ? '1' : '0'}
+                    aria-label={colors.join(', ')} title={colors.join(' · ')}
+                    style={{ background: hero }}
+                    onClick={() => onChange(o)}>
+              {sup.length > 0 && (
+                <span>
+                  {sup.map((c, j) => <i key={j} style={{ background: c }} />)}
+                </span>
+              )}
+              {on && <__TwkCheck light={__twkIsLight(hero)} />}
+            </button>
+          );
+        })}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+</script>
+  <script type="text/babel">
+
+// DesignCanvas.jsx — Figma-ish design canvas wrapper
+// Warm gray grid bg + Sections + Artboards + PostIt notes.
+// Artboards are reorderable (grip-drag), deletable, labels/titles are
+// inline-editable, and any artboard can be opened in a fullscreen focus
+// overlay (←/→/Esc). State persists to a .design-canvas.state.json sidecar
+// via the host bridge. No assets, no deps.
+//
+// Usage:
+//   <DesignCanvas>
+//     <DCSection id="onboarding" title="Onboarding" subtitle="First-run variants">
+//       <DCArtboard id="a" label="A · Dusk" width={260} height={480}>…</DCArtboard>
+//       <DCArtboard id="b" label="B · Minimal" width={260} height={480}>…</DCArtboard>
+//     </DCSection>
+//   </DesignCanvas>
+
+const DC = {
+  bg: '#f0eee9',
+  grid: 'rgba(0,0,0,0.06)',
+  label: 'rgba(60,50,40,0.7)',
+  title: 'rgba(40,30,20,0.85)',
+  subtitle: 'rgba(60,50,40,0.6)',
+  postitBg: '#fef4a8',
+  postitText: '#5a4a2a',
+  font: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+};
+
+// One-time CSS injection (classes are dc-prefixed so they don't collide with
+// the hosted design's own styles).
+if (typeof document !== 'undefined' && !document.getElementById('dc-styles')) {
+  const s = document.createElement('style');
+  s.id = 'dc-styles';
+  s.textContent = [
+    '.dc-editable{cursor:text;outline:none;white-space:nowrap;border-radius:3px;padding:0 2px;margin:0 -2px}',
+    '.dc-editable:focus{background:#fff;box-shadow:0 0 0 1.5px #c96442}',
+    '[data-dc-slot]{transition:transform .18s cubic-bezier(.2,.7,.3,1)}',
+    '[data-dc-slot].dc-dragging{transition:none;z-index:10;pointer-events:none}',
+    '[data-dc-slot].dc-dragging .dc-card{box-shadow:0 12px 40px rgba(0,0,0,.25),0 0 0 2px #c96442;transform:scale(1.02)}',
+    // isolation:isolate contains artboard content's z-indexes so a
+    // z-indexed child (sticky navbar etc.) can't paint over .dc-header or
+    // the .dc-menu popover that drops into the top of the card.
+    '.dc-card{isolation:isolate;transition:box-shadow .15s,transform .15s}',
+    '.dc-card *{scrollbar-width:none}',
+    '.dc-card *::-webkit-scrollbar{display:none}',
+    // Per-artboard header: grip + label on the left, delete/expand on the
+    // right. Single flex row; when the artboard's on-screen width is too
+    // narrow for both the label yields (ellipsis, then hidden entirely below
+    // ~4ch via the container query) and the buttons stay on the row.
+    '.dc-header{position:absolute;bottom:100%;left:-4px;margin-bottom:calc(4px * var(--dc-inv-zoom,1));z-index:2;',
+    '  display:flex;align-items:center;container-type:inline-size}',
+    '.dc-labelrow{display:flex;align-items:center;gap:4px;height:24px;flex:1 1 auto;min-width:0}',
+    '.dc-grip{flex:0 0 auto;cursor:grab;display:flex;align-items:center;padding:5px 4px;border-radius:4px;transition:background .12s,opacity .12s}',
+    '.dc-grip:hover{background:rgba(0,0,0,.08)}',
+    '.dc-grip:active{cursor:grabbing}',
+    '.dc-labeltext{flex:1 1 auto;min-width:0;cursor:pointer;border-radius:4px;padding:3px 6px;',
+    '  display:flex;align-items:center;transition:background .12s;overflow:hidden}',
+    // Below ~4ch of label room: hide the label entirely, and drop the grip to
+    // hover-only (same reveal rule as .dc-btns) so a narrow header is clean
+    // until the card is moused.
+    '@container (max-width: 110px){',
+    '  .dc-labeltext{display:none}',
+    '  .dc-grip{opacity:0}',
+    '  [data-dc-slot]:hover .dc-grip{opacity:1}',
+    '}',
+    '.dc-labeltext:hover{background:rgba(0,0,0,.05)}',
+    '.dc-labeltext .dc-editable{overflow:hidden;text-overflow:ellipsis;max-width:100%}',
+    '.dc-labeltext .dc-editable:focus{overflow:visible;text-overflow:clip}',
+    '.dc-btns{flex:0 0 auto;margin-left:auto;display:flex;gap:2px;opacity:0;transition:opacity .12s}',
+    '[data-dc-slot]:hover .dc-btns,.dc-btns:has(.dc-menu){opacity:1}',
+    '.dc-expand,.dc-kebab{width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;padding:0;',
+    '  background:transparent;color:rgba(60,50,40,.7);display:flex;align-items:center;justify-content:center;',
+    '  font:inherit;transition:background .12s,color .12s}',
+    '.dc-expand:hover,.dc-kebab:hover{background:rgba(0,0,0,.06);color:#2a251f}',
+    // Slot hosting an open menu floats above later siblings (which otherwise
+    // paint on top — same z-index:auto, later DOM order) so the popup isn't
+    // clipped by the next card.
+    '[data-dc-slot]:has(.dc-menu){z-index:10}',
+    '.dc-menu{position:absolute;top:100%;right:0;margin-top:4px;background:#fff;border-radius:8px;',
+    '  box-shadow:0 8px 28px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.05);padding:4px;min-width:160px;z-index:10}',
+    '.dc-menu button{display:block;width:100%;padding:7px 10px;border:0;background:transparent;',
+    '  border-radius:5px;font-family:inherit;font-size:13px;font-weight:500;line-height:1.2;',
+    '  color:#29261b;cursor:pointer;text-align:left;transition:background .12s;white-space:nowrap}',
+    '.dc-menu button:hover{background:rgba(0,0,0,.05)}',
+    '.dc-menu hr{border:0;border-top:1px solid rgba(0,0,0,.08);margin:4px 2px}',
+    '.dc-menu .dc-danger{color:#c96442}',
+    '.dc-menu .dc-danger:hover{background:rgba(201,100,66,.1)}',
+    // Chrome (titles / labels / buttons) counter-scales against the viewport
+    // zoom so it stays a constant on-screen size. --dc-inv-zoom is set by
+    // DCViewport on every transform update and inherits to all descendants —
+    // any overlay inside the world (e.g. a TweaksPanel on an artboard) can use
+    // it the same way.
+    //
+    // The header uses transform:scale (out-of-flow, so layout impact doesn't
+    // matter) with its world-space width set to card-width / inv-zoom so that
+    // after counter-scaling its on-screen width exactly matches the card's —
+    // that's what lets the container query + text-overflow behave against the
+    // card's visible edge at every zoom level.
+    //
+    // The section head uses CSS zoom instead of transform so its layout box
+    // grows with the counter-scale, pushing the card row down — otherwise the
+    // constant-screen-size title would overflow into the (shrinking) world-
+    // space gap and overlap the artboard headers at low zoom.
+    '.dc-header{width:calc((100% + 4px) / var(--dc-inv-zoom,1));',
+    '  transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom left}',
+    '.dc-sectionhead{zoom:var(--dc-inv-zoom,1)}',
+  ].join('\n');
+  document.head.appendChild(s);
+}
+
+const DCCtx = React.createContext(null);
+
+// Recursively unwrap React.Fragment so <>…</> grouping doesn't hide
+// DCSection/DCArtboard children from the type-based walks below.
+function dcFlatten(children) {
+  const out = [];
+  React.Children.forEach(children, (c) => {
+    if (c && c.type === React.Fragment) out.push(...dcFlatten(c.props.children));
+    else out.push(c);
+  });
+  return out;
+}
+
+// ─────────────────────────────────────────────────────────────
+// DesignCanvas — stateful wrapper around the pan/zoom viewport.
+// Owns runtime state (per-section order, renamed titles/labels, hidden
+// artboards, focused artboard). Order/titles/labels/hidden persist to a
+// .design-canvas.state.json
+// sidecar next to the HTML. Reads go via plain fetch() so the saved
+// arrangement is visible anywhere the HTML + sidecar are served together
+// (omelette preview, direct link, downloaded zip). Writes go through the
+// host's window.omelette bridge — editing requires the omelette runtime.
+// Focus is ephemeral.
+// ─────────────────────────────────────────────────────────────
+const DC_STATE_FILE = '.design-canvas.state.json';
+
+function DesignCanvas({ children, minScale, maxScale, style }) {
+  const [state, setState] = React.useState({ sections: {}, focus: null });
+  // Hold rendering until the sidecar read settles so the saved order/titles
+  // appear on first paint (no source-order flash). didRead gates writes until
+  // the read settles so the empty initial state can't clobber a slow read;
+  // skipNextWrite suppresses the one echo-write that would otherwise follow
+  // hydration.
+  const [ready, setReady] = React.useState(false);
+  const didRead = React.useRef(false);
+  const skipNextWrite = React.useRef(false);
+
+  React.useEffect(() => {
+    let off = false;
+    fetch('./' + DC_STATE_FILE)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((saved) => {
+        if (off || !saved || !saved.sections) return;
+        skipNextWrite.current = true;
+        setState((s) => ({ ...s, sections: saved.sections }));
+      })
+      .catch(() => {})
+      .finally(() => { didRead.current = true; if (!off) setReady(true); });
+    const t = setTimeout(() => { if (!off) setReady(true); }, 150);
+    return () => { off = true; clearTimeout(t); };
+  }, []);
+
+  React.useEffect(() => {
+    if (!didRead.current) return;
+    if (skipNextWrite.current) { skipNextWrite.current = false; return; }
+    const t = setTimeout(() => {
+      window.omelette?.writeFile(DC_STATE_FILE, JSON.stringify({ sections: state.sections })).catch(() => {});
+    }, 250);
+    return () => clearTimeout(t);
+  }, [state.sections]);
+
+  // Build registries synchronously from children so FocusOverlay can read
+  // them in the same render. Fragments are flattened; wrapping in other
+  // elements still opts out of focus/reorder.
+  const registry = {};     // slotId -> { sectionId, artboard }
+  const sectionMeta = {};  // sectionId -> { title, subtitle, slotIds[] }
+  const sectionOrder = [];
+  dcFlatten(children).forEach((sec) => {
+    if (!sec || sec.type !== DCSection) return;
+    const sid = sec.props.id ?? sec.props.title;
+    if (!sid) return;
+    sectionOrder.push(sid);
+    const persisted = state.sections[sid] || {};
+    const abs = [];
+    dcFlatten(sec.props.children).forEach((ab) => {
+      if (!ab || ab.type !== DCArtboard) return;
+      const aid = ab.props.id ?? ab.props.label;
+      if (aid) abs.push([aid, ab]);
+    });
+    // hidden is scoped to one source revision — when the agent regenerates
+    // (artboard-ID set changes), prior deletes don't apply to new content.
+    const srcKey = abs.map(([k]) => k).join('\x1f');
+    const hidden = persisted.srcKey === srcKey ? (persisted.hidden || []) : [];
+    const srcIds = [];
+    abs.forEach(([aid, ab]) => {
+      if (hidden.includes(aid)) return;
+      registry[`${sid}/${aid}`] = { sectionId: sid, artboard: ab };
+      srcIds.push(aid);
+    });
+    const kept = (persisted.order || []).filter((k) => srcIds.includes(k));
+    sectionMeta[sid] = {
+      title: persisted.title ?? sec.props.title,
+      subtitle: sec.props.subtitle,
+      slotIds: [...kept, ...srcIds.filter((k) => !kept.includes(k))],
+    };
+  });
+
+  const api = React.useMemo(() => ({
+    state,
+    section: (id) => state.sections[id] || {},
+    patchSection: (id, p) => setState((s) => ({
+      ...s,
+      sections: { ...s.sections, [id]: { ...s.sections[id], ...(typeof p === 'function' ? p(s.sections[id] || {}) : p) } },
+    })),
+    setFocus: (slotId) => setState((s) => ({ ...s, focus: slotId })),
+  }), [state]);
+
+  // Esc exits focus; any outside pointerdown commits an in-progress rename.
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') api.setFocus(null); };
+    const onPd = (e) => {
+      const ae = document.activeElement;
+      if (ae && ae.isContentEditable && !ae.contains(e.target)) ae.blur();
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPd, true);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPd, true);
+    };
+  }, [api]);
+
+  return (
+    <DCCtx.Provider value={api}>
+      <DCViewport minScale={minScale} maxScale={maxScale} style={style}>{ready && children}</DCViewport>
+      {state.focus && registry[state.focus] && (
+        <DCFocusOverlay entry={registry[state.focus]} sectionMeta={sectionMeta} sectionOrder={sectionOrder} />
+      )}
+    </DCCtx.Provider>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// DCViewport — transform-based pan/zoom (internal)
+//
+// Input mapping (Figma-style):
+//   • trackpad pinch  → zoom   (ctrlKey wheel; Safari gesture* events)
+//   • trackpad scroll → pan    (two-finger)
+//   • mouse wheel     → zoom   (notched; distinguished from trackpad scroll)
+//   • middle-drag / primary-drag-on-bg → pan
+//
+// Transform state lives in a ref and is written straight to the DOM
+// (translate3d + will-change) so wheel ticks don't go through React —
+// keeps pans at 60fps on dense canvases.
+// ─────────────────────────────────────────────────────────────
+function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
+  const vpRef = React.useRef(null);
+  const worldRef = React.useRef(null);
+  const tf = React.useRef({ x: 0, y: 0, scale: 1 });
+  // Persist viewport across reloads so the user lands back where they were
+  // after an agent edit or browser refresh. The sandbox origin is already
+  // per-project; pathname keeps multiple canvas files in one project apart.
+  const tfKey = 'dc-viewport:' + location.pathname;
+  const saveT = React.useRef(0);
+
+  const lastPostedScale = React.useRef();
+  const apply = React.useCallback(() => {
+    const { x, y, scale } = tf.current;
+    const el = worldRef.current;
+    if (!el) return;
+    el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+    // Exposed for zoom-invariant chrome (labels, buttons, TweaksPanel).
+    el.style.setProperty('--dc-inv-zoom', String(1 / scale));
+    // Keep the host toolbar's % readout in sync with the canvas scale. Pan
+    // ticks leave scale unchanged — skip the cross-frame post for those.
+    if (lastPostedScale.current !== scale) {
+      lastPostedScale.current = scale;
+      window.parent.postMessage({ type: '__dc_zoom', scale }, '*');
+    }
+    clearTimeout(saveT.current);
+    saveT.current = setTimeout(() => {
+      try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch {}
+    }, 200);
+  }, [tfKey]);
+
+  React.useLayoutEffect(() => {
+    const flush = () => {
+      clearTimeout(saveT.current);
+      try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch {}
+    };
+    try {
+      const s = JSON.parse(localStorage.getItem(tfKey) || 'null');
+      if (s && Number.isFinite(s.x) && Number.isFinite(s.y) && Number.isFinite(s.scale)) {
+        tf.current = { x: s.x, y: s.y, scale: Math.min(maxScale, Math.max(minScale, s.scale)) };
+        apply();
+      }
+    } catch {}
+    // Flush on pagehide and unmount so a reload within the 200ms debounce
+    // window doesn't drop the last pan/zoom.
+    window.addEventListener('pagehide', flush);
+    return () => { window.removeEventListener('pagehide', flush); flush(); };
+  }, []);
+
+  React.useEffect(() => {
+    const vp = vpRef.current;
+    if (!vp) return;
+
+    const zoomAt = (cx, cy, factor) => {
+      const r = vp.getBoundingClientRect();
+      const px = cx - r.left, py = cy - r.top;
+      const t = tf.current;
+      const next = Math.min(maxScale, Math.max(minScale, t.scale * factor));
+      const k = next / t.scale;
+      // --dc-inv-zoom consumers (.dc-sectionhead's CSS zoom, each section's
+      // marginBottom) reflow on every scale change, vertically shifting the
+      // world layout — so a world point mathematically pinned under the cursor
+      // drifts as you zoom (content creeps up on zoom-in, down on zoom-out).
+      // Anchor the DOM element under the cursor instead: record its screen Y,
+      // apply the transform + --dc-inv-zoom, then cancel whatever vertical
+      // drift the reflow introduced so it stays put on screen.
+      let marker = null, markerY0 = 0;
+      if (k !== 1) {
+        const hit = document.elementFromPoint(cx, cy);
+        marker = hit && hit.closest ? hit.closest('[data-dc-slot],[data-dc-section]') : null;
+        if (marker) markerY0 = marker.getBoundingClientRect().top;
+      }
+      // keep the world point under the cursor fixed
+      t.x = px - (px - t.x) * k;
+      t.y = py - (py - t.y) * k;
+      t.scale = next;
+      apply();
+      if (marker) {
+        // A pure zoom around (cx, cy) maps screen Y → cy + (Y - cy) * k. Any
+        // departure after the --dc-inv-zoom reflow is the layout drift.
+        const drift = marker.getBoundingClientRect().top - (cy + (markerY0 - cy) * k);
+        if (Math.abs(drift) > 0.1) { t.y -= drift; apply(); }
+      }
+    };
+
+    // Mouse-wheel vs trackpad-scroll heuristic. A physical wheel sends
+    // line-mode deltas (Firefox) or large integer pixel deltas with no X
+    // component (Chrome/Safari, typically multiples of 100/120). Trackpad
+    // two-finger scroll sends small/fractional pixel deltas, often with
+    // non-zero deltaX. ctrlKey is set by the browser for trackpad pinch.
+    const isMouseWheel = (e) =>
+      e.deltaMode !== 0 ||
+      (e.deltaX === 0 && Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 40);
+
+    const onWheel = (e) => {
+      e.preventDefault();
+      if (isGesturing) return; // Safari: gesture* owns the pinch — discard concurrent wheels
+      if ((e.ctrlKey || e.metaKey) && !isMouseWheel(e)) {
+        // trackpad pinch, or ctrl/cmd + smooth-scroll mouse. Notched
+        // wheels fall through to the fixed-step branch below.
+        zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.01));
+      } else if (isMouseWheel(e)) {
+        // notched mouse wheel — fixed-ratio step per click
+        zoomAt(e.clientX, e.clientY, Math.exp(-Math.sign(e.deltaY) * 0.18));
+      } else {
+        // trackpad two-finger scroll — pan
+        tf.current.x -= e.deltaX;
+        tf.current.y -= e.deltaY;
+        apply();
+      }
+    };
+
+    // Safari sends native gesture* events for trackpad pinch with a smooth
+    // e.scale; preferring these over the ctrl+wheel fallback gives a much
+    // better feel there. No-ops on other browsers. Safari also fires
+    // ctrlKey wheel events during the same pinch — isGesturing makes
+    // onWheel drop those entirely so they neither zoom nor pan.
+    let gsBase = 1;
+    let isGesturing = false;
+    const onGestureStart = (e) => { e.preventDefault(); isGesturing = true; gsBase = tf.current.scale; };
+    const onGestureChange = (e) => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, (gsBase * e.scale) / tf.current.scale);
+    };
+    const onGestureEnd = (e) => { e.preventDefault(); isGesturing = false; };
+
+    // Drag-pan: middle button anywhere, or primary button on canvas
+    // background (anything that isn't an artboard or an inline editor).
+    let drag = null;
+    const onPointerDown = (e) => {
+      const onBg = !e.target.closest('[data-dc-slot], .dc-editable');
+      if (!(e.button === 1 || (e.button === 0 && onBg))) return;
+      e.preventDefault();
+      vp.setPointerCapture(e.pointerId);
+      drag = { id: e.pointerId, lx: e.clientX, ly: e.clientY };
+      vp.style.cursor = 'grabbing';
+    };
+    const onPointerMove = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      tf.current.x += e.clientX - drag.lx;
+      tf.current.y += e.clientY - drag.ly;
+      drag.lx = e.clientX; drag.ly = e.clientY;
+      apply();
+    };
+    const onPointerUp = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      vp.releasePointerCapture(e.pointerId);
+      drag = null;
+      vp.style.cursor = '';
+    };
+
+    // Host-driven zoom (toolbar % menu). Zooms around viewport centre so the
+    // visible midpoint stays fixed — matching the host's iframe-zoom feel.
+    const onHostMsg = (e) => {
+      const d = e.data;
+      if (d && d.type === '__dc_set_zoom' && typeof d.scale === 'number') {
+        const r = vp.getBoundingClientRect();
+        zoomAt(r.left + r.width / 2, r.top + r.height / 2, d.scale / tf.current.scale);
+      } else if (d && d.type === '__dc_probe') {
+        // Host's [readyGen] reset asks whether a canvas is present; it
+        // fires on the iframe's native 'load', which for canvases with
+        // images/fonts is after our mount-time announce, so re-announce.
+        // Clear the pan-tick guard so apply() re-posts the current scale
+        // even if it's unchanged — the host just reset dcScale to 1.
+        window.parent.postMessage({ type: '__dc_present' }, '*');
+        lastPostedScale.current = undefined;
+        apply();
+      }
+    };
+    window.addEventListener('message', onHostMsg);
+    // Announce canvas mode so the host toolbar proxies its % control here
+    // instead of scaling the iframe element (which would just shrink the
+    // viewport window of an infinite canvas). The apply() that follows emits
+    // the initial __dc_zoom so the toolbar % is correct before first pinch.
+    // lastPostedScale reset mirrors the __dc_probe handler: the layout
+    // effect's restore-path apply() may already have posted the restored
+    // scale (before __dc_present), so clear the guard to re-post it in order.
+    window.parent.postMessage({ type: '__dc_present' }, '*');
+    lastPostedScale.current = undefined;
+    apply();
+
+    vp.addEventListener('wheel', onWheel, { passive: false });
+    vp.addEventListener('gesturestart', onGestureStart, { passive: false });
+    vp.addEventListener('gesturechange', onGestureChange, { passive: false });
+    vp.addEventListener('gestureend', onGestureEnd, { passive: false });
+    vp.addEventListener('pointerdown', onPointerDown);
+    vp.addEventListener('pointermove', onPointerMove);
+    vp.addEventListener('pointerup', onPointerUp);
+    vp.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      window.removeEventListener('message', onHostMsg);
+      vp.removeEventListener('wheel', onWheel);
+      vp.removeEventListener('gesturestart', onGestureStart);
+      vp.removeEventListener('gesturechange', onGestureChange);
+      vp.removeEventListener('gestureend', onGestureEnd);
+      vp.removeEventListener('pointerdown', onPointerDown);
+      vp.removeEventListener('pointermove', onPointerMove);
+      vp.removeEventListener('pointerup', onPointerUp);
+      vp.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [apply, minScale, maxScale]);
+
+  const gridSvg = `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M120 0H0v120' fill='none' stroke='${encodeURIComponent(DC.grid)}' stroke-width='1'/%3E%3C/svg%3E")`;
+  return (
+    <div
+      ref={vpRef}
+      className="design-canvas"
+      style={{
+        height: '100vh', width: '100vw',
+        background: DC.bg,
+        overflow: 'hidden',
+        overscrollBehavior: 'none',
+        touchAction: 'none',
+        position: 'relative',
+        fontFamily: DC.font,
+        boxSizing: 'border-box',
+        ...style,
+      }}
+    >
+      <div
+        ref={worldRef}
+        style={{
+          position: 'absolute', top: 0, left: 0,
+          transformOrigin: '0 0',
+          willChange: 'transform',
+          width: 'max-content', minWidth: '100%',
+          minHeight: '100%',
+          padding: '60px 0 80px',
+        }}
+      >
+        <div style={{ position: 'absolute', inset: -6000, backgroundImage: gridSvg, backgroundSize: '120px 120px', pointerEvents: 'none', zIndex: -1 }} />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// DCSection — editable title + h-row of artboards in persisted order
+// ─────────────────────────────────────────────────────────────
+function DCSection({ id, title, subtitle, children, gap = 48 }) {
+  const ctx = React.useContext(DCCtx);
+  const sid = id ?? title;
+  const all = React.Children.toArray(dcFlatten(children));
+  const artboards = all.filter((c) => c && c.type === DCArtboard);
+  const rest = all.filter((c) => !(c && c.type === DCArtboard));
+  const sec = (ctx && sid && ctx.section(sid)) || {};
+  // Must match DesignCanvas's srcKey computation exactly (it filters falsy
+  // IDs), or onDelete persists a srcKey that DesignCanvas never recognizes.
+  const allIds = artboards.map((a) => a.props.id ?? a.props.label).filter(Boolean);
+  const srcKey = allIds.join('\x1f');
+  const hidden = sec.srcKey === srcKey ? (sec.hidden || []) : [];
+  const srcOrder = allIds.filter((k) => !hidden.includes(k));
+
+  const order = React.useMemo(() => {
+    const kept = (sec.order || []).filter((k) => srcOrder.includes(k));
+    return [...kept, ...srcOrder.filter((k) => !kept.includes(k))];
+  }, [sec.order, srcOrder.join('|')]);
+
+  const byId = Object.fromEntries(artboards.map((a) => [a.props.id ?? a.props.label, a]));
+
+  // marginBottom counter-scales so the on-screen gap between sections stays
+  // constant — otherwise at low zoom the (world-space) gap collapses while
+  // the screen-constant sectionhead below it doesn't, and the title reads as
+  // belonging to the section above. paddingBottom below is just enough for
+  // the 24px artboard-header (abs-positioned above each card) plus ~8px, so
+  // the title sits tight against its own row at every zoom.
+  return (
+    <div data-dc-section={sid}
+      style={{ marginBottom: 'calc(80px * var(--dc-inv-zoom, 1))', position: 'relative' }}>
+      <div style={{ padding: '0 60px' }}>
+        <div className="dc-sectionhead" style={{ paddingBottom: 36 }}>
+          <DCEditable tag="div" value={sec.title ?? title}
+            onChange={(v) => ctx && sid && ctx.patchSection(sid, { title: v })}
+            style={{ fontSize: 28, fontWeight: 600, color: DC.title, letterSpacing: -0.4, marginBottom: 6, display: 'inline-block' }} />
+          {subtitle && <div style={{ fontSize: 16, color: DC.subtitle }}>{subtitle}</div>}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap, padding: '0 60px', alignItems: 'flex-start', width: 'max-content' }}>
+        {order.map((k) => (
+          <DCArtboardFrame key={k} sectionId={sid} artboard={byId[k]} order={order}
+            label={(sec.labels || {})[k] ?? byId[k].props.label}
+            onRename={(v) => ctx && ctx.patchSection(sid, (x) => ({ labels: { ...x.labels, [k]: v } }))}
+            onReorder={(next) => ctx && ctx.patchSection(sid, { order: next })}
+            onDelete={() => ctx && ctx.patchSection(sid, (x) => ({
+              hidden: [...(x.srcKey === srcKey ? (x.hidden || []) : []), k],
+              srcKey,
+            }))}
+            onFocus={() => ctx && ctx.setFocus(`${sid}/${k}`)} />
+        ))}
+      </div>
+      {rest}
+    </div>
+  );
+}
+
+// DCArtboard — marker; rendered by DCArtboardFrame via DCSection.
+function DCArtboard() { return null; }
+
+// Per-artboard export (kind: 'png' | 'html'). Both paths share the same
+// self-contained clone: computed styles baked in, @font-face / <img> /
+// inline-style background-image urls inlined as data URIs. PNG wraps the
+// clone in foreignObject→canvas at 3× the artboard's natural width×height
+// (same pipeline the host uses for page captures); HTML wraps it in a
+// minimal standalone document. Both are independent of viewport zoom.
+async function dcExport(node, w, h, name, kind) {
+  try { await document.fonts.ready; } catch {}
+  const toDataURL = (url) => fetch(url).then((r) => r.blob()).then((b) => new Promise((res) => {
+    const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => res(url); fr.readAsDataURL(b);
+  })).catch(() => url);
+
+  // Collect @font-face rules. ss.cssRules throws SecurityError on
+  // cross-origin sheets (e.g. fonts.googleapis.com) — in that case fetch
+  // the CSS text directly (those endpoints send ACAO:*) and regex-extract
+  // the blocks. @import and @media/@supports are walked so nested
+  // @font-face rules aren't missed.
+  const fontRules = [], pending = [], seen = new Set();
+  const scrapeCss = (href) => {
+    if (seen.has(href)) return; seen.add(href);
+    pending.push(fetch(href).then((r) => r.text()).then((css) => {
+      for (const m of css.match(/@font-face\s*{[^}]*}/g) || []) fontRules.push({ css: m, base: href });
+      for (const m of css.matchAll(/@import\s+(?:url\()?['"]?([^'")\s;]+)/g))
+        scrapeCss(new URL(m[1], href).href);
+    }).catch(() => {}));
+  };
+  const walk = (rules, base) => {
+    for (const r of rules) {
+      if (r.type === CSSRule.FONT_FACE_RULE) fontRules.push({ css: r.cssText, base });
+      else if (r.type === CSSRule.IMPORT_RULE && r.styleSheet) {
+        const ibase = r.styleSheet.href || base;
+        try { walk(r.styleSheet.cssRules, ibase); } catch { scrapeCss(ibase); }
+      } else if (r.cssRules) walk(r.cssRules, base);
+    }
+  };
+  for (const ss of document.styleSheets) {
+    const base = ss.href || location.href;
+    try { walk(ss.cssRules, base); } catch { if (ss.href) scrapeCss(ss.href); }
+  }
+  while (pending.length) await pending.shift();
+  const fontCss = (await Promise.all(fontRules.map(async (rule) => {
+    let out = rule.css, m; const re = /url\((['"]?)([^'")]+)\1\)/g;
+    while ((m = re.exec(rule.css))) {
+      if (m[2].indexOf('data:') === 0) continue;
+      let abs; try { abs = new URL(m[2], rule.base).href; } catch { continue; }
+      out = out.split(m[0]).join('url("' + await toDataURL(abs) + '")');
+    }
+    return out;
+  }))).join('\n');
+
+  const cloneStyled = (src) => {
+    if (src.nodeType === 8 || (src.nodeType === 1 && src.tagName === 'SCRIPT')) return document.createTextNode('');
+    const dst = src.cloneNode(false);
+    if (src.nodeType === 1) {
+      const cs = getComputedStyle(src); let txt = '';
+      for (let i = 0; i < cs.length; i++) txt += cs[i] + ':' + cs.getPropertyValue(cs[i]) + ';';
+      dst.setAttribute('style', txt + 'animation:none;transition:none;');
+      if (src.tagName === 'CANVAS') try { const im = document.createElement('img'); im.src = src.toDataURL(); im.setAttribute('style', txt); return im; } catch {}
+    }
+    for (let c = src.firstChild; c; c = c.nextSibling) dst.appendChild(cloneStyled(c));
+    return dst;
+  };
+  const clone = cloneStyled(node);
+  clone.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+  // Drop the card's own shadow/radius so the export is a flush w×h rect;
+  // the artboard's own background (if any) is already in the computed style.
+  clone.style.boxShadow = 'none'; clone.style.borderRadius = '0';
+
+  const jobs = [];
+  clone.querySelectorAll('img').forEach((el) => {
+    const s = el.getAttribute('src');
+    if (s && s.indexOf('data:') !== 0) jobs.push(toDataURL(el.src).then((d) => el.setAttribute('src', d)));
+  });
+  [clone, ...clone.querySelectorAll('*')].forEach((el) => {
+    const bg = el.style.backgroundImage; if (!bg) return;
+    let m; const re = /url\(["']?([^"')]+)["']?\)/g;
+    while ((m = re.exec(bg))) {
+      const tok = m[0], url = m[1];
+      if (url.indexOf('data:') === 0) continue;
+      jobs.push(toDataURL(url).then((d) => { el.style.backgroundImage = el.style.backgroundImage.split(tok).join('url("' + d + '")'); }));
+    }
+  });
+  await Promise.all(jobs);
+
+  const xml = new XMLSerializer().serializeToString(clone);
+  const save = (blob, ext) => {
+    if (!blob) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name + '.' + ext; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
+  if (kind === 'html') {
+    const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + name + '</title>' +
+      (fontCss ? '<style>' + fontCss + '</style>' : '') +
+      '</head><body style="margin:0">' + xml + '</body></html>';
+    return save(new Blob([html], { type: 'text/html' }), 'html');
+  }
+
+  // PNG: the SVG's own width/height must be the output resolution — an
+  // <img>-loaded SVG rasterizes at its intrinsic size, so sizing it at 1×
+  // and ctx.scale()-ing up would just upscale a 1× bitmap. viewBox maps the
+  // w×h foreignObject onto the px·w × px·h SVG canvas so the browser renders
+  // the HTML at full resolution.
+  const px = 3;
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w * px + '" height="' + h * px +
+    '" viewBox="0 0 ' + w + ' ' + h + '"><foreignObject width="' + w + '" height="' + h + '">' +
+    (fontCss ? '<style><![CDATA[' + fontCss + ']]></style>' : '') + xml + '</foreignObject></svg>';
+  const img = new Image();
+  await new Promise((res, rej) => {
+    img.onload = res; img.onerror = () => rej(new Error('svg load failed'));
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+  const cv = document.createElement('canvas');
+  cv.width = w * px; cv.height = h * px;
+  cv.getContext('2d').drawImage(img, 0, 0);
+  cv.toBlob((blob) => save(blob, 'png'), 'image/png');
+}
+
+function DCArtboardFrame({ sectionId, artboard, label, order, onRename, onReorder, onFocus, onDelete }) {
+  const { id: rawId, label: rawLabel, width = 260, height = 480, children, style = {} } = artboard.props;
+  const id = rawId ?? rawLabel;
+  const ref = React.useRef(null);
+  const cardRef = React.useRef(null);
+  const menuRef = React.useRef(null);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [confirming, setConfirming] = React.useState(false);
+
+  // ⋯ menu: close on any outside pointerdown. Two-click delete lives inside
+  // the menu — first click arms the row, second commits; closing disarms.
+  React.useEffect(() => {
+    if (!menuOpen) { setConfirming(false); return; }
+    const off = (e) => { if (!menuRef.current || !menuRef.current.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener('pointerdown', off, true);
+    return () => document.removeEventListener('pointerdown', off, true);
+  }, [menuOpen]);
+
+  const doExport = (kind) => {
+    setMenuOpen(false);
+    if (!cardRef.current) return;
+    const name = String(label || id || 'artboard').replace(/[^\w\s.-]+/g, '_');
+    dcExport(cardRef.current, width, height, name, kind)
+      .catch((e) => console.error('[design-canvas] export failed:', e));
+  };
+
+  // Live drag-reorder: dragged card sticks to cursor; siblings slide into
+  // their would-be slots in real time via transforms. DOM order only
+  // changes on drop.
+  const onGripDown = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const me = ref.current;
+    // translateX is applied in local (pre-scale) space but pointer deltas and
+    // getBoundingClientRect().left are screen-space — divide by the viewport's
+    // current scale so the dragged card tracks the cursor at any zoom level.
+    const scale = me.getBoundingClientRect().width / me.offsetWidth || 1;
+    const peers = Array.from(document.querySelectorAll(`[data-dc-section="${sectionId}"] [data-dc-slot]`));
+    const homes = peers.map((el) => ({ el, id: el.dataset.dcSlot, x: el.getBoundingClientRect().left }));
+    const slotXs = homes.map((h) => h.x);
+    const startIdx = order.indexOf(id);
+    const startX = e.clientX;
+    let liveOrder = order.slice();
+    me.classList.add('dc-dragging');
+
+    const layout = () => {
+      for (const h of homes) {
+        if (h.id === id) continue;
+        const slot = liveOrder.indexOf(h.id);
+        h.el.style.transform = `translateX(${(slotXs[slot] - h.x) / scale}px)`;
+      }
+    };
+
+    const move = (ev) => {
+      const dx = ev.clientX - startX;
+      me.style.transform = `translateX(${dx / scale}px)`;
+      const cur = homes[startIdx].x + dx;
+      let nearest = 0, best = Infinity;
+      for (let i = 0; i < slotXs.length; i++) {
+        const d = Math.abs(slotXs[i] - cur);
+        if (d < best) { best = d; nearest = i; }
+      }
+      if (liveOrder.indexOf(id) !== nearest) {
+        liveOrder = order.filter((k) => k !== id);
+        liveOrder.splice(nearest, 0, id);
+        layout();
+      }
+    };
+
+    const up = () => {
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      const finalSlot = liveOrder.indexOf(id);
+      me.classList.remove('dc-dragging');
+      me.style.transform = `translateX(${(slotXs[finalSlot] - homes[startIdx].x) / scale}px)`;
+      // After the settle transition, kill transitions + clear transforms +
+      // commit the reorder in the same frame so there's no visual snap-back.
+      setTimeout(() => {
+        for (const h of homes) { h.el.style.transition = 'none'; h.el.style.transform = ''; }
+        if (liveOrder.join('|') !== order.join('|')) onReorder(liveOrder);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          for (const h of homes) h.el.style.transition = '';
+        }));
+      }, 180);
+    };
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  };
+
+  return (
+    <div ref={ref} data-dc-slot={id} style={{ position: 'relative', flexShrink: 0 }}>
+      <div className="dc-header" data-omelette-chrome="" style={{ color: DC.label }} onPointerDown={(e) => e.stopPropagation()}>
+        <div className="dc-labelrow">
+          <div className="dc-grip" onPointerDown={onGripDown} title="Drag to reorder">
+            <svg width="9" height="13" viewBox="0 0 9 13" fill="currentColor"><circle cx="2" cy="2" r="1.1"/><circle cx="7" cy="2" r="1.1"/><circle cx="2" cy="6.5" r="1.1"/><circle cx="7" cy="6.5" r="1.1"/><circle cx="2" cy="11" r="1.1"/><circle cx="7" cy="11" r="1.1"/></svg>
+          </div>
+          <div className="dc-labeltext" onClick={onFocus} title="Click to focus">
+            <DCEditable value={label} onChange={onRename} onClick={(e) => e.stopPropagation()}
+              style={{ fontSize: 15, fontWeight: 500, color: DC.label, lineHeight: 1 }} />
+          </div>
+        </div>
+        <div className="dc-btns">
+          <div ref={menuRef} style={{ position: 'relative' }}>
+            <button className="dc-kebab" title="More" onClick={() => setMenuOpen((o) => !o)}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="2.5" cy="6" r="1.1"/><circle cx="6" cy="6" r="1.1"/><circle cx="9.5" cy="6" r="1.1"/></svg>
+            </button>
+            {menuOpen && (
+              <div className="dc-menu" onPointerDown={(e) => e.stopPropagation()}>
+                <button onClick={() => doExport('png')}>Download PNG</button>
+                <button onClick={() => doExport('html')}>Download HTML</button>
+                <hr />
+                <button className="dc-danger"
+                  onClick={() => { if (confirming) { setMenuOpen(false); onDelete(); } else setConfirming(true); }}>
+                  {confirming ? 'Click again to delete' : 'Delete'}
+                </button>
+              </div>
+            )}
+          </div>
+          <button className="dc-expand" onClick={onFocus} title="Focus">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M7 1h4v4M5 11H1V7M11 1L7.5 4.5M1 11l3.5-3.5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div ref={cardRef} className="dc-card"
+        style={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06)', overflow: 'hidden', width, height, background: '#fff', ...style }}>
+        {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb', fontSize: 13, fontFamily: DC.font }}>{id}</div>}
+      </div>
+    </div>
+  );
+}
+
+// Inline rename — commits on blur or Enter.
+function DCEditable({ value, onChange, style, tag = 'span', onClick }) {
+  const T = tag;
+  return (
+    <T className="dc-editable" contentEditable suppressContentEditableWarning
+      onClick={onClick}
+      onPointerDown={(e) => e.stopPropagation()}
+      onBlur={(e) => onChange && onChange(e.currentTarget.textContent)}
+      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+      style={style}>{value}</T>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Focus mode — overlay one artboard; ←/→ within section, ↑/↓ across
+// sections, Esc or backdrop click to exit.
+// ─────────────────────────────────────────────────────────────
+function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
+  const ctx = React.useContext(DCCtx);
+  const { sectionId, artboard } = entry;
+  const sec = ctx.section(sectionId);
+  const meta = sectionMeta[sectionId];
+  const peers = meta.slotIds;
+  const aid = artboard.props.id ?? artboard.props.label;
+  const idx = peers.indexOf(aid);
+  const secIdx = sectionOrder.indexOf(sectionId);
+
+  const go = (d) => { const n = peers[(idx + d + peers.length) % peers.length]; if (n) ctx.setFocus(`${sectionId}/${n}`); };
+  const goSection = (d) => {
+    // Sections whose artboards are all deleted have slotIds:[] — step past
+    // them to the next non-empty section so ↑/↓ doesn't dead-end.
+    const n = sectionOrder.length;
+    for (let i = 1; i < n; i++) {
+      const ns = sectionOrder[(((secIdx + d * i) % n) + n) % n];
+      const first = sectionMeta[ns] && sectionMeta[ns].slotIds[0];
+      if (first) { ctx.setFocus(`${ns}/${first}`); return; }
+    }
+  };
+
+  React.useEffect(() => {
+    const k = (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); goSection(-1); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); goSection(1); }
+    };
+    document.addEventListener('keydown', k);
+    return () => document.removeEventListener('keydown', k);
+  });
+
+  const { width = 260, height = 480, children } = artboard.props;
+  const [vp, setVp] = React.useState({ w: window.innerWidth, h: window.innerHeight });
+  React.useEffect(() => { const r = () => setVp({ w: window.innerWidth, h: window.innerHeight }); window.addEventListener('resize', r); return () => window.removeEventListener('resize', r); }, []);
+  const scale = Math.max(0.1, Math.min((vp.w - 200) / width, (vp.h - 260) / height, 2));
+
+  const [ddOpen, setDd] = React.useState(false);
+  const Arrow = ({ dir, onClick }) => (
+    <button onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ position: 'absolute', top: '50%', [dir]: 28, transform: 'translateY(-50%)',
+        border: 'none', background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.9)',
+        width: 44, height: 44, borderRadius: 22, fontSize: 18, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s' }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.18)')}
+      onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.08)')}>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d={dir === 'left' ? 'M11 3L5 9l6 6' : 'M7 3l6 6-6 6'} /></svg>
+    </button>
+  );
+
+  // Portal to body so position:fixed is the real viewport regardless of any
+  // transform on DesignCanvas's ancestors (including the canvas zoom itself).
+  return ReactDOM.createPortal(
+    <div onClick={() => ctx.setFocus(null)}
+      onWheel={(e) => e.preventDefault()}
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(24,20,16,.6)', backdropFilter: 'blur(14px)',
+        fontFamily: DC.font, color: '#fff' }}>
+
+      {/* top bar: section dropdown (left) · close (right) */}
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 72, display: 'flex', alignItems: 'flex-start', padding: '16px 20px 0', gap: 16 }}>
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => setDd((o) => !o)}
+            style={{ border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', padding: '6px 8px',
+              borderRadius: 6, textAlign: 'left', fontFamily: 'inherit' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 18, fontWeight: 600, letterSpacing: -0.3 }}>{meta.title}</span>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" style={{ opacity: .7 }}><path d="M2 4l3.5 3.5L9 4"/></svg>
+            </span>
+            {meta.subtitle && <span style={{ display: 'block', fontSize: 13, opacity: .6, fontWeight: 400, marginTop: 2 }}>{meta.subtitle}</span>}
+          </button>
+          {ddOpen && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#2a251f', borderRadius: 8,
+              boxShadow: '0 8px 32px rgba(0,0,0,.4)', padding: 4, minWidth: 200, zIndex: 10 }}>
+              {sectionOrder.filter((sid) => sectionMeta[sid].slotIds.length).map((sid) => (
+                <button key={sid} onClick={() => { setDd(false); const f = sectionMeta[sid].slotIds[0]; if (f) ctx.setFocus(`${sid}/${f}`); }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
+                    background: sid === sectionId ? 'rgba(255,255,255,.1)' : 'transparent', color: '#fff',
+                    padding: '8px 12px', borderRadius: 5, fontSize: 14, fontWeight: sid === sectionId ? 600 : 400, fontFamily: 'inherit' }}>
+                  {sectionMeta[sid].title}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => ctx.setFocus(null)}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.12)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', width: 32, height: 32,
+            borderRadius: 16, fontSize: 20, cursor: 'pointer', lineHeight: 1, transition: 'background .12s' }}>×</button>
+      </div>
+
+      {/* card centered, label + index below — only the card itself stops
+          propagation so any backdrop click (including the margins around
+          the card) exits focus */}
+      <div
+        style={{ position: 'absolute', top: 64, bottom: 56, left: 100, right: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div onClick={(e) => e.stopPropagation()} style={{ width: width * scale, height: height * scale, position: 'relative' }}>
+          <div style={{ width, height, transform: `scale(${scale})`, transformOrigin: 'top left', background: '#fff', borderRadius: 2, overflow: 'hidden',
+            boxShadow: '0 20px 80px rgba(0,0,0,.4)' }}>
+            {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>{aid}</div>}
+          </div>
+        </div>
+        <div onClick={(e) => e.stopPropagation()} style={{ fontSize: 14, fontWeight: 500, opacity: .85, textAlign: 'center' }}>
+          {(sec.labels || {})[aid] ?? artboard.props.label}
+          <span style={{ opacity: .5, marginLeft: 10, fontVariantNumeric: 'tabular-nums' }}>{idx + 1} / {peers.length}</span>
+        </div>
+      </div>
+
+      <Arrow dir="left" onClick={() => go(-1)} />
+      <Arrow dir="right" onClick={() => go(1)} />
+
+      {/* dots */}
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
+        {peers.map((p, i) => (
+          <button key={p} onClick={() => ctx.setFocus(`${sectionId}/${p}`)}
+            style={{ border: 'none', padding: 0, cursor: 'pointer', width: 6, height: 6, borderRadius: 3,
+              background: i === idx ? '#fff' : 'rgba(255,255,255,.3)' }} />
+        ))}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Post-it — absolute-positioned sticky note
+// ─────────────────────────────────────────────────────────────
+function DCPostIt({ children, top, left, right, bottom, rotate = -2, width = 180 }) {
+  return (
+    <div style={{
+      position: 'absolute', top, left, right, bottom, width,
+      background: DC.postitBg, padding: '14px 16px',
+      fontFamily: '"Comic Sans MS", "Marker Felt", "Segoe Print", cursive',
+      fontSize: 14, lineHeight: 1.4, color: DC.postitText,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
+      transform: `rotate(${rotate}deg)`,
+      zIndex: 5,
+    }}>{children}</div>
+  );
+}
+
+Object.assign(window, { DesignCanvas, DCSection, DCArtboard, DCPostIt });
+
+
+</script>
+
+  <script type="text/babel">
+// ChatPane.jsx — chat column with messages, inline tool calls, composer
+const ToolCall = ({ name, args, status = "done", result, open: openProp = false, tweaks }) => {
+  const [open, setOpen] = React.useState(openProp);
+  const style = tweaks?.tool_call_style || "inline";
+
+  if (style === "drawer") {
+    return (
+      <button className={`sv-tool sv-tool--drawer sv-tool--${status}`} onClick={() => setOpen(!open)}>
+        <span className="sv-tool-dot" aria-hidden="true"></span>
+        <span className="sv-tool-name">{name}</span>
+        <span className="sv-tool-args">{args}</span>
+      </button>
+    );
+  }
+
+  if (style === "timeline") {
+    return (
+      <div className={`sv-tool sv-tool--timeline sv-tool--${status}`}>
+        <span className="sv-tool-rail" aria-hidden="true"></span>
+        <span className="sv-tool-dot" aria-hidden="true"></span>
+        <span className="sv-tool-name">{name}</span>
+        <span className="sv-tool-args">{args}</span>
+      </div>
+    );
+  }
+
+  // inline (default) — collapsible block
+  return (
+    <div className={`sv-tool sv-tool--inline sv-tool--${status}`}>
+      <button className="sv-tool-head" onClick={() => setOpen(!open)} aria-expanded={open}>
+        <span className="sv-tool-chevron" aria-hidden="true">{open ? "▾" : "▸"}</span>
+        <span className="sv-tool-dot" aria-hidden="true"></span>
+        <code className="sv-tool-name">{name}</code>
+        <span className="sv-tool-args">{args}</span>
+        <span className="sv-tool-status">{status === "running" ? "running…" : status === "done" ? "" : status}</span>
+      </button>
+      {open && (
+        <div className="sv-tool-body">
+          {result || <span className="sv-tool-skel">…</span>}
+        </div>
+      )}
+    </div>
+  );
+};
+
+function ChatPane({ state, tweaks }) {
+  // state: "empty" | "thinking" | "done"
+  return (
+    <aside className="sv-chat">
+      <div className="sv-chat-stream">
+        {state === "empty" && <EmptyState />}
+        {state !== "empty" && (
+          <>
+            <UserMessage text="Where in England is deprivation high but green space provision low, by local authority?" />
+            <AssistantMessage state={state} tweaks={tweaks} />
+          </>
+        )}
+      </div>
+      <Composer state={state} />
+    </aside>
+  );
+}
+window.ChatPane = ChatPane;
+
+function EmptyState() {
+  const suggestions = [
+    "Where in England is deprivation high but green space low, by local authority?",
+    "Population per GP surgery by LSOA",
+    "Listed buildings per capita by local authority",
+    "Compare counts of educational buildings across major cities",
+  ];
+  return (
+    <div className="sv-empty">
+      <div className="sv-empty-greet">
+        <div className="sv-avatar" aria-hidden="true">S</div>
+        <div>
+          <p className="sv-empty-lead">Hi — I'm <strong>Surveyor</strong>.</p>
+          <p className="sv-empty-sub">Ask me a question about Britain. I'll fetch the data from Ordnance Survey and ONS live, do the spatial join, and show you the result — with every step inspectable.</p>
+        </div>
+      </div>
+      <div className="sv-empty-sugs">
+        <div className="sv-empty-eyebrow">Try one of these</div>
+        {suggestions.map(s => (
+          <button key={s} className="sv-sug">
+            <span>{s}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function UserMessage({ text }) {
+  return (
+    <div className="sv-msg sv-msg--user">
+      <div className="sv-msg-bubble">{text}</div>
+    </div>
+  );
+}
+
+function AssistantMessage({ state, tweaks }) {
+  return (
+    <div className="sv-msg sv-msg--assistant">
+      <div className="sv-msg-head">
+        <span className="sv-avatar sv-avatar--sm" aria-hidden="true">S</span>
+        <span className="sv-msg-meta">Surveyor</span>
+        {state === "thinking" && <span className="sv-thinking">thinking…</span>}
+      </div>
+      <div className="sv-msg-body">
+        <p>Good question. Let me fetch the deprivation index and the green-space layer, then aggregate by local authority.</p>
+
+        <ToolCall
+          name="ons.boundaries.get"
+          args="(type: local-authority, year: 2024)"
+          status="done"
+          result={<>317 polygons · CRS EPSG:27700 · 2.4 MB</>}
+          tweaks={tweaks}
+        />
+        <ToolCall
+          name="ons.nomis.query"
+          args={`(dataset: "IMD-2019", geography: "LA")`}
+          status="done"
+          result={<>317 rows · imd_rank, imd_decile, income_score…</>}
+          tweaks={tweaks}
+        />
+        <ToolCall
+          name="os.ngd.features"
+          args={`(collection: "lnd-fts-greenspace", bbox: "england")`}
+          status={state === "thinking" ? "running" : "done"}
+          result={state === "done" ? <>148,302 features · type ∈ {`{public_park, playing_field, sports_facility}`}</> : null}
+          tweaks={tweaks}
+          open={state === "thinking"}
+        />
+
+        {state === "done" && (
+          <>
+            <ToolCall
+              name="spatial.aggregate"
+              args={`(features → LAs, op: "area_per_capita")`}
+              status="done"
+              result={<>317 rows · m²/person</>}
+              tweaks={tweaks}
+            />
+            <ToolCall
+              name="score.composite"
+              args={`(weights: { imd: 0.6, green: 0.4 })`}
+              status="done"
+              result={<>concern_score ∈ [12, 92]</>}
+              tweaks={tweaks}
+            />
+            <ToolCall
+              name="render.choropleth + chart.ranked_bar"
+              args="(palette: GDV/M2, n: 7)"
+              status="done"
+              result={<>Map and chart pushed to canvas →</>}
+              tweaks={tweaks}
+            />
+
+            <p>Concern is sharpest in <strong>Blackpool</strong>, <strong>Hartlepool</strong> and <strong>Middlesbrough</strong> — high IMD deciles paired with sub-15 m²/person of public green space. <strong>Hull</strong>, <strong>Liverpool</strong>, and <strong>Manchester</strong> follow.</p>
+            <p>The cleanest counter-example is <strong>Northumberland</strong> — moderate IMD but exceptional greenspace provision (62 m²/person).</p>
+            <p className="sv-msg-caveat">Caveat: greenspace in <em>OS NGD lnd-fts-greenspace</em> excludes private gardens and most agricultural land. Per-capita figures are sensitive to LA boundary definitions.</p>
+          </>
+        )}
+
+        {state === "thinking" && (
+          <div className="sv-streaming">
+            <span className="sv-streaming-cursor" aria-hidden="true"></span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Composer({ state }) {
+  return (
+    <form className="sv-composer" onSubmit={(e) => e.preventDefault()}>
+      <textarea rows={1} placeholder="Ask Surveyor a question about Britain…" />
+      <div className="sv-composer-actions">
+        <button type="button" className="sv-composer-icon" aria-label="Attach data" title="Attach data">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.4 8.4 0 0 1-4 7.1l-4 2.4v-3.6a8.5 8.5 0 1 1 8-5.9z"/></svg>
+        </button>
+        <button type="submit" className="sv-composer-send" disabled={state === "thinking"}>
+          {state === "thinking" ? "Working…" : "Ask"}
+          {state !== "thinking" && (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          )}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+</script>
+  <script type="text/babel">
+// MapPane.jsx — hex-cartogram of English local authorities
+// Hex coords: offset rows, flat-top hexes. We compute pixel positions from col/row.
+
+function MapPane({ state, hovered, setHovered, selected, setSelected, tweaks }) {
+  const las = window.SURVEYOR_LAS;
+  const ramp = window.SURVEYOR_RAMP;
+  const bucket = window.SURVEYOR_BUCKET;
+  const score = window.SURVEYOR_SCORE;
+
+  // Hex sizing
+  const R = 26;                          // hex radius (flat-to-flat / 2 + a bit)
+  const w = Math.sqrt(3) * R;            // hex width  (pointy-top)
+  const h = 2 * R;                       // hex height
+  const xStep = w;
+  const yStep = h * 0.75;
+
+  const positioned = las.map(la => {
+    const x = la.col * xStep + (la.row % 2 === 1 ? w / 2 : 0) + 60;
+    const y = la.row * yStep + 60;
+    const s = score(la);
+    const b = bucket(s);
+    return { ...la, x, y, score: s, fill: ramp[b] };
+  });
+
+  // viewBox bounds
+  const maxX = Math.max(...positioned.map(p => p.x)) + 60;
+  const maxY = Math.max(...positioned.map(p => p.y)) + 70;
+
+  // Hex path generator (pointy-top)
+  const hexPath = (cx, cy) => {
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 3) * i + Math.PI / 6; // pointy top
+      pts.push(`${cx + R * Math.cos(angle)},${cy + R * Math.sin(angle)}`);
+    }
+    return `M${pts.join(" L")} Z`;
+  };
+
+  const isEmpty = state === "empty";
+  const isThinking = state === "thinking";
+
+  return (
+    <section className="sv-map" aria-label="Map of England">
+      <div className="sv-map-toolbar">
+        <div className="sv-map-title">
+          <span className="sv-map-eyebrow">Choropleth · Local authority</span>
+          <span className="sv-map-h1">
+            {isEmpty ? "Map of England" : "Concern score — deprivation × greenspace"}
+          </span>
+        </div>
+        <div className="sv-map-controls">
+          <button className="sv-iconbtn" aria-label="Zoom in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button className="sv-iconbtn" aria-label="Zoom out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/></svg></button>
+          <button className="sv-iconbtn" aria-label="Basemap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
+        </div>
+      </div>
+
+      <div className="sv-map-canvas">
+        <svg viewBox={`0 0 ${maxX} ${maxY}`} className="sv-map-svg" preserveAspectRatio="xMidYMid meet">
+          {/* faint sea/background contour */}
+          <defs>
+            <pattern id="sv-grain" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="0.4" fill="currentColor" opacity="0.18"/>
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width={maxX} height={maxY} fill="url(#sv-grain)" className="sv-map-grain"/>
+
+          {positioned.map(p => {
+            const isHover = hovered === p.id;
+            const isSel = selected === p.id;
+            const cls = [
+              "sv-hex",
+              isEmpty ? "sv-hex--empty" : "",
+              isHover ? "is-hover" : "",
+              isSel ? "is-selected" : "",
+              isThinking ? "sv-hex--thinking" : "",
+            ].filter(Boolean).join(" ");
+            return (
+              <g key={p.id} className={cls}
+                 onMouseEnter={() => setHovered && setHovered(p.id)}
+                 onMouseLeave={() => setHovered && setHovered(null)}
+                 onClick={() => setSelected && setSelected(isSel ? null : p.id)}>
+                <path d={hexPath(p.x, p.y)} fill={isEmpty ? "var(--sv-hex-empty)" : p.fill} className="sv-hex-fill"/>
+                {(isHover || isSel) && (
+                  <path d={hexPath(p.x, p.y)} fill="none" className="sv-hex-stroke"/>
+                )}
+              </g>
+            );
+          })}
+
+          {/* highlight overlay text on selected */}
+          {selected && (() => {
+            const p = positioned.find(x => x.id === selected);
+            if (!p) return null;
+            return (
+              <g className="sv-hex-callout">
+                <line x1={p.x + R + 4} y1={p.y} x2={p.x + R + 80} y2={p.y - 24} />
+                <rect x={p.x + R + 78} y={p.y - 56} width="220" height="64" rx="2" />
+                <text x={p.x + R + 90} y={p.y - 34} className="sv-hex-callout-title">{p.name}</text>
+                <text x={p.x + R + 90} y={p.y - 16} className="sv-hex-callout-stat">
+                  Concern {p.score} · IMD {p.imd} · {p.green} m²/pp
+                </text>
+              </g>
+            );
+          })()}
+        </svg>
+
+        {isThinking && (
+          <div className="sv-map-overlay">
+            <div className="sv-map-loading">
+              <div className="sv-spinner" aria-hidden="true"></div>
+              <span>Joining OS greenspace features into ONS local authorities…</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="sv-map-foot">
+        {!isEmpty && <Legend ramp={ramp}/>}
+        <div className="sv-map-attribution">
+          Contains OS data © Crown copyright and database rights 2026 · ONS Open Geography © Crown copyright 2026
+        </div>
+      </div>
+    </section>
+  );
+}
+window.MapPane = MapPane;
+
+function Legend({ ramp }) {
+  return (
+    <div className="sv-legend">
+      <div className="sv-legend-label">Concern</div>
+      <div className="sv-legend-ramp">
+        {ramp.map(c => <span key={c} style={{ background: c }} />)}
+      </div>
+      <div className="sv-legend-scale">
+        <span>low</span><span>high</span>
+      </div>
+    </div>
+  );
+}
+
+</script>
+  <script type="text/babel">
+// ChartRail.jsx — scrollable right rail of linked charts
+function ChartRail({ state, hovered, setHovered, selected, setSelected, tweaks }) {
+  const las = window.SURVEYOR_LAS;
+  const ramp = window.SURVEYOR_RAMP;
+  const bucket = window.SURVEYOR_BUCKET;
+  const score = window.SURVEYOR_SCORE;
+  const chartType = tweaks?.chart_type || "bar";
+
+  if (state === "empty") {
+    return (
+      <aside className="sv-rail">
+        <div className="sv-rail-empty">
+          <div className="sv-rail-empty-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 21h18M5 21v-9m4 9V8m4 13V5m4 16v-7"/></svg>
+          </div>
+          <p>Charts appear here as soon as the agent has data.</p>
+        </div>
+      </aside>
+    );
+  }
+
+  // Compute & rank
+  const ranked = las.map(la => ({ ...la, score: score(la), bucketIx: bucket(score(la)) }))
+                    .sort((a, b) => b.score - a.score);
+  const top = ranked.slice(0, 10);
+
+  // Cap thinking state — show skeletons
+  if (state === "thinking") {
+    return (
+      <aside className="sv-rail">
+        <div className="sv-card sv-card--skel">
+          <div className="sv-skel-line" style={{ width: "60%" }}/>
+          <div className="sv-skel-bars">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="sv-skel-bar" style={{ width: `${50 + Math.random()*40}%`, animationDelay: `${i*80}ms` }}/>
+            ))}
+          </div>
+        </div>
+        <div className="sv-card sv-card--skel">
+          <div className="sv-skel-line" style={{ width: "40%" }}/>
+          <div className="sv-skel-scatter"/>
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="sv-rail">
+      {/* Card 1: Headline number */}
+      <div className="sv-card sv-card--stat">
+        <div className="sv-card-eyebrow">Headline</div>
+        <div className="sv-stat-grid">
+          <div>
+            <div className="sv-stat-n">42</div>
+            <div className="sv-stat-l">LAs above concern 60</div>
+          </div>
+          <div>
+            <div className="sv-stat-n">9.2×</div>
+            <div className="sv-stat-l">Northumberland vs Blackpool greenspace ratio</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 2: Ranked chart (responds to chartType tweak) */}
+      <div className="sv-card">
+        <div className="sv-card-head">
+          <div>
+            <div className="sv-card-eyebrow">Ranked</div>
+            <h3>Top 10 local authorities by concern</h3>
+          </div>
+          <span className="sv-chip">{top.length} of {ranked.length}</span>
+        </div>
+        <RankedChart rows={top} type={chartType} ramp={ramp}
+                     hovered={hovered} setHovered={setHovered}
+                     selected={selected} setSelected={setSelected}/>
+        <div className="sv-card-foot">Composite score · IMD ×0.6 + (inverse) greenspace m²/pp ×0.4</div>
+      </div>
+
+      {/* Card 3: Scatter */}
+      <div className="sv-card">
+        <div className="sv-card-head">
+          <div>
+            <div className="sv-card-eyebrow">Distribution</div>
+            <h3>Deprivation × greenspace</h3>
+          </div>
+        </div>
+        <Scatter rows={ranked} ramp={ramp} bucket={bucket}
+                 hovered={hovered} setHovered={setHovered}
+                 selected={selected} setSelected={setSelected}/>
+        <div className="sv-card-foot">Each dot is one LA · top-left quadrant is the concern zone</div>
+      </div>
+
+      {/* Card 4: Histogram */}
+      <div className="sv-card">
+        <div className="sv-card-head">
+          <div>
+            <div className="sv-card-eyebrow">Distribution</div>
+            <h3>Concern score histogram</h3>
+          </div>
+        </div>
+        <Histogram rows={ranked} ramp={ramp}/>
+      </div>
+    </aside>
+  );
+}
+window.ChartRail = ChartRail;
+
+function RankedChart({ rows, type, ramp, hovered, setHovered, selected, setSelected }) {
+  const max = Math.max(...rows.map(r => r.score));
+  return (
+    <ul className={`sv-ranked sv-ranked--${type}`}>
+      {rows.map((r, i) => {
+        const isHover = hovered === r.id;
+        const isSel = selected === r.id;
+        const pct = (r.score / 100) * 100;
+        return (
+          <li key={r.id}
+              className={`sv-ranked-row ${isHover ? "is-hover" : ""} ${isSel ? "is-selected" : ""}`}
+              onMouseEnter={() => setHovered && setHovered(r.id)}
+              onMouseLeave={() => setHovered && setHovered(null)}
+              onClick={() => setSelected && setSelected(isSel ? null : r.id)}>
+            <span className="sv-ranked-rank">{i + 1}</span>
+            <span className="sv-ranked-name">{r.name}</span>
+            <span className="sv-ranked-track">
+              {type === "lollipop" ? (
+                <>
+                  <span className="sv-lolli-line" style={{ width: `${pct}%` }}/>
+                  <span className="sv-lolli-dot"  style={{ left: `${pct}%`, background: ramp[r.bucketIx] }}/>
+                </>
+              ) : type === "heat" ? (
+                <span className="sv-heat-row">
+                  {[0,1,2,3,4,5,6].map(i => (
+                    <span key={i} className="sv-heat-cell" style={{
+                      background: i <= r.bucketIx ? ramp[i] : "var(--sv-skel)",
+                      opacity: i <= r.bucketIx ? 1 : 0.25,
+                    }}/>
+                  ))}
+                </span>
+              ) : (
+                <span className="sv-bar" style={{ width: `${pct}%`, background: ramp[r.bucketIx] }}/>
+              )}
+            </span>
+            <span className="sv-ranked-val">{r.score}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Scatter({ rows, ramp, bucket, hovered, setHovered, selected, setSelected }) {
+  // x = green m²/pp (0..70), y = imd (1..10, inverted so 10 at top)
+  const W = 320, H = 200, P = 28;
+  const xMax = 70, yMax = 10;
+  const xScale = v => P + (v / xMax) * (W - P*2);
+  const yScale = v => H - P - ((v - 1) / (yMax - 1)) * (H - P*2);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="sv-scatter" preserveAspectRatio="none">
+      {/* axes + zone shading */}
+      <rect x={P} y={P} width={xScale(20)-P} height={H-2*P} className="sv-scatter-zone" />
+      {/* axis lines */}
+      <line x1={P} y1={H-P} x2={W-P} y2={H-P} className="sv-scatter-axis"/>
+      <line x1={P} y1={P}   x2={P}   y2={H-P} className="sv-scatter-axis"/>
+      {/* gridlines */}
+      {[20, 40, 60].map(v => (
+        <line key={v} x1={xScale(v)} y1={P} x2={xScale(v)} y2={H-P} className="sv-scatter-grid"/>
+      ))}
+      {/* axis labels */}
+      <text x={W-P} y={H-8} textAnchor="end" className="sv-scatter-lbl">greenspace m²/pp →</text>
+      <text x={4} y={P+8} className="sv-scatter-lbl">↑ IMD decile</text>
+      {/* dots */}
+      {rows.map(r => {
+        const isHover = hovered === r.id;
+        const isSel = selected === r.id;
+        return (
+          <g key={r.id} className={`sv-dot ${isHover ? "is-hover" : ""} ${isSel ? "is-selected" : ""}`}
+             onMouseEnter={() => setHovered && setHovered(r.id)}
+             onMouseLeave={() => setHovered && setHovered(null)}
+             onClick={() => setSelected && setSelected(isSel ? null : r.id)}>
+            <circle cx={xScale(r.green)} cy={yScale(r.imd)} r={isHover || isSel ? 7 : 5}
+                    fill={ramp[r.bucketIx]} stroke={isHover || isSel ? "var(--fg-default)" : "rgba(0,0,0,.18)"} strokeWidth={isHover || isSel ? 1.5 : 0.5}/>
+            {(isHover || isSel) && (
+              <text x={xScale(r.green)} y={yScale(r.imd) - 12} textAnchor="middle" className="sv-dot-lbl">{r.name}</text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function Histogram({ rows, ramp }) {
+  const buckets = [0,0,0,0,0,0,0];
+  rows.forEach(r => buckets[r.bucketIx]++);
+  const max = Math.max(...buckets);
+  return (
+    <div className="sv-hist">
+      {buckets.map((c, i) => (
+        <div key={i} className="sv-hist-col">
+          <span className="sv-hist-bar" style={{ height: `${(c/max)*100}%`, background: ramp[i] }}/>
+          <span className="sv-hist-c">{c}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+</script>
+  <script type="text/babel">
+// SurveyorApp.jsx — three-pane composition (chat | map | chart rail)
+function SurveyorApp({ state = "done", initialMood, mode = "fullscreen", tweaks: tweaksProp }) {
+  // We optionally accept tweaks; otherwise use defaults
+  const tweaks = tweaksProp || { mood: initialMood || "paper", tool_call_style: "inline", chart_type: "bar" };
+  const [hovered, setHovered] = React.useState(null);
+  const [selected, setSelected] = React.useState(state === "done" ? "hartlepool" : null);
+
+  return (
+    <div className={`sv-app sv-mood--${tweaks.mood} sv-state--${state} sv-mode--${mode}`} data-screen-label="Surveyor — app">
+      <header className="sv-topbar">
+        <div className="sv-topbar-l">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSIxMCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDQwIDEwIj48cGF0aCBmaWxsPSIjNDUzQzkwIiBkPSJtNC4xOSA5LjkzMS0uMDk4LS4wMTYtLjEwOC0uMDJBNSA1IDAgMCAxIDIuNjMgOS40bC4wMTUtLjA4N2MuMTA3LS42NzYuMjE4LTEuMzczLjQ5Ni0yLjAwNGEuNTYuNTYgMCAwIDAgLjEzNy0uMjQ0bDEuMDY1LjAzNC4yMDcuMDA0YS41LjUgMCAwIDAgLjI0Mi0uMDgxLjQ4LjQ4IDAgMCAwIC41OTYtLjA2OGMuMTk1LjA5NS4zNzguMTc2LjYxMi4xNzZoLjA1cS4zOS0uMDMyLjc2OC0uMTM2Yy4yNDYtLjA2LjUxNi0uMTMyLjc5MS0uMjE0cS0uMzExLjM0OC0uNjc0LjY0MS0uNTEuMzY5LTEuMDgxLjYzMmMtLjIwNC4xMDEtLjM5MS4yMzUtLjU1Mi4zOTZxLS4xNjIuMTc4LS4yNy4zOTNsLS4wNTMuMDk0YTMgMyAwIDAgMS0uMTE1LjE3NCAxLjUgMS41IDAgMCAwLS4yMDUuMzU3IDEwIDEwIDAgMCAwLS4xNDguNDczbC0uMDEuMDNhNSA1IDAgMCAxLS4zMTItLjA0bTIuMDM0LTEuODI4Yy4zNzguNTE1LjkzMi44MiAxLjUwMyAxLjA4NWE0Ljk4IDQuOTggMCAwIDEtMy4wMTYuODAzYy4wNDMtLjE0OC4wOS0uMzAyLjE0MS0uNDQ5cS4wNjgtLjE2NS4xNzgtLjMwNy4wNjgtLjA5LjEyNS0uMTkuMDI4LS4wNDYuMDU1LS4wOTYuMDk0LS4xOS4yMzUtLjM0OC4yMi0uMjE4LjQ5Ny0uMzU3ek0yLjgxOCAyLjQ1N0ExMi40IDEyLjQgMCAwIDAgMi42MDkuNjA5YTUgNSAwIDAgMSA1LjUuNDc1IDEgMSAwIDAgMC0uMDkxLjEwMnEtLjExMy4xNTgtLjE3NS4zNDNsLS4wNDguMTItLjA2Ni4xNTJxLS4xNjYuNDEtLjQwMi43ODFhMyAzIDAgMCAxLS40MzcuNDg4IDUgNSAwIDAgMC0uMzEzLjMycS0uMDM4LjA1Mi0uMDguMTA0TDYuMyAzLjMxN2wtLjA0NC0uMDhhLjMzLjMzIDAgMCAxLS4wNjYtLjE4Yy4wMDctLjA2NC4wOTgtLjEzNS4xNjgtLjE5M2wuMDU3LS4wNDlhLjEuMSAwIDAgMCAuMDM2LS4wNzEuMTA0LjEwNCAwIDAgMC0uMTczLS4wODRsLS4wNTEuMDQzYy0uMDk4LjA3Ni0uMjE3LjE3OC0uMjQyLjMyYS41LjUgMCAwIDAgLjA5LjMxN2wuMDExLjAyMi0uMDY0LjA5NGMtLjEuMTU2LS4xNzUuMjU3LS4yNzMuMjQ0LS4yNTUtLjA0LS4zMS4xMDUtLjM2LjI0NC0uMDUyLjEzOC0uMDkuMzMzLjE3My40NGwuMDcyLjAzMnEuMTQzLjA2NS4yOTUuMTA2LjA4NS4wMi4xNzIuMDI4bC4yMzQuMDFxLjI0My4wMTEuNDg0LjAyNy4zMzEuMDE2LjY1LjExYy4xMjguMDQuMjA4LjE3LjI3LjI4NS4wOTkuMTg4LjE5NC4zOTUuMzEuNjdxLjEyMy4yODIuMjg3LjU0M2wuMDQuMDY4cS0uMDgyLjA0NS0uMTY2LjA4LS43MTIuMjg1LTEuNDYuNDU0YTQgNCAwIDAgMS0uNzE5LjEyN2MtLjIwMi4wMTItLjM2Ni0uMDYyLS41NTEtLjE1YS41LjUgMCAwIDAgLjAxNi0uMTIxLjQyNi40MjYgMCAwIDAtLjMzNi0uNDNjLjAwNi0uMDg2LjAxMy0uMTc1LjAyMi0uMjU2cS4wMy0uMjQuMDMtLjQ4YTcgNyAwIDAgMC0uMDE0LS4yNmMtLjAwNS0uMS0uMDEzLS4yLS4wMTMtLjN2LS4wNWMwLS4yOTgtLjAwNC0uNzQyLS4zMzUtLjg5M2ExLjQ1IDEuNDUgMCAwIDAtLjcxOS0uMTAzIDIgMiAwIDAgMC0uMTg3LjAyN2MtLjEyOS4wMjMtLjI3OS4wNS0uMzYuMDA3LS4wNTItLjAyOC0uMDcyLS4xMTQtLjA4NC0uMjAzcS0uMDE3LS4xNS0uMDE0LS4zVjMuMzRxLS4wMDItLjIxMi0uMDE5LS40MTdsLS4wMS0uMTYyLS4wMTItLjE2M2ExLjggMS44IDAgMCAxIDAtLjQ4N2MuMDQ2LS4yMy4wODQtLjQ1Ny4xMTUtLjY1YS4xMDQuMTA0IDAgMSAwLS4yMDQtLjAzNGMtLjAzMy4xOTEtLjA3LjQxNy0uMTE1LjY0M3EtLjA0LjI3Mi0uMDA1LjU0M2wuMDExLjE2MmMuMDA0LjA1MS4wMTEuMTA3LjAxMS4xNjMuMDA5LjEzNC4wMTkuMjczLjAxOS40MDZ2LjA2OHEtLjAwNS4xNjMuMDE1LjMyNWMuMDEzLjA4OS4wNTIuMjgzLjE5OC4zNTdzLjMyNy4wNDEuNDg4LjAxM2EyIDIgMCAwIDEgLjE2LS4wMjRjLjIxNC0uMDI1LjQyOS4wMDYuNjI3LjA4OC4yMTcuMDk2LjIxNy40NTkuMjE3LjcwM3YuMDUycS4wMDIuMTU1LjAxNC4zMTNjLjAwNS4wODQuMDEzLjE3Mi4wMTMuMjUzcTAgLjIyNy0uMDI5LjQ1Mi0uMDEzLjEzMS0uMDIzLjI3YS40My40MyAwIDAgMC0uMzY3LjQzOXEwIC4xMTQuMDU0LjIxNWEuMjYuMjYgMCAwIDEtLjE1My4wMzFsLTEuMi0uMDQzYS41NS41NSAwIDAgMC0uMDgxLS4yNDRjLS4yOTgtLjY1LS4zNzktMS4zNzctLjQ1OS0yLjA4bC0uMDE1LS4xMThxLjA5Mi0uOTc2LjA4MS0xLjk1N20xLjE0OC4xcS0uMDA3LjEyNi4wMTMuMjUxYy4wMDYuMDUuMDQxLjI0Mi4wODYuMjY0cy4xNiAwIC4yMDYgMGguNTI1di0uNEg0LjY4di0uNTA4aC0uNTMxYy0uMDYgMC0uMDgzLS4wMTItLjExNC4wMjctLjA2LjA4LS4wNjMuMjc0LS4wNjguMzY3TTIuMzAyIDYuNDZhNDYgNDYgMCAwIDAtLjAzLjkwNmMtLjI5LS4wMzItLjU2NS0uMTY2LS41NjUtLjQ1MiAwLS4yODUuMjkzLS40MjguNTk1LS40NTRtLjI5LjAxNGEuOC44IDAgMCAxIC4yOTcuMTA2LjM4LjM4IDAgMCAxIC4yLjMzNWMwIC4yNjMtLjI0OS40MDYtLjUyNC40NDZxLjAwNi0uNDU1LjAyOC0uODg3TTguODY3IDYuMmwxLjA0NS0uMjYyYy0uMTAxLjUzLS4yODcgMS4wNC0uNTUyIDEuNTExYTUgNSAwIDAgMC0uNDIzLS41MzUuOC44IDAgMCAwLS4yMjYtLjE1IDEgMSAwIDAgMS0uMTMzLS4wODIuNS41IDAgMCAxLS4xMy0uMjE5cS4yMTgtLjEwNS40MDMtLjI2M2wuMDE3LjAwMXptLjI0Ny0uNjQ0YTIuNyAyLjcgMCAwIDEtLjM3NC40NjggMS40IDEuNCAwIDAgMS0uMTc3LjEzNWwtLjA0Mi0uMDdhNCA0IDAgMCAxLS4yNzgtLjUyIDkgOSAwIDAgMC0uMzIyLS42ODYgMSAxIDAgMCAwLS4xNDItLjIxNkw3LjYxIDIuNTI0cS4xNy0uMzEyLjMwNC0uNjRsLjA2NS0uMTVxLjAyNy0uMDY0LjA1Mi0uMTMuMDUyLS4xNTQuMTQ1LS4yOS4wNDEtLjA1LjA4OC0uMDk3QTUgNSAwIDAgMSA5Ljk1NSA0LjMybC0uMDY0LjA5NGMtLjIyNy4zMzktLjQ2LjY4OS0uNjk4IDEuMDI4LS4wMjkuMDM5LS4wNTIuMDc3LS4wOC4xMTV6TTYuODM2IDQuMzc4cS0uMjQ2LS4wMTYtLjQ5MS0uMDI5bC0uMTctLjAwOC4wNC0uMDY1cS4yMzItLjM5NS41MjItLjc1Yy4wOTMtLjEwNy4xOTgtLjIwOC4zLS4zMDZxLjIxLS4xOTQuMzktLjQxNmwuMTM0IDEuNzA1LS4wMjItLjAxYTIuOSAyLjkgMCAwIDAtLjcwMy0uMTJtMi40NDcgMS4yOTcuMDc4LS4xMTFjLjIxMy0uMzA1LjQyMS0uNjE3LjYyNS0uOTIycS4wMTMuMTc3LjAxNC4zNTkgMCAuMzU3LS4wNTEuNzEybC0uODQ0LjIxM2MuMDYzLS4wODIuMTItLjE3LjE3OC0uMjVNNi4zNyAzLjY2MmExMSAxMSAwIDAgMC0uMzMzLjUwNWwtLjA5LjE0NGEyIDIgMCAwIDEtLjIzMi0uMDg3bC0uMDctLjAzMmMtLjA5LS4wNC0uMTA3LS4wNS0uMDYtLjE3Ny4wNDgtLjEyNi4wNDgtLjEyNy4xMzgtLjExMy4yMzUuMDM0LjM3Ny0uMTguNDc4LS4zMzVsLjAyNS0uMDR6bS0zLjc3IDIuNmMuMDE2LS4zMi4wNC0uNjQ1LjA2Ny0uOTY2cS4wNzUuNTQyLjI0OSAxLjA2MWExLjEgMS4xIDAgMCAwLS4zMTUtLjA5NW0tLjkzNyAxLjA2cS4zNzYuOTE5LjYyMSAxLjg3OEE1IDUgMCAwIDEgLjI1NCA2LjU4bC4wMDUtLjAwOC4wNjItLjA0MnEuMTU3LS4wOTMuMjgtLjIyOS4xNDcuMTA5LjI5LjIzbC4yMS4xNjhxLjExMi4wODIuMjMyLjE1LjA5LjA1Mi4xNzEuMTA3Yy4wMS4xMzUuMDY3LjI2Mi4xNjEuMzZ6TS4yIDQuMDA3YTEgMSAwIDAgMC0uMDgtLjA3MSA1IDUgMCAwIDEgMS4wNDYtMi4xMzhsLjAyLjM1NGMuMDMuNTk0LjA2MSAxLjIxMS4xMiAxLjgxM2wuMDA2LjA0NmMuMDE3LjE0NS4wMTIuMTk1LS4wNDYuMjI3YS42LjYgMCAwIDEtLjIxMy4wMzljLS4wMyAwLS4wNTkuMDA2LS4wODYuMDA2cS0uMDY2LjAwOC0uMTQuMDI0Yy0uMTA4LjAyLS4yMy4wNDMtLjI4NyAwLS4xMTctLjA5My0uMjMtLjE5OC0uMzQtLjNtLS4xMy4xNjNjLjExLjEwMi4yMjQuMjA3LjM0NC4yOTlsLjAyLjAxMy4wNCAxLjI2NnEuMDAxLjA2LjAxLjEyNS4wMTUuMTEgMCAuMjJjLS4wMjEuMDk2LS4xNjcuMTk1LS4yNzQuMjY1bC0uMDE4LjAxMmE1IDUgMCAwIDEtLjEyMi0yLjJtOS4xNiAzLjQ1Ny4wMTQuMDIzYTUgNSAwIDAgMS0xLjMxOCAxLjQwOWMtLjU3NC0uMjctMS4xNDYtLjU2Mi0xLjUxNi0xLjA1NXEuMzQyLS4xOC42NS0uNDEzYTYgNiAwIDAgMCAuNzEtLjY3OHEuMTMtLjE0LjI2Mi0uMjc0LjExNC0uMDQuMjI2LS4wODZhLjY1LjY1IDAgMCAwIC4xOTUuMzAycS4wNzYuMDU2LjE2MS4wOTdhLjYuNiAwIDAgMSAuMTczLjEwOHEuMjQxLjI2OC40NDMuNTY3TTQuOCA2LjY0OWEuMjM0LjIzNCAwIDAgMSAuMjQ5LS4yNC4yNy4yNyAwIDAgMSAuMTczLjA2MS4yMi4yMiAwIDAgMSAuMDczLjE3OS4yNDguMjQ4IDAgMSAxLS40OTYgMG0tMi4yMzcuOTJhMS4yIDEuMiAwIDAgMCAuMzA2LS4wNzdxLS4xODcuNTI1LS4yODUgMS4wNzMtLjAwOS0uMTk4LS4wMTYtLjM5NS0uMDA3LS4zMDItLjAwNi0uNm0tLjMwOS0xLjk0OHEuMDI4LS4xMDUuMDU3LS4yMDNsLjA3OC0uMjY3cS0uMDQ2LjU1LS4wNzggMS4xYTEuMyAxLjMgMCAwIDAtLjMwMi4wNTdxLjA2Ny0uMTE4LjExMy0uMjQ0Yy4wNTItLjE0NS4wOTMtLjI5Ny4xMzItLjQ0M20uMDI0IDIuNTU3LjAxNS4zNzVhMTMgMTMgMCAwIDAtLjM1OS0xLjA2MnEuMTYzLjA2NS4zMzcuMDgxLS4wMDIuMzAxLjAwNy42MDZNMS4zOSAyLjEzNWwtLjAzLS41NmMuMjg5LS4zMTEuNjE2LS41ODQuOTczLS44MTJxLjE1NC44NDEuMTg0IDEuNjk4Yy4wMTYuNTg2LS4wMTggMS4xODUtLjA2NCAxLjc3NGwtLjMyMiAxLjEyNC0uMDU4LjIxYy0uMDQuMTQzLS4wNzguMjktLjEyOC40M3EtLjA2LjE1OC0uMTUuMzAybC0uMDguMTU2YS42LjYgMCAwIDAtLjE4Ni4yNjZsLS4wOTYtLjA1N2EyIDIgMCAwIDEtLjIwOS0uMTM0IDUgNSAwIDAgMS0uMjA3LS4xNjJjLS4xMDctLjA4Ny0uMjE3LS4xOC0uMzMxLS4yNnEuMDE1LS4xMyAwLS4yNTctLjAwOC0uMDU4LS4wMS0uMTFMLjY0NSA0LjUzN3EuMTEtLjAwNi4yMTYtLjAzYS42LjYgMCAwIDEgLjEyLS4wMjFsLjA4LS4wMDZxLjE1NSAwIC4yOTctLjA2Yy4xOTgtLjEwMy4xNzYtLjMwNC4xNi0uNDM3bC0uMDA0LS4wNDNjLS4wNi0uNTk5LS4wOTEtMS4yMTItLjEyMi0xLjgwNSI+PC9wYXRoPjxwYXRoIGZpbGw9IiNENDAwNTgiIGQ9Ik0xMi45MzYgOS41NWEuMjI1LjIyNSAwIDEgMSAwIC40NWMtMS4xODQgMC0yLjMxMi0uNTA3LTMuMTgtMS40M2EuMjQuMjQgMCAwIDEtLjA1MS0uMjU0LjIyNi4yMjYgMCAwIDEgLjMwMy0uMTEycS4wNDYuMDIyLjA4LjA2Yy43OC44MyAxLjc5IDEuMjg2IDIuODQ4IDEuMjg2bS45MTEtOS4xMTNWLjQ0QS4yMi4yMiAwIDAgMSAxMy44NzEgMGguMDI3YTQgNCAwIDAgMSAyLjU4MiAxLjM1Mi4yMi4yMiAwIDAgMSAwIC4yODguMjMuMjMgMCAwIDEtLjE2OC4wNzYuMjIuMjIgMCAwIDEtLjE2OS0uMDc5IDMuNTYgMy41NiAwIDAgMC0yLjI5Ni0xLjJtLjAyIDUuMjFjLS4wNzMtLjAxOC0uMTQ3LS4wMzktLjIxOS0uMDUydi0xYy4xOTYuMDQ4LjMwMy4xMzIuMzQ5LjI2NnEuMDU0LjE4LjA3My4zNjcuMDIyLjIyNi4wOTMuNDQzbC4wMTguMDQ2YTQgNCAwIDAgMS0uMzE0LS4wN20uMzkzLS44NzljLS4xMDMtLjMtLjM3LS40MDctLjYwOC0uNDU5VjMuMjg2YTMuMzkgMy4zOSAwIDAgMSAyLjk5NiAxLjc5N2wtLjE5Mi4xNTFxLS4wMzEuMDI2LS4wNjQuMDU2YTEgMSAwIDAgMS0uMDkzLjA3NWgtLjAxYy0uMDM5LS4wMTYtLjUxMi0uMjk1LS41ODMtLjM0MWEuMTA1LjEwNSAwIDAgMC0uMTYyLjA4LjEuMSAwIDAgMCAuMDQ3LjA5NGwuMDMyLjAxNS0uMTc1LjA2Mi0uMDUuMDE2YS4zLjMgMCAwIDAtLjIyLjE4MiAxIDEgMCAwIDAtLjAzNC4wOTEgMS40IDEuNCAwIDAgMS0uMDY4LjE3MWMtLjA5LjAwNS0uMzc5IDAtLjU3OCAwYTIgMiAwIDAgMS0uMDctLjE2MiAyIDIgMCAwIDEtLjA4My0uMzg2IDIgMiAwIDAgMC0uMDg0LS40MTltLjI1OCA1LjA5OC0uMDA4LjAwN2EzLjQgMy40IDAgMCAxLS40OTUuMDk0Yy0uMTIzLjAxMy0uMTgzLjA0LS4yNzQtLjAyYS4yLjIgMCAwIDEtLjA5Mi0uMTYzdi0yLjIxbC45NiAyLjExNGEyIDIgMCAwIDAtLjA5LjE3OG0xLjE1NC0xLjgxM2MuMTc4LjI3LjQ2Ni40NDMuNzA5LjU2NS0uMjA2LjI3Ni0uNDUzLjUyLS43MzIuNzIxbC0uMjAyLS4yODVhLjEwNC4xMDQgMCAwIDAtLjE1My0uMDE5bC0uNTIuNDUxLS4wMTcuMDE2LTEuMTA1LTIuNDMyVjUuODFsLjE2OC4wMzlxLjIzLjA2NC40NjguMDkzYy4xMTcuMjE3LjI3Ny40MDYuNDcyLjU1Ny4xMTcuMDg0LjM4Ny4yMzQuNjA1LjE4NmEuMzMuMzMgMCAwIDAgLjIyMS0uMTYuOC44IDAgMCAwIC4wODItLjMyNmMuMDI2LS4zMzQuMTI3LS4zNjEuMTkzLS4zMTguMTMuMDg3LjA1NS4zMDYtLjA0NS41M2wtLjAyLjA0NmEzLjEgMy4xIDAgMCAwLS4yNzIuNzg1Yy0uMDU1LjI4LS4wMDIuNTcuMTQ5LjgxMm0xLjE0Ni0yLjE3MWMuMDQ2LjAyNC4wOTMuMDQuMTQuMDYyYTMuMzMgMy4zMyAwIDAgMS0uNDI1IDIuNDQ0aC0uMDA1Yy0uMjE2LS4xMS0uNDc0LS4yNjMtLjYyMy0uNDg4YS44NC44NCAwIDAgMS0uMTA1LS42MTNxLjA3Ni0uMzczLjI0Ny0uNzEybC4wMi0uMDQ2Yy4wODgtLjE5Ni4yNjYtLjY1LS4wOS0uODYtLjYxMi0uMzU4LS40NTcuNjItLjYzNy43MjQtLjAxMi4wMDYtLjAxNC4wMi0uMDM1LjAyNC0uMDkuMDE4LS4yNzQtLjA1Ni0uMzgyLS4xMzdxLS4xOC0uMTM4LS4zMDYtLjMyNWguMTk1cS4xOC4wMS4zNTgtLjAyNGMuMDc1LS4wNDMuMTE3LS4xNDkuMTY3LS4yOTJxLjAxNS0uMDQ3LjAyOC0uMDc0Yy4wMi0uMDQ2LjAyMy0uMDQ3LjA5My0uMDdsLjA1Ny0uMDE4LjI2Ny0uMDk1LjAzNi0uMDE0Yy4wMS0uMDA1LjAzLS4wMTUuMDI1LS4wMTUuMDIuMDA0LjM1Mi4xOTkuMzUyLjE5OWwuMjQ0LjEzNHEuMDI0LjAxNC4wNTIuMDEzYS4xLjEgMCAwIDAgLjA5LS4wNTMuMTA0LjEwNCAwIDAgMC0uMDQtLjE0MmwtLjA0OC0uMDI3LjAzNS0uMDNxLjAyOC0uMDI3LjA1NS0uMDQ3bC4xNTYtLjEyN3EuMDkuMjAzLjE1Ni40MTZhLjEwMy4xMDMgMCAxIDAtLjA3Ni4xOTJ6bS0xLjM0NCAzLjU3N2EzLjQgMy40IDAgMCAxLS42ODMuMzMxLjYuNiAwIDAgMSAuMTE3LS4xNDVsLjQzMy0uMzc3ek0xMS40OTkgNC45NmwtLjc4OS0uNjlhNS43IDUuNyAwIDAgMC0uNzIzLTIuMTQybC42MTcuNTIzYS4yMy4yMyAwIDAgMSAuMDgxLjE0MnEuMDUyLjE5My4wNzMuMzkuMDIxLjE3My4wNi4zNDRjLjA1NC4yODkuMTkuNTU3LjM5Ljc3MmExLjM0IDEuMzQgMCAwIDAgLjk4LjQxM3EuMDk2IDAgLjE5My0uMDEyYy4yNDUtLjAzLjQ5LS4wNzYuNzI4LS4xMjZ2Ljg5NGwtMS4yOC0uMzUyLS4wODEtLjAyYS43LjcgMCAwIDEtLjEzOC0uMDRBLjMuMyAwIDAgMSAxMS41NCA1em0uMjc3LjM1NiAxLjMzNS4zNjd2Ljk1MmEzLjMzIDMuMzMgMCAwIDEtMi4zOTUtMS4wMjdxLjAzNy0uMzE1LjA0LS42MzQtLjAwMS0uMjAyLS4wMTYtLjRsLjYyNS41NDQuMDMzLjAzcS4wNTIuMDU3LjEyLjA5NC4wOS4wNC4xODguMDU3LjAzNS4wMS4wNy4wMTh6bTEuMTMtNS4zMTNjLjIyMS0uMDEyLjIwNS4yMzcuMjA1LjIzN3Y0LjA1NmExMCAxMCAwIDAgMS0uNzYyLjEzMyAxLjA4IDEuMDggMCAwIDEtLjkzOC0uMzE2IDEuMyAxLjMgMCAwIDEtLjMxNy0uNjQ0IDMgMyAwIDAgMS0uMDU0LS4zMDZsLjAxNS4wMWMuMTAyLjA3OS4yMjQuMTI4LjM1Mi4xNGEuNDYuNDYgMCAwIDAgLjIzOC0uMDY2Yy4wNjEtLjAzNC4wOS0uMDQxLjExNy0uMDM0YTEgMSAwIDAgMSAuMjguMTVjLjA0Ni4wMzUuMDUxLjA0LS4wMjQuMTc5bC0uMDIuMDM3YS4xNC4xNCAwIDAgMCAuMTI0LjIwNC4xNC4xNCAwIDAgMCAuMTItLjA3M2wuMDE5LS4wMzRjLjA2Ni0uMTI2LjE5LS4zNTItLjA1NS0uNTMzYTEuMiAxLjIgMCAwIDAtLjM2Ni0uMi40Mi40MiAwIDAgMC0uMzE2LjA1Mi4yLjIgMCAwIDEtLjExMy4wNGMtLjE3NC0uMDE4LS40LS4yMDItLjQyNS0uMjAyLS4wMS0uMDQzLS4wMi0uMDcyLS4wMzItLjExNGEuNS41IDAgMCAwLS4xNjgtLjI3NGwtLjYzLS41MzdhLjE0LjE0IDAgMCAwLS4wNTgtLjAyN2MuMjE2LS40NDQuNTI2LS44MzQuOTEtMS4xNDRsLjAwNS4wMTJhLjEwNS4xMDUgMCAwIDAgLjEzOC4wNTIuMTA1LjEwNSAwIDAgMCAuMDU0LS4xMzhMMTEuMTguNjFhMy4zMyAzLjMzIDAgMCAxIDEuNzI3LS42MDVtMi4xMTYgNC42MDFhLjEuMSAwIDAgMC0uMDI3LjA3Ni4xLjEgMCAwIDAgLjAzNS4wNzFxLjEwNS4wOTUuMjEyLjE4Ny4wMjkuMDIzLjA2Ny4wMjRhLjEwNS4xMDUgMCAwIDAgLjA2OC0uMTg0cS0uMTA2LS4wOS0uMjA3LS4xODJhLjEwNC4xMDQgMCAwIDAtLjE0OC4wMDhtLS4zMjUtLjQ4MmEuMTEuMTEgMCAwIDAtLjEwOC0uMDQ0LjEwNS4xMDUgMCAwIDAtLjA2Ni4xNjIgMSAxIDAgMCAwIC4wNjguMDhsLjA4MS4wODMuMDUuMDUzYS4xLjEgMCAwIDAgLjA3Ni4wMzJxLjA0MiAwIC4wNzMtLjAyOGEuMTA1LjEwNSAwIDAgMCAuMDA0LS4xNDhsLS4wNS0uMDUzcS0uMDQzLS4wMzgtLjA4Mi0uMDgxYTEgMSAwIDAgMS0uMDQ2LS4wNTZtLS40ODEtLjYzMmEuMTAzLjEwMyAwIDAgMC0uMDE3LjE0NXEuMDc4LjEuMTMuMjE4YS4xMS4xMSAwIDAgMCAuMDkzLjA1OC4xMDQuMTA0IDAgMCAwIC4wOTUtLjE1IDEuMyAxLjMgMCAwIDAtLjE1Ni0uMjU4LjEuMSAwIDAgMC0uMDctLjA0LjEuMSAwIDAgMC0uMDc1LjAyN20tMi44MTMtMi4wMzZxLjAyLjAwMi4wNC0uMDA0YS4xMDQuMTA0IDAgMCAwIC4wNTQtLjEzN2wtLjA1My0uMTIzLS4wNi0uMTQyYS4xMDUuMTA1IDAgMCAwLS4xMzgtLjA1MS4xLjEgMCAwIDAtLjA2LjA5OXEwIC4wMi4wMDkuMDRsLjA2Mi4xMzdjLjAxOC4wMzYuMDM0LjA3OC4wNTIuMTE3YS4xLjEgMCAwIDAgLjA5NS4wNjRtLjM4My42MDdhLjEwNC4xMDQgMCAwIDAgLjAyNi0uMTQ2IDMgMyAwIDAgMS0uMTQyLS4yMjguMTEuMTEgMCAwIDAtLjEwMi0uMDU2LjEwNS4xMDUgMCAwIDAtLjA4My4xNTNsLjAzLjA1N3EuMDYxLjEwMi4xMjUuMTk1YS4xLjEgMCAwIDAgLjA4Ni4wNDYuMS4xIDAgMCAwIC4wNi0uMDJtLjU1OC40NGEuMS4xIDAgMCAwLS4wMDgtLjA4LjEuMSAwIDAgMC0uMDYzLS4wNWwtLjEwMy0uMDM0YS40LjQgMCAwIDEtLjExMy0uMDVsLS4wMjEtLjAyM2EuMS4xIDAgMCAwLS4wNzEtLjA0Ni4xMDQuMTA0IDAgMCAwLS4wOS4xNzYuMy4zIDAgMCAwIC4wNTguMDYuNi42IDAgMCAwIC4xOC4wOGwuMDM0LjAxMS4wMjYuMDA5LjA0My4wMTNhLjEuMSAwIDAgMCAuMDcxIDAgLjEuMSAwIDAgMCAuMDU3LS4wNjVtLjYxNC4yNTFhLjEwNS4xMDUgMCAwIDAtLjA2LS4xMzZsLS4yNjItLjEwNGEuMTA1LjEwNSAwIDEgMC0uMDc4LjE5NmwuMjY1LjEwM2EuMS4xIDAgMCAwIC4wOTgtLjAxLjEuMSAwIDAgMCAuMDM4LS4wNDl6Ij48L3BhdGg+PHBhdGggZmlsbD0iIzQ1M0M5MCIgZD0iTTI1LjkwNCA0LjQxNGExLjEgMS4xIDAgMCAxLS44MTQuMzU4Yy0uNzMgMC0xLjI1OS0uNTc0LTEuMjU5LTEuMzYyIDAtLjg0Mi42NTQtMS4zNjIgMS4yNTktMS4zNjJhMS4wOCAxLjA4IDAgMCAxIC44MTQuMzUyVjEuMDJhLjA0My4wNDMgMCAwIDEgLjA0NC0uMDQzaC40M2EuMDQ0LjA0NCAwIDAgMSAuMDQ0LjA0M3YzLjYzM2EuMDQ0LjA0NCAwIDAgMS0uMDQ1LjA0M2gtLjQzYS4wNDQuMDQ0IDAgMCAxLS4wNDMtLjA0M3pNMjQuMzQ3IDMuNDFjMCAuNDQuMjAyLjkxNS43NzkuOTE4LjQ4NyAwIC43NzgtLjQ2OS43NzgtLjkxOCAwLS41NzUtLjI5LS45MTgtLjc3OC0uOTE4LS41MzctLjAwMi0uNzc5LjQ3NC0uNzc5LjkxN3ptMi42MDEgMS4yODdhLjA0LjA0IDAgMCAxLS4wMy0uMDEzLjA0LjA0IDAgMCAxLS4wMTMtLjAzVjIuMTU5YS4wNDMuMDQzIDAgMCAxIC4wNDMtLjA0M2guMzkzYS4wNDMuMDQzIDAgMCAxIC4wNDQuMDRsLjAyNS4yNDZhMS4wNiAxLjA2IDAgMCAxIC44Mi0uMzU4Yy42NDcgMCAuOTc3LjQyMy45NzcgMS4yNTR2MS4zNTRhLjA0NC4wNDQgMCAwIDEtLjA0NC4wNDNoLS40M2EuMDQuMDQgMCAwIDEtLjA0LS4wMjZsLS4wMDQtLjAxN1YzLjQxYzAtLjIxNyAwLS40NTYtLjA3LS42MzMtLjA3NS0uMTk1LS4yMTktLjI4Ni0uNDYtLjI4Ni0uMjk4IDAtLjc0Mi4yNTEtLjc0Mi41OTh2MS41NjRhLjA0NC4wNDQgMCAwIDEtLjA0NC4wNDN6bTYuODI1IDEuNjE3YS4wNDMuMDQzIDAgMCAxIC4wNC4wNDF2LjAyTDMyLjY5NCA5LjA2Yy0uMjIuNTA4LS41Ny44MjktLjk4Ny45YS4wNS4wNSAwIDAgMS0uMDM0LS4wMTVsLS4yMzUtLjI4NGEuMDQ0LjA0NCAwIDAgMSAuMDA0LS4wNi4xLjEgMCAwIDEgLjAyLS4wMTFjLjQwNC0uMS42MzktLjMyMi43ODMtLjc0MmwtMS4wNC0yLjQ3N2EuMDQuMDQgMCAwIDEgMC0uMDM5LjA1LjA1IDAgMCAxIC4wMzctLjAxOWguNDQ4YS4wNC4wNCAwIDAgMSAuMDQxLjAyOGwuNzc1IDEuOTg4Ljc5NC0xLjk4OGEuMDQuMDQgMCAwIDEgLjA0LS4wMjh6TTIwLjIzLjk3N2MuOTkgMCAxLjc5NC44NSAxLjc5NCAxLjg5NHMtLjgwNiAxLjktMS43OTQgMS45LTEuNzkzLS44NTUtMS43OTMtMS45UzE5LjI0My45NzcgMjAuMjMuOTc3bTEuMjc4IDEuODk0YzAtLjgtLjU3My0xLjQ1MS0xLjI3OC0xLjQ1MXMtMS4yNzguNjUtMS4yNzggMS40NTFjMCAuODAyLjU3MyAxLjQ1MyAxLjI3OCAxLjQ1M3MxLjI3OC0uNjUyIDEuMjc4LTEuNDUzbTIuNTczIDMuNDQyYS4wNC4wNCAwIDAgMSAuMDQuMDI2bC4wMDQuMDE3djIuNDkzYS4wNC4wNCAwIDAgMS0uMDEzLjAzLjA0LjA0IDAgMCAxLS4wMzEuMDEzaC0uMzkzYS4wNC4wNCAwIDAgMS0uMDQzLS4wNGwtLjAyNi0uMjQ2YTEuMDYgMS4wNiAwIDAgMS0uODIuMzU3Yy0uNjQ4IDAtLjk3Ny0uNDIxLS45NzctMS4yNTRWNi4zNTZxMC0uMDEuMDAzLS4wMTdhLjA0LjA0IDAgMCAxIC4wMjQtLjAyM2wuMDE3LS4wMDNoLjQzcS4wMTcgMCAuMDMuMDEybC4wMS4wMTRxLjAwMy4wMDguMDAzLjAxN3YxLjI0NmMwIC4yMjYgMCAuNDU2LjA2OC42MzMuMDc3LjE5NS4yMi4yODUuNDYyLjI4NS4yOTggMCAuNzQyLS4yNS43NDItLjU5N1Y2LjM1NmEuMDQuMDQgMCAwIDEgLjAyNy0uMDRsLjAxNy0uMDAzem00Ljc0LjAxOWEuMDQuMDQgMCAwIDEgLjAwMy4wNDFMMjcuNzYgOC44NjdhLjA0LjA0IDAgMCAxLS4wMzkuMDI2aC0uNDEzYS4wNC4wNCAwIDAgMS0uMDM5LS4wMjZsLTEuMDUtMi40OTNhLjA0LjA0IDAgMCAxIC4wMDUtLjAzOS4wNC4wNCAwIDAgMSAuMDM2LS4wMTloLjQ0N2EuMDQuMDQgMCAwIDEgLjA0MS4wMjhsLjc2NiAxLjk2My43OTQtMS45NjRhLjA0LjA0IDAgMCAxIC4wNC0uMDI3aC40MzZhLjA0LjA0IDAgMCAxIC4wMzcuMDE2bTEuMjI4LS4wOWMuNzY1IDAgMS4xODcuNTAzIDEuMTg3IDEuNDJhLjA0LjA0IDAgMCAxLS4wMTMuMDMuMDQuMDQgMCAwIDEtLjAzLjAxM2gtMS44ODRjLjAzMi40MDMuMjQuODE4Ljc0LjgxOC4zNjcgMCAuNjk1LS4xMTIuODk5LS4zMDZhLjA1LjA1IDAgMCAxIC4wMzktLjAxMS4wNC4wNCAwIDAgMSAuMDMuMDI3bC4xMjYuMzM3YS4wNS4wNSAwIDAgMS0uMDEyLjA0OWMtLjMzNy4yODYtLjc3NS4zNDctMS4wODMuMzQ3LS43NTIgMC0xLjI1OS0uNTQ3LTEuMjU5LTEuMzYyIDAtLjc5LjUzLTEuMzYzIDEuMjYtMS4zNjNtLS43MzUgMS4wOTNoMS4zOThjLS4wNzUtLjQ0LS4yODctLjY0Ny0uNjY0LS42NDctLjM3NiAwLS42NTguMjUyLS43MzQuNjQ3bS02LjkwNS0yLjY0YS4wNDMuMDQzIDAgMCAxLS4wNDMtLjA0M1YyLjE2M2EuMDQzLjA0MyAwIDAgMSAuMDQzLS4wNDNoLjM5NGEuMDQ0LjA0NCAwIDAgMSAuMDQzLjAzOWwuMDIyLjIyNmEuNzcuNzcgMCAwIDEgLjYzNi0uMzM5cS4xMzkuMDAzLjI3My4wNGEuMDQuMDQgMCAwIDEgLjAzNC4wNDJ2LjM5YS4wNDMuMDQzIDAgMCAxLS4wNjUuMDQuNC40IDAgMCAwLS4yNjQtLjA2NmMtLjU1NyAwLS42LjYyLS42LjgxdjEuMzVhLjA0LjA0IDAgMCAxLS4wMTMuMDMxLjA0LjA0IDAgMCAxLS4wMzEuMDEyem0xNi40MDQtMi42NDljLjc2NSAwIDEuMTg3LjUwMyAxLjE4NyAxLjQxN2EuMDQzLjA0MyAwIDAgMS0uMDQzLjA0M2gtMS44ODRjLjAzMi40MDQuMjQuODE4Ljc0LjgxOC4zNzIgMCAuNjk0LS4xMTQuODk4LS4zMDZhLjA0My4wNDMgMCAwIDEgLjA1OS0uMDAycS4wMDguMDA3LjAxMi4wMThsLjEyNi4zMzZhLjA0LjA0IDAgMCAxLS4wMTQuMDUzYy0uMzM2LjI4OC0uNzczLjM0OC0xLjA4Mi4zNDgtLjc1MyAwLTEuMjU5LS41NDctMS4yNTktMS4zNjIuMDAxLS43OTIuNTMtMS4zNjMgMS4yNi0xLjM2M20tLjczNSAxLjA5aDEuMzk5Yy0uMDc2LS40NC0uMjg4LS42NDctLjY2NC0uNjQ3cy0uNjYuMjUzLS43MzUuNjQ3TTIwLjMwNSA2LjcxM2MuNzc5LjIwNSAxLjE3NC42IDEuMTcyIDEuMTc0LS4wMDQuNjM0LS40OTIgMS4wNzYtMS4xODcgMS4wNzYtLjUyLS4wMDUtLjk4OS0uMTc4LTEuMjU0LS40NjNhLjA0LjA0IDAgMCAxIDAtLjA1NGwuMjI0LS4zMjFhLjA1LjA1IDAgMCAxIC4wMzItLjAxOC4wNC4wNCAwIDAgMSAuMDMzLjAxMWMuMjYzLjI0NS42MDYuMzg4Ljk2NS40YS42MTMuNjEzIDAgMCAwIC42MzYtLjYzM2MuMDA0LS40MzItLjMzOS0uNTYtLjc1NC0uNjcyLS42NjYtLjE4Mi0xLjAzMS0uNTY0LTEuMDMxLTEuMDcyIDAtLjY2NC41OTctLjk3IDEuMTUtLjk3LjMxOC4wMDIuNjMuMDkyLjg5OS4yNmEuMDQuMDQgMCAwIDEgLjAxOS4wMjguMDQuMDQgMCAwIDEtLjAwNy4wMzNsLS4yMi4zMTJhLjA0NS4wNDUgMCAwIDEtLjA1Ny4wMTQgMS40NiAxLjQ2IDAgMCAwLS42MzUtLjJjLS4zMTMgMC0uNjM0LjE2Mi0uNjM0LjUyNi0uMDA4LjM1LjM2Ny40ODguNjUuNTY5em01LjcxNi0uNDM2YS4wNDUuMDQ1IDAgMCAxIC4wMzQuMDQ0di4zOWEuMDQ0LjA0NCAwIDAgMS0uMDQ1LjA0NS4xLjEgMCAwIDEtLjAyMS0uMDA2LjQuNCAwIDAgMC0uMjY1LS4wNjVjLS41NTYgMC0uNTk5LjYyLS41OTkuODFWOC44NWEuMDQuMDQgMCAwIDEtLjAxMi4wMy4wNC4wNCAwIDAgMS0uMDMxLjAxM2gtLjQzYS4wNC4wNCAwIDAgMS0uMDMtLjAxMmwtLjAxLS4wMTQtLjAwNC0uMDE3VjYuMzU2YS4wNC4wNCAwIDAgMSAuMDI3LS4wNGwuMDE3LS4wMDNoLjM5M2EuMDQ0LjA0NCAwIDAgMSAuMDQ0LjAzOWwuMDIyLjIyNWEuNzcuNzcgMCAwIDEgLjYzNi0uMzM5cS4xMzkuMDA0LjI3NC4wNG0xMS4yMTEtMi4yMDVhLjA0LjA0IDAgMCAxIC4wMjcuMDMybC4xMS4zMzdhLjA0LjA0IDAgMCAxLS4wMTMuMDQ3Yy0uMjI4LjE4Ny0uNTMzLjI4My0uOTA2LjI4My0uNzYyIDAtMS4yOTUtLjU3Ny0xLjI5NS0xLjM2N3MuNTQ3LTEuMzYzIDEuMy0xLjM2M2MuMTg4IDAgLjY1Mi4wMzYuODkzLjM3YS4wNC4wNCAwIDAgMSAwIC4wNWwtLjE4MS4yNjFhLjA0LjA0IDAgMCAxLS4wMzQuMDIuMDYuMDYgMCAwIDEtLjAzNi0uMDE3Yy0uMTgtLjIyMy0uMzg4LS4yNC0uNjQ0LS4yNC0uNTc0IDAtLjc3Ny40OTQtLjc3Ny45MTggMCAuNTgyLjI4My45MTcuNzc3LjkxNy4yNjcuMDEyLjUzLS4wNzQuNzM5LS4yNGEuMDQuMDQgMCAwIDEgLjA0LS4wMDhtLTYuNDk2LjY5OWMtLjczIDAtMS4yNTktLjU3Ni0xLjI1OS0xLjM2MiAwLS44NDMuNjU0LTEuMzYzIDEuMjU5LTEuMzYzYTEuMDggMS4wOCAwIDAgMSAuODI2LjM2MmwuMDI2LS4yNTNhLjA0My4wNDMgMCAwIDEgLjA0NC0uMDM5aC4zOTFhLjA0My4wNDMgMCAwIDEgLjA0NC4wNDR2Mi40OTdhLjA0My4wNDMgMCAwIDEtLjA0NC4wNDRoLS40M2EuMDQzLjA0MyAwIDAgMS0uMDQzLS4wNDR2LS4yNGExLjEgMS4xIDAgMCAxLS44MTMuMzU0em0tLjc0Mi0xLjM2MmMwIC40NC4yMDQuOTE1Ljc3Ny45MTcuNDg4IDAgLjc3OS0uNDY5Ljc3OS0uOTE3IDAtLjU3Ni0uMjkxLS45MTktLjc3OS0uOTE5LS41MzcgMC0uNzc3LjQ3Ni0uNzc3LjkxOW0zLjg4My0xLjM2M2MuNjQ4IDAgLjk3Ni40MjEuOTczIDEuMjUzdjEuMzUzYS4wNDMuMDQzIDAgMCAxLS4wNDMuMDQzaC0uNDNhLjA0LjA0IDAgMCAxLS4wMy0uMDEybC0uMDEtLjAxNC0uMDA0LS4wMTdWMy40MWMwLS4yMTcgMC0uNDU2LS4wNjgtLjYzMy0uMDc4LS4xOTUtLjIyLS4yODYtLjQ2Mi0uMjg2LS4yOTcgMC0uNzQyLjI1MS0uNzQyLjU5OHYxLjU2NGEuMDQzLjA0MyAwIDAgMS0uMDQzLjA0M2gtLjQzYS4wNDMuMDQzIDAgMCAxLS4wNDMtLjA0M1YyLjE2MWEuMDQzLjA0MyAwIDAgMSAuMDQzLS4wNDNoLjM5NmEuMDQzLjA0MyAwIDAgMSAuMDQzLjAzOWwuMDI1LjI0NmExLjA2IDEuMDYgMCAwIDEgLjgyNi0uMzU3eiI+PC9wYXRoPjwvc3ZnPg==" alt="" className="sv-os" />
+          <span className="sv-divider" aria-hidden="true"></span>
+          <div className="sv-brand">
+            <span className="sv-brand-mark" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 18l5-8 4 5 3-3 4 6H4z" fill="currentColor"/>
+                <circle cx="17" cy="6" r="2" fill="currentColor"/>
+              </svg>
+            </span>
+            <span className="sv-brand-name">Surveyor</span>
+            <span className="sv-brand-tag">v0.1</span>
+          </div>
+        </div>
+        <div className="sv-topbar-c">
+          {state !== "empty" && (
+            <span className="sv-query-title">Deprivation × greenspace, by local authority</span>
+          )}
+        </div>
+        <div className="sv-topbar-r">
+          <button className="sv-iconbtn" aria-label="History"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></button>
+          <button className="sv-ghostbtn">Share</button>
+          <button className="sv-ghostbtn">Export</button>
+          <div className="sv-avatar sv-avatar--user" aria-label="Account">JD</div>
+        </div>
+      </header>
+
+      <main className="sv-grid">
+        <ChatPane state={state} tweaks={tweaks}/>
+        <MapPane state={state} hovered={hovered} setHovered={setHovered}
+                 selected={selected} setSelected={setSelected} tweaks={tweaks}/>
+        <ChartRail state={state} hovered={hovered} setHovered={setHovered}
+                   selected={selected} setSelected={setSelected} tweaks={tweaks}/>
+      </main>
+    </div>
+  );
+}
+window.SurveyorApp = SurveyorApp;
+
+</script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "mood": "paper",
+      "tool_call_style": "inline",
+      "chart_type": "heat"
+    }/*EDITMODE-END*/;
+
+    function Page() {
+      const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      return (
+        <React.Fragment>
+          <DesignCanvas title="Surveyor — agentic geospatial assistant" initialZoom={0.52}>
+            <DCSection id="states" title="App states (Inner London → Cornwall, by way of Hartlepool)">
+              <DCArtboard id="empty" label="① Empty — first open" width={1440} height={900}>
+                <div className="sv-artboard-host">
+                  <SurveyorApp state="empty" tweaks={tweaks}/>
+                </div>
+              </DCArtboard>
+
+              <DCArtboard id="thinking" label="② Mid-query — fetching live data" width={1440} height={900}>
+                <div className="sv-artboard-host">
+                  <SurveyorApp state="thinking" tweaks={tweaks}/>
+                </div>
+              </DCArtboard>
+
+              <DCArtboard id="done" label="③ Result — choropleth, charts, linked highlight" width={1440} height={900}>
+                <div className="sv-artboard-host">
+                  <SurveyorApp state="done" tweaks={tweaks}/>
+                </div>
+              </DCArtboard>
+            </DCSection>
+          </DesignCanvas>
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection title="Brand mood">
+              <TweakRadio
+                label="Theme"
+                value={tweaks.mood}
+                onChange={v => setTweak('mood', v)}
+                options={[
+                  { value: 'paper',  label: 'Paper' },
+                  { value: 'dark',   label: 'Dark' },
+                  { value: 'carto',  label: 'Cartographic' },
+                ]}
+              />
+            </TweakSection>
+
+            <TweakSection title="Tool calls" subtitle="How the agent's 'show your work' appears in the chat">
+              <TweakRadio
+                label="Style"
+                value={tweaks.tool_call_style}
+                onChange={v => setTweak('tool_call_style', v)}
+                options={[
+                  { value: 'inline',   label: 'Inline' },
+                  { value: 'drawer',   label: 'Drawer' },
+                  { value: 'timeline', label: 'Timeline' },
+                ]}
+              />
+            </TweakSection>
+
+            <TweakSection title="Chart type" subtitle="Used by the ranked Top-10 chart in the right rail">
+              <TweakRadio
+                label="Bars"
+                value={tweaks.chart_type}
+                onChange={v => setTweak('chart_type', v)}
+                options={[
+                  { value: 'bar',      label: 'Bar' },
+                  { value: 'lollipop', label: 'Lollipop' },
+                  { value: 'heat',     label: 'Heat-bar' },
+                ]}
+              />
+            </TweakSection>
+          </TweaksPanel>
+        </React.Fragment>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<Page />);
+  </script>
+</body>
+</html>
