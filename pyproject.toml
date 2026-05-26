@@ -23,3 +23,17 @@ dependencies = [
 [tool.uv]
 # An application, not a distributable package — uv manages the venv, we run via `-m`.
 package = false
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]  # the app isn't installed (package = false); import surveyor from the repo root
+addopts = "-q"
+# Live tests against the upstream APIs are opt-in (RUN_LIVE_TESTS=1) so CI never burns a key.
+markers = [
+    "live: hits real upstream APIs; run only with RUN_LIVE_TESTS=1",
+]
