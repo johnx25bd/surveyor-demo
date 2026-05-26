@@ -62,9 +62,11 @@ class FetchStatistic:
             code = r[metric.key_column]
             if keep is not None and code not in keep:
                 continue
-            rows.append(
-                {"code": code, "name": r[metric.name_column], args.metric: int(r[metric.value_column])}
-            )
+            try:
+                value = int(r[metric.value_column])
+            except (ValueError, TypeError):
+                continue  # Nomis suppresses small/disclosive cells (e.g. '-'); skip rather than crash
+            rows.append({"code": code, "name": r[metric.name_column], args.metric: value})
 
         dataset = TableDataset(rows=rows, key_column="code", value_columns=[args.metric])
         handle = ctx.store.put(dataset)
