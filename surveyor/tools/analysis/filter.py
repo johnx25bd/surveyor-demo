@@ -41,7 +41,10 @@ def _literal(raw: str) -> Any:
 
 
 def _parse(where: str) -> tuple[str, list[tuple[str, Callable[[Any, Any], bool], Any]]]:
-    connective = "or" if (" or " in where and " and " not in where) else "and"
+    has_and, has_or = " and " in where, " or " in where
+    if has_and and has_or:
+        raise ValueError("filter takes a single 'and' or 'or', not both — keep the expression simple")
+    connective = "or" if has_or else "and"
     clauses = []
     for part in re.split(rf"\s+{connective}\s+", where):
         m = _CLAUSE.match(part)

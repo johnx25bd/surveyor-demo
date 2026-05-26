@@ -43,7 +43,7 @@ class Normalize:
         den_map = {r[den.key_column]: r for r in den.rows}
 
         scale = args.per if args.per is not None else 1.0
-        per_label = f" per {int(args.per):,}" if args.per is not None else ""
+        per_label = f" per {args.per:,.0f}" if args.per is not None else ""
         ctx.sink.emit("status", {"state": f"normalizing {num_col} / {den_col}{per_label}"})
 
         rows = []
