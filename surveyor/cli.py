@@ -51,7 +51,7 @@ def _dump(store: DatasetStore, directory: str) -> None:
     """Write every live dataset to ``directory`` as JSON — a phase-1 peek into the store."""
     out = pathlib.Path(directory)
     out.mkdir(parents=True, exist_ok=True)
-    for handle, (_, dataset) in store._items.items():
+    for handle, dataset in store.items():
         path = out / f"{handle}.json"
         path.write_text(json.dumps(dataset.model_dump(), indent=2))
         print(f"  wrote {path}")

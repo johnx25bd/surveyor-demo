@@ -48,6 +48,8 @@ def run(question: str, sink: EventSink, store: DatasetStore | None = None) -> No
     ]
     tools = registry.tool_schemas()
     if tools:
+        # One breakpoint on the last tool caches the whole tool block above it — which tool is last
+        # doesn't matter, only that the breakpoint sits at the end of the static prefix.
         tools[-1] = {**tools[-1], "cache_control": {"type": "ephemeral"}}
 
     client = Anthropic(api_key=anthropic_api_key())
@@ -63,10 +65,9 @@ def run(question: str, sink: EventSink, store: DatasetStore | None = None) -> No
             tools=tools,
             messages=messages,
         ) as stream:
-            for event in stream:
-                if event.type == "text":
-                    sink.emit(ev.MESSAGE, {"text": event.text})
-                    text_parts.append(event.text)
+            for text in stream.text_stream:  # the SDK's text-delta iterator drives the live trace
+                sink.emit(ev.MESSAGE, {"text": text})
+                text_parts.append(text)
             final = stream.get_final_message()
 
         if final.stop_reason != "tool_use":
