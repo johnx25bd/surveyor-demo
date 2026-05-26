@@ -9,6 +9,7 @@ next-env.d.ts
 
 # Environment
 .env*
+!.env.example
 
 # Logs
 *.log
@@ -28,3 +29,9 @@ design/
 
 # Claude Code
 .claude/settings.local.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/

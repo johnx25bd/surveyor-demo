@@ -25,4 +25,39 @@ Phases 1–6 each produce a repo artifact and a recorded session, shipped as one
 
 ## What's here now
 
-A process scaffold, nothing more. There is no product code, no framework chosen, and no concept brief — those arrive in the phases above. The bootstrap commit message records exactly what was and wasn't set up.
+Through phase 3 this was process scaffold and decision documents — no product code, by design. Phase 4 lands the first working slice: the Surveyor backend, an agent that turns a natural-language question into a sequence of tool calls over live OS and ONS data and shows its work as it goes. It runs from the command line; the browser UI is phase 5.
+
+## Running Surveyor (build phase 1)
+
+The backend is a Python application managed with [uv](https://docs.astral.sh/uv/), and needs Python 3.11 or newer.
+
+```bash
+uv sync                 # install dependencies into a local .venv
+```
+
+**API keys.** Two are needed, both kept server-side and never sent to the browser. Create a git-ignored `.env.dev` (or export them into the environment):
+
+```
+ANTHROPIC_API_KEY=...   # the agent loop
+OS_DATA_HUB_KEY=...     # OS NGD feature fetches (a premium API)
+```
+
+ONS Nomis and the ONS/MHCLG ArcGIS services need no key. The agent runs on `claude-sonnet-4-6` by default; override it with `SURVEYOR_MODEL`.
+
+**Ask a question:**
+
+```bash
+uv run python -m surveyor "How many health centres per 10,000 residents by local authority across Greater Manchester?"
+uv run python -m surveyor "Population by local authority in England"
+```
+
+The agent prints its whole trace — every tool call, the small descriptor each returns, the render instructions for the map and chart, and a short written answer. Add `--dump-dir out/` to also write each resulting dataset to disk for inspection.
+
+**Per-tool smokes**, each running one slice live against the real APIs:
+
+```bash
+uv run python -m scripts.try_boundaries
+uv run python -m scripts.try_statistic
+uv run python -m scripts.try_features      # needs OS_DATA_HUB_KEY
+uv run python -m scripts.try_analysis      # the headline analysis chain, no model call
+```
