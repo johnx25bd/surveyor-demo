@@ -23,5 +23,8 @@ yarn-error.log*
 *.mov
 *.mp4
 
+# Design-tool exports (the committed artifact is docs/01-ui-mockup.html; raw exports stay local)
+design/
+
 # Claude Code
 .claude/settings.local.json
