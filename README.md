@@ -4,6 +4,8 @@ This repository is a public, build-in-the-open walkthrough of making a thing cal
 
 As of the bootstrap commit, what Surveyor actually *is* has not been decided. That is deliberate. The concept, the stack, the UI, the rough edges — all of it emerges across eight phases, each captured here as it happens. We don't plant the story; we record it.
 
+**▶ Watch the demo:** [the Surveyor UI in action](https://youtu.be/By9EBr5duwA)
+
 ## How to follow along
 
 - [`WALKTHROUGH.md`](./WALKTHROUGH.md) — the index. One section per phase, linking the pull request, the recorded session, and the commits that carry the story.
