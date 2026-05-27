@@ -22,7 +22,7 @@ from .base import Tool, ToolContext, ToolOutcome
 from .fetch.boundaries import FetchBoundaries
 from .fetch.features import FetchFeatures
 from .fetch.statistic import FetchStatistic
-from .render import RenderChart, RenderChoropleth
+from .render import RenderChart, RenderChoropleth, RenderPoints
 
 
 class Registry:
@@ -67,6 +67,7 @@ def build_registry() -> Registry:
         Relate(),
         RenderChoropleth(),
         RenderChart(),
+        RenderPoints(),
     ):
         registry.register(tool)
     return registry
