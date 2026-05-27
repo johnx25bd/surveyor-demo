@@ -45,6 +45,21 @@ def os_data_hub_key() -> str:
     return key
 
 
+def os_maps_key() -> str:
+    """Key for the OS Vector Tile basemap proxy.
+
+    Prefers a dedicated ``OS_MAPS_API_KEY`` if set (use it when the basemap lives on a different OS
+    Data Hub project than the NGD features key); otherwise reuses ``OS_DATA_HUB_KEY``. Either way the
+    key stays server-side — the basemap proxy injects it, the browser never sees it.
+    """
+    key = (os.environ.get("OS_MAPS_API_KEY") or os.environ.get("OS_DATA_HUB_KEY") or "").strip()
+    if not key:
+        raise ConfigError(
+            "no OS basemap key set (set OS_MAPS_API_KEY, or OS_DATA_HUB_KEY to reuse the NGD key)"
+        )
+    return key
+
+
 def anthropic_api_key() -> str:
     key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if not key:

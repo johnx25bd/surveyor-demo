@@ -35,3 +35,7 @@ design/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Local dev/verification artifacts (Playwright snapshots, ad-hoc screenshots)
+.playwright-mcp/
+/surveyor-*.png

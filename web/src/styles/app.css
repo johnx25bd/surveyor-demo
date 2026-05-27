@@ -1,0 +1,221 @@
+/* App-level layout on top of the vendored OS design system styles.
+   The design's surveyor.css owns the look; this file only makes the shell fill the viewport and
+   adapts the map pane to host a real MapLibre canvas instead of the mockup's inline SVG. */
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Real MapLibre canvas (replaces the mockup's padded SVG canvas) ---- */
+.sv-map-gl {
+  position: absolute;
+  inset: 0;
+}
+.sv-map-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* MapLibre's own popup, restyled to the OS card language. */
+.maplibregl-popup-content {
+  background: var(--sv-surface);
+  color: var(--sv-fg);
+  border: 1px solid var(--sv-border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-overlay);
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+}
+.maplibregl-popup-tip {
+  border-top-color: var(--sv-border-strong);
+  border-bottom-color: var(--sv-border-strong);
+}
+.sv-popup-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sv-fg);
+}
+.sv-popup-stat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--sv-fg-muted);
+  margin-top: 2px;
+}
+
+/* MapLibre attribution/ctrl tucked to match the foot bar; keep it subtle. */
+.sv-map-body .maplibregl-ctrl-bottom-right {
+  margin-bottom: 4px;
+}
+
+/* A clickable affordance on the ranked rows + suggestions parity. */
+.sv-sug-arrow {
+  flex-shrink: 0;
+}
+
+/* ---- Long tokens (dataset handles, GSS codes) must wrap, never bleed the pane ---- */
+.sv-msg-body,
+.sv-tool-body {
+  overflow-wrap: anywhere;
+}
+
+/* ---- Markdown in the assistant answer ---- */
+.sv-markdown h1,
+.sv-markdown h2,
+.sv-markdown h3,
+.sv-markdown h4 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 10px 0 4px;
+  color: var(--sv-fg);
+}
+.sv-markdown p {
+  margin: 0 0 8px;
+}
+.sv-markdown ul,
+.sv-markdown ol {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.sv-markdown li {
+  margin: 2px 0;
+}
+.sv-markdown strong {
+  color: var(--sv-fg);
+  font-weight: 700;
+}
+.sv-markdown em {
+  font-family: inherit;
+  font-style: italic;
+  background: none;
+  padding: 0;
+}
+.sv-markdown code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--sv-surface-2);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.sv-markdown > *:last-child {
+  margin-bottom: 0;
+}
+/* Tables can be wide — let them scroll inside the pane rather than push it open. */
+.sv-markdown table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 4px 0 10px;
+}
+.sv-markdown th,
+.sv-markdown td {
+  border: 1px solid var(--sv-border);
+  padding: 4px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.sv-markdown th {
+  background: var(--sv-surface-2);
+  font-weight: 600;
+}
+
+/* ---- Ranked rows: widen the value column for real-world magnitudes (populations, counts) ---- */
+.sv-ranked-row {
+  grid-template-columns: 20px 1fr 52px 68px;
+}
+/* Keyboard focus for the now-operable ranked rows. */
+.sv-ranked-row:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}
+
+/* ---- Contrast: the design's subtle grey is ~4.0:1 on white, below WCAG AA for small text.
+   Darken it just enough to clear 4.5:1 (the Crown copyright line lives in this colour). ---- */
+.sv-app.sv-mood--paper {
+  --sv-fg-subtle: #6a6a6a;
+}
+
+/* ---- A long unbroken token in a question must wrap inside the bubble, not overflow it. ---- */
+.sv-msg-bubble {
+  overflow-wrap: anywhere;
+}
+/* Cap the composer so a long question can't grow the textarea over the chat. */
+.sv-composer textarea {
+  max-height: 160px;
+  overflow: auto;
+}
+
+/* ---- "Basemap unavailable" note in the map foot ---- */
+.sv-map-note {
+  font-size: 11px;
+  color: var(--sv-fg-muted);
+  background: var(--sv-surface-2);
+  border: 1px solid var(--sv-border);
+  border-radius: 2px;
+  padding: 4px 8px;
+}
+
+/* ---- Restyle MapLibre's default controls to the OS language ---- */
+.sv-map-body .maplibregl-ctrl-group {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-sticky);
+}
+.sv-map-body .maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--sv-border);
+}
+.sv-map-body .maplibregl-ctrl-group button {
+  background: transparent;
+}
+
+/* ---- Respect reduced-motion: stop the looping animations for users who ask for less motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .sv-spinner,
+  .sv-tool--running .sv-tool-dot,
+  .sv-streaming-cursor,
+  .sv-skel-line,
+  .sv-skel-bar,
+  .sv-skel-scatter,
+  .sv-thinking::after {
+    animation: none !important;
+  }
+}
+
+/* ---- Responsive: the three-pane grid is fixed; below a laptop width the map gets crushed.
+   Give the map a floor and let the shell scroll; stack to one column on narrow screens. ---- */
+@media (max-width: 1100px) {
+  .sv-grid {
+    grid-template-columns: 340px minmax(420px, 1fr) 320px;
+    overflow-x: auto;
+  }
+}
+@media (max-width: 820px) {
+  .sv-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(320px, auto);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .sv-chat,
+  .sv-map,
+  .sv-rail {
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--sv-border);
+  }
+}
