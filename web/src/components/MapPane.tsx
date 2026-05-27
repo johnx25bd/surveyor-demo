@@ -132,7 +132,7 @@ export function MapPane({ choropleth, points, mood, hovered, selected, onHover, 
         container,
         style,
         center: GB_CENTER,
-        zoom: 5.1,
+        zoom: 5.9,
         attributionControl: false,
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
