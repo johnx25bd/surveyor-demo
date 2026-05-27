@@ -48,6 +48,7 @@ ONS Nomis and the ONS/MHCLG ArcGIS services need no key. The agent runs on `clau
 
 ```bash
 uv run python -m surveyor "How many health centres per 10,000 residents by local authority across Greater Manchester?"
+uv run python -m surveyor "How many health centres in the West Midlands are within 800m of a library?"
 uv run python -m surveyor "Population by local authority in England"
 ```
 
@@ -98,7 +99,8 @@ The HTTP surface:
   - `message` `{text}` — a chunk of streamed assistant reasoning
   - `tool_call` `{id, name, input}` and `tool_result` `{id, descriptor}` — the visible trace
   - `view` `{kind, handle, encoding}` — a render instruction; `kind` is `"choropleth"` (a geo handle)
-    or `"chart"` (a table handle)
+    or `"chart"` (a table handle), or `"points"` (a geo handle drawn as a marker overlay, e.g. the
+    reference layer of a proximity question)
   - `error` `{message, tool_id?}` and `done` `{summary}`
 - `GET /api/datasets/{handle}` → the full GeoJSON or table behind a handle, for the map and chart to draw
 - `GET /api/basemap/*` → OS Vector Tile proxy, key injected server-side (restricted to the `vts` path)
