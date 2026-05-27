@@ -5,17 +5,25 @@ import type { Feature, FeatureCollection } from "geojson";
 import type { Mood } from "../App";
 import { formatNum } from "../lib/format";
 import { classify, DEFAULT_RAMP, GDV } from "../lib/palettes";
-import type { ChoroplethEncoding, GeoDataset, ViewSpec } from "../lib/types";
+import type { ChoroplethEncoding, GeoDataset, PointsEncoding, ViewSpec } from "../lib/types";
 
 const GB_CENTER: [number, number] = [-2.4, 54.2];
 
 interface Props {
   choropleth: ViewSpec | null;
+  points: ViewSpec | null;
   mood: Mood;
   hovered: string | null;
   selected: string | null;
   onHover(code: string | null): void;
   onSelect(code: string): void;
+}
+
+// A reference point overlay (e.g. libraries) drawn over the choropleth, each footprint reduced to a
+// representative point. Held in a ref so the once-bound styledata handler can re-add it after a swap.
+interface PointOverlay {
+  fc: FeatureCollection; // Point features carrying a `__label` property
+  title: string;
 }
 
 interface Overlay {
@@ -86,12 +94,14 @@ async function resolveStyle(mood: Mood): Promise<Resolved> {
   return { style: fallbackStyle(mood), os: false };
 }
 
-export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect }: Props) {
+export function MapPane({ choropleth, points, mood, hovered, selected, onHover, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const overlayRef = useRef<Overlay | null>(null);
+  const pointsRef = useRef<PointOverlay | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
   const [legend, setLegend] = useState<Legend | null>(null);
+  const [pointsTitle, setPointsTitle] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [basemapOn, setBasemapOn] = useState(true);
 
@@ -130,9 +140,14 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
       mapRef.current = map;
 
       map.on("styledata", addOverlay);
+      map.on("styledata", addPoints);
       map.on("mousemove", "choro-fill", handleMove);
       map.on("mouseleave", "choro-fill", handleLeave);
       map.on("click", "choro-fill", handleClick);
+      // Registered after the choro handler so, when a point sits over a polygon, the point's popup
+      // wins (MapLibre fires same-event layer listeners in registration order).
+      map.on("mousemove", "lib-points", handlePointMove);
+      map.on("mouseleave", "lib-points", handlePointLeave);
     });
 
     return () => {
@@ -207,6 +222,43 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
       cancelled = true;
     };
   }, [choropleth]);
+
+  // ---- A reference point overlay (e.g. libraries): fetch, reduce each footprint to a point, draw. ----
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!points) {
+      pointsRef.current = null;
+      setPointsTitle(null);
+      if (map?.getSource("points")) removePoints(map);
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      try {
+        const ds: GeoDataset = await fetch(`/api/datasets/${points.handle}`).then((r) => r.json());
+        if (cancelled || ds.kind !== "geo") return;
+        const { label_column, title } = points.encoding as PointsEncoding;
+        const pts: Feature[] = [];
+        for (const f of ds.features.features) {
+          const c = centroidOf(f.geometry);
+          if (!c) continue;
+          pts.push({
+            type: "Feature",
+            geometry: { type: "Point", coordinates: c },
+            properties: { __label: String(f.properties?.[label_column] ?? title) },
+          });
+        }
+        pointsRef.current = { fc: { type: "FeatureCollection", features: pts }, title };
+        setPointsTitle(title);
+        addPoints();
+      } catch {
+        /* a failed fetch leaves the prior overlay in place; the chat shows the error */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [points]);
 
   // ---- Mirror shared hovered/selected into MapLibre feature-state. ----
   useEffect(applyInteractionState, [hovered, selected]);
@@ -301,6 +353,50 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     if (f) onSelectRef.current(String(f.id));
   }
 
+  // Add (or refresh) the point overlay above the choropleth. Bound to styledata, so it survives a
+  // basemap swap; tolerates being called before the style is ready.
+  function addPoints() {
+    const map = mapRef.current;
+    const p = pointsRef.current;
+    if (!map || !p || !map.isStyleLoaded()) return;
+    const src = map.getSource("points") as maplibregl.GeoJSONSource | undefined;
+    if (src) {
+      src.setData(p.fc);
+      return;
+    }
+    map.addSource("points", { type: "geojson", data: p.fc });
+    map.addLayer({
+      id: "lib-points",
+      type: "circle",
+      source: "points",
+      paint: {
+        "circle-radius": 5,
+        "circle-color": moodRef.current === "dark" ? "#7ee0c8" : "#0b6e4f",
+        "circle-stroke-color": moodRef.current === "dark" ? "#0d1117" : "#ffffff",
+        "circle-stroke-width": 1.4,
+        "circle-opacity": 0.95,
+      },
+    });
+  }
+
+  function handlePointMove(e: maplibregl.MapLayerMouseEvent) {
+    const map = mapRef.current;
+    const f = e.features?.[0];
+    if (!map || !f) return;
+    map.getCanvas().style.cursor = "pointer";
+    const label = String(f.properties?.__label ?? "");
+    popupRef.current
+      ?.setLngLat(e.lngLat)
+      .setHTML(`<div class="sv-popup-name">${escapeHtml(label)}</div>`)
+      .addTo(map);
+  }
+
+  function handlePointLeave() {
+    const map = mapRef.current;
+    if (map) map.getCanvas().style.cursor = "";
+    popupRef.current?.remove();
+  }
+
   const title = legend?.title ?? (choropleth ? "Map" : "Map of Great Britain");
 
   return (
@@ -336,6 +432,26 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
             <div className="sv-legend-scale">
               <span>{formatNum(legend.min)}</span>
               <span>{formatNum(legend.max)}</span>
+            </div>
+          </div>
+        )}
+        {pointsTitle && (
+          <div className="sv-legend">
+            <div className="sv-legend-label">
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  background: mood === "dark" ? "#7ee0c8" : "#0b6e4f",
+                  border: `1.4px solid ${mood === "dark" ? "#0d1117" : "#ffffff"}`,
+                  marginRight: 6,
+                  verticalAlign: "middle",
+                }}
+                aria-hidden="true"
+              />
+              {pointsTitle}
             </div>
           </div>
         )}
@@ -377,4 +493,26 @@ function escapeHtml(s: string): string {
 function removeOverlay(map: maplibregl.Map) {
   for (const id of ["choro-fill", "choro-line"]) if (map.getLayer(id)) map.removeLayer(id);
   if (map.getSource("choro")) map.removeSource("choro");
+}
+
+function removePoints(map: maplibregl.Map) {
+  if (map.getLayer("lib-points")) map.removeLayer("lib-points");
+  if (map.getSource("points")) map.removeSource("points");
+}
+
+// Representative point for a footprint: the centre of its coordinate bounding box. Good enough to
+// place a marker at city scale, and cheap — no turf/centroid dependency.
+function centroidOf(geometry: unknown): [number, number] | null {
+  let minx = Infinity;
+  let miny = Infinity;
+  let maxx = -Infinity;
+  let maxy = -Infinity;
+  walk(geometry, (lng, lat) => {
+    minx = Math.min(minx, lng);
+    miny = Math.min(miny, lat);
+    maxx = Math.max(maxx, lng);
+    maxy = Math.max(maxy, lat);
+  });
+  if (!Number.isFinite(minx)) return null;
+  return [(minx + maxx) / 2, (miny + maxy) / 2];
 }
