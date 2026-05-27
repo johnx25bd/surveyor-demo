@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 
 import { ChatPane } from "./components/ChatPane";
 import { ChartRail } from "./components/ChartRail";
-import { MapPane } from "./components/MapPane";
 import { Topbar } from "./components/Topbar";
 import { useSurveyor } from "./state/useSurveyor";
+
+// MapLibre is ~800KB — the bulk of the bundle and only needed once a map renders. Lazy-load MapPane
+// so it splits into its own chunk and stays off the initial load.
+const MapPane = lazy(() => import("./components/MapPane").then((m) => ({ default: m.MapPane })));
 
 export type Mood = "paper" | "dark";
 
@@ -15,6 +18,10 @@ export default function App() {
   // Shared interaction state: a GSS code hovered/selected in any pane highlights it in all of them.
   const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  // One definition of the select-toggle, shared by map and chart (click a selected area to deselect).
+  const toggleSelect = useCallback((code: string) => {
+    setSelected((current) => (current === code ? null : code));
+  }, []);
 
   return (
     <div className={`sv-app sv-mood--${mood}`}>
@@ -25,21 +32,23 @@ export default function App() {
       />
       <main className="sv-grid">
         <ChatPane state={state} onAsk={ask} />
-        <MapPane
-          choropleth={state.choropleth}
-          mood={mood}
-          hovered={hovered}
-          selected={selected}
-          onHover={setHovered}
-          onSelect={(code) => setSelected((s) => (s === code ? null : code))}
-        />
+        <Suspense fallback={<section className="sv-map" aria-label="Map" />}>
+          <MapPane
+            choropleth={state.choropleth}
+            mood={mood}
+            hovered={hovered}
+            selected={selected}
+            onHover={setHovered}
+            onSelect={toggleSelect}
+          />
+        </Suspense>
         <ChartRail
           chart={state.chart}
           status={state.status}
           hovered={hovered}
           selected={selected}
           onHover={setHovered}
-          onSelect={(code) => setSelected((s) => (s === code ? null : code))}
+          onSelect={toggleSelect}
         />
       </main>
     </div>

@@ -106,9 +106,9 @@ function reducer(state: SurveyorState, action: Action): SurveyorState {
       };
 
     case "view":
-      return data.kind === "choropleth"
-        ? { ...state, choropleth: data }
-        : { ...state, chart: data };
+      if (data.kind === "choropleth") return { ...state, choropleth: data };
+      if (data.kind === "chart") return { ...state, chart: data };
+      return state; // unknown view kind: ignore rather than mis-route it to the chart
 
     case "error": {
       if (data.tool_id) {

@@ -136,3 +136,86 @@ body,
 .sv-ranked-row {
   grid-template-columns: 20px 1fr 52px 68px;
 }
+/* Keyboard focus for the now-operable ranked rows. */
+.sv-ranked-row:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}
+
+/* ---- Contrast: the design's subtle grey is ~4.0:1 on white, below WCAG AA for small text.
+   Darken it just enough to clear 4.5:1 (the Crown copyright line lives in this colour). ---- */
+.sv-app.sv-mood--paper {
+  --sv-fg-subtle: #6a6a6a;
+}
+
+/* ---- A long unbroken token in a question must wrap inside the bubble, not overflow it. ---- */
+.sv-msg-bubble {
+  overflow-wrap: anywhere;
+}
+/* Cap the composer so a long question can't grow the textarea over the chat. */
+.sv-composer textarea {
+  max-height: 160px;
+  overflow: auto;
+}
+
+/* ---- "Basemap unavailable" note in the map foot ---- */
+.sv-map-note {
+  font-size: 11px;
+  color: var(--sv-fg-muted);
+  background: var(--sv-surface-2);
+  border: 1px solid var(--sv-border);
+  border-radius: 2px;
+  padding: 4px 8px;
+}
+
+/* ---- Restyle MapLibre's default controls to the OS language ---- */
+.sv-map-body .maplibregl-ctrl-group {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-sticky);
+}
+.sv-map-body .maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--sv-border);
+}
+.sv-map-body .maplibregl-ctrl-group button {
+  background: transparent;
+}
+
+/* ---- Respect reduced-motion: stop the looping animations for users who ask for less motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .sv-spinner,
+  .sv-tool--running .sv-tool-dot,
+  .sv-streaming-cursor,
+  .sv-skel-line,
+  .sv-skel-bar,
+  .sv-skel-scatter,
+  .sv-thinking::after {
+    animation: none !important;
+  }
+}
+
+/* ---- Responsive: the three-pane grid is fixed; below a laptop width the map gets crushed.
+   Give the map a floor and let the shell scroll; stack to one column on narrow screens. ---- */
+@media (max-width: 1100px) {
+  .sv-grid {
+    grid-template-columns: 340px minmax(420px, 1fr) 320px;
+    overflow-x: auto;
+  }
+}
+@media (max-width: 820px) {
+  .sv-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(320px, auto);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .sv-chat,
+  .sv-map,
+  .sv-rail {
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--sv-border);
+  }
+}

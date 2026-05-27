@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
-import type { FeatureCollection } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 
 import type { Mood } from "../App";
 import { formatNum } from "../lib/format";
-import { colourFor, DEFAULT_RAMP, GDV, quantileBreaks } from "../lib/palettes";
+import { classify, DEFAULT_RAMP, GDV } from "../lib/palettes";
 import type { ChoroplethEncoding, GeoDataset, ViewSpec } from "../lib/types";
 
-const CLASSES = 7;
 const GB_CENTER: [number, number] = [-2.4, 54.2];
-const NODATA = "#c9c2b4";
 
 interface Props {
   choropleth: ViewSpec | null;
@@ -34,6 +32,11 @@ interface Legend {
   max: number;
 }
 
+interface Resolved {
+  style: maplibregl.StyleSpecification;
+  os: boolean; // true when the real OS vector basemap loaded, false when we fell back to a plain bg
+}
+
 function styleUrl(mood: Mood): string {
   return `/api/basemap/style.json?theme=${mood === "dark" ? "night" : "light"}`;
 }
@@ -53,7 +56,7 @@ function fallbackStyle(mood: Mood): maplibregl.StyleSpecification {
   };
 }
 
-async function resolveStyle(mood: Mood): Promise<maplibregl.StyleSpecification> {
+async function resolveStyle(mood: Mood): Promise<Resolved> {
   // The style document serves without a key; the *tiles* don't. Probe the keyed tile endpoint so a
   // missing/invalid key falls back to a plain background (over which the choropleth still draws)
   // rather than loading an OS style whose sources 503 and never finish.
@@ -61,12 +64,12 @@ async function resolveStyle(mood: Mood): Promise<maplibregl.StyleSpecification> 
     const probe = await fetch("/api/basemap/vts");
     if (probe.ok) {
       const r = await fetch(styleUrl(mood));
-      if (r.ok) return (await r.json()) as maplibregl.StyleSpecification;
+      if (r.ok) return { style: (await r.json()) as maplibregl.StyleSpecification, os: true };
     }
   } catch {
     /* basemap unreachable — fall through to the plain background */
   }
-  return fallbackStyle(mood);
+  return { style: fallbackStyle(mood), os: false };
 }
 
 export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect }: Props) {
@@ -74,12 +77,9 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
   const mapRef = useRef<maplibregl.Map | null>(null);
   const overlayRef = useRef<Overlay | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
-  const appliedRef = useRef<{ hover: string | null; selected: string | null }>({
-    hover: null,
-    selected: null,
-  });
   const [legend, setLegend] = useState<Legend | null>(null);
   const [loading, setLoading] = useState(false);
+  const [basemapOn, setBasemapOn] = useState(true);
 
   // Live values behind refs so the once-bound map callbacks never read stale props.
   const moodRef = useRef(mood);
@@ -101,8 +101,9 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     let map: maplibregl.Map | null = null;
     let disposed = false;
 
-    void resolveStyle(moodRef.current).then((style) => {
+    void resolveStyle(moodRef.current).then(({ style, os }) => {
       if (disposed) return;
+      setBasemapOn(os);
       map = new maplibregl.Map({
         container,
         style,
@@ -133,8 +134,10 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     const map = mapRef.current;
     if (!map) return;
     let cancelled = false;
-    void resolveStyle(mood).then((style) => {
-      if (!cancelled) map.setStyle(style);
+    void resolveStyle(mood).then(({ style, os }) => {
+      if (cancelled) return;
+      setBasemapOn(os);
+      map.setStyle(style);
     });
     return () => {
       cancelled = true;
@@ -158,15 +161,14 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
         if (cancelled || ds.kind !== "geo") return;
         const valueCol = (choropleth.encoding as ChoroplethEncoding).value_column;
         const ramp = GDV.sequential[DEFAULT_RAMP];
-        const values = ds.features.features
-          .map((f) => Number(f.properties?.[valueCol]))
-          .filter(Number.isFinite);
-        const breaks = quantileBreaks(values, CLASSES);
-        for (const f of ds.features.features) {
-          const v = Number(f.properties?.[valueCol]);
+        const feats = ds.features.features;
+        const valueOf = (f: Feature) => Number(f.properties?.[valueCol]);
+        const colour = classify(feats, valueOf, ramp);
+        for (const f of feats) {
           f.properties = f.properties ?? {};
-          f.properties.__color = Number.isFinite(v) ? colourFor(v, breaks, ramp) : NODATA;
+          (f.properties as Record<string, unknown>).__color = colour(f);
         }
+        const values = feats.map(valueOf).filter(Number.isFinite);
         overlayRef.current = {
           fc: ds.features,
           keyProp: ds.key_property ?? "code",
@@ -181,6 +183,8 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
           min: values.length ? Math.min(...values) : 0,
           max: values.length ? Math.max(...values) : 0,
         });
+      } catch {
+        /* a failed dataset fetch leaves the prior map in place; the chat shows the error */
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -243,18 +247,13 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     const map = mapRef.current;
     const o = overlayRef.current;
     if (!map || !o || !map.getSource("choro")) return;
-    const prev = appliedRef.current;
+    // Clear all feature-state on the source, then set the current two — no need to track what was
+    // set last (which also avoids a stale-id desync when the dataset changes under us).
+    map.removeFeatureState({ source: "choro" });
     const h = hoveredRef.current;
     const s = selectedRef.current;
-    if (prev.hover && prev.hover !== h) {
-      map.setFeatureState({ source: "choro", id: prev.hover }, { hover: false });
-    }
-    if (prev.selected && prev.selected !== s) {
-      map.setFeatureState({ source: "choro", id: prev.selected }, { selected: false });
-    }
     if (h) map.setFeatureState({ source: "choro", id: h }, { hover: true });
     if (s) map.setFeatureState({ source: "choro", id: s }, { selected: true });
-    appliedRef.current = { hover: h, selected: s };
   }
 
   function handleMove(e: maplibregl.MapLayerMouseEvent) {
@@ -288,7 +287,7 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
     if (f) onSelectRef.current(String(f.id));
   }
 
-  const title = legend?.title ?? (choropleth ? "Mapping result" : "Map of Great Britain");
+  const title = legend?.title ?? (choropleth ? "Map" : "Map of Great Britain");
 
   return (
     <section className="sv-map" aria-label="Map">
@@ -324,6 +323,11 @@ export function MapPane({ choropleth, mood, hovered, selected, onHover, onSelect
               <span>{formatNum(legend.min)}</span>
               <span>{formatNum(legend.max)}</span>
             </div>
+          </div>
+        )}
+        {!basemapOn && (
+          <div className="sv-map-note" role="note">
+            Basemap unavailable — add an OS Data Hub key to show the OS vector basemap.
           </div>
         )}
         <div className="sv-map-attribution">

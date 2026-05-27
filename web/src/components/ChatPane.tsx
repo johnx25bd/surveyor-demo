@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -18,10 +18,19 @@ interface Props {
 export function ChatPane({ state, onAsk }: Props) {
   const running = state.status === "running";
   const showThinking = running && !endsWithStreamingText(state.items);
+  const streamRef = useRef<HTMLDivElement | null>(null);
+
+  // Follow the trace as it streams — the whole point of this pane is watching the agent work. Keyed
+  // on item count + the last item's text so each appended tool call / token scrolls into view.
+  const lastText = state.items[state.items.length - 1];
+  useEffect(() => {
+    const el = streamRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [state.items.length, lastText, showThinking]);
 
   return (
     <section className="sv-chat" aria-label="Conversation">
-      <div className="sv-chat-stream">
+      <div className="sv-chat-stream" ref={streamRef} aria-live="polite" aria-busy={running}>
         {state.items.length === 0 ? (
           <EmptyState onPick={onAsk} />
         ) : (
@@ -129,7 +138,12 @@ function ToolEntry({ item }: { item: Extract<ChatItem, { kind: "tool" }> }) {
     <div
       className={`sv-tool sv-tool--inline${item.status === "running" ? " sv-tool--running" : ""}`}
     >
-      <button className="sv-tool-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+      <button
+        type="button"
+        className="sv-tool-head"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+      >
         <span className="sv-tool-chevron">{open ? "▾" : "▸"}</span>
         <span className="sv-tool-dot" aria-hidden="true" />
         <span className="sv-tool-name">{item.name}</span>
@@ -182,7 +196,12 @@ function Composer({ onAsk, disabled }: { onAsk(q: string): void; disabled: boole
       />
       <div className="sv-composer-actions">
         <span className="sv-tool-status">{disabled ? "working…" : ""}</span>
-        <button className="sv-composer-send" onClick={submit} disabled={disabled || !text.trim()}>
+        <button
+          type="button"
+          className="sv-composer-send"
+          onClick={submit}
+          disabled={disabled || !text.trim()}
+        >
           Ask
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M5 12h14M13 6l6 6-6 6" />

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { formatNum } from "../lib/format";
-import { colourFor, DEFAULT_RAMP, GDV, quantileBreaks } from "../lib/palettes";
+import { classify } from "../lib/palettes";
 import type { ChartEncoding, TableDataset, ViewSpec } from "../lib/types";
 import type { RunStatus } from "../state/useSurveyor";
 
@@ -32,10 +32,14 @@ export function ChartRail({ chart, status, hovered, selected, onHover, onSelect 
       return;
     }
     let cancelled = false;
+    setTable(null);
     fetch(`/api/datasets/${chart.handle}`)
       .then((r) => r.json())
       .then((ds: TableDataset) => {
         if (!cancelled && ds.kind === "table") setTable(ds);
+      })
+      .catch(() => {
+        /* a failed table fetch leaves the rail empty; the chat shows the error */
       });
     return () => {
       cancelled = true;
@@ -45,24 +49,22 @@ export function ChartRail({ chart, status, hovered, selected, onHover, onSelect 
   const rows = useMemo<Row[]>(() => {
     if (!table || !chart) return [];
     const enc = chart.encoding as ChartEncoding;
-    const values = table.rows.map((r) => Number(r[enc.value_column])).filter(Number.isFinite);
-    const breaks = quantileBreaks(values, 7);
-    const ramp = GDV.sequential[DEFAULT_RAMP];
+    const valueOf = (r: Record<string, unknown>) => Number(r[enc.value_column]);
+    const colour = classify(table.rows, valueOf);
     return table.rows
-      .map((r) => {
-        const value = Number(r[enc.value_column]);
-        return {
-          code: String(r[table.key_column]),
-          name: String(r[enc.label_column] ?? r[table.key_column]),
-          value,
-          colour: Number.isFinite(value) ? colourFor(value, breaks, ramp) : "#c9c2b4",
-        };
-      })
+      .map((r) => ({
+        code: String(r[table.key_column]),
+        name: String(r[enc.label_column] ?? r[table.key_column]),
+        value: valueOf(r),
+        colour: colour(r),
+      }))
       .filter((r) => Number.isFinite(r.value))
       .sort((a, b) => b.value - a.value);
   }, [table, chart]);
 
-  if (status === "running" && !chart) return <RailSkeleton />;
+  // Skeleton while a run is in flight or a chart has been announced but its table is still loading;
+  // only show the empty state when there's genuinely nothing to render.
+  if ((status === "running" && !chart) || (chart && !table)) return <RailSkeleton />;
   if (rows.length === 0) return <RailEmpty />;
 
   const enc = chart!.encoding as ChartEncoding;
@@ -98,9 +100,20 @@ export function ChartRail({ chart, status, hovered, selected, onHover, onSelect 
               className={`sv-ranked-row${hovered === r.code ? " is-hover" : ""}${
                 selected === r.code ? " is-selected" : ""
               }`}
+              role="button"
+              tabIndex={0}
+              aria-pressed={selected === r.code}
               onMouseEnter={() => onHover(r.code)}
               onMouseLeave={() => onHover(null)}
+              onFocus={() => onHover(r.code)}
+              onBlur={() => onHover(null)}
               onClick={() => onSelect(r.code)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(r.code);
+                }
+              }}
             >
               <span className="sv-ranked-rank">{i + 1}</span>
               <span className="sv-ranked-name" title={r.name}>
