@@ -78,6 +78,13 @@ def style(theme: str = "light") -> Response:
 @router.get("/{path:path}")
 async def proxy(path: str, request: Request) -> Response:
     """Proxy TileJSON / tiles / glyphs to the OS Vector Tile API with the key injected server-side."""
+    # Allow-list the vector-tile path only. Without this the catch-all is a keyed reverse proxy to
+    # *any* path on api.os.uk the key is entitled to (NGD, Places, …), and `..` segments can escape
+    # the /maps/vector/v1 base. MapLibre only ever fetches the TileJSON, tiles, glyphs, and style
+    # resources — all under `vts`.
+    if ".." in path or not (path == "vts" or path.startswith("vts/")):
+        raise HTTPException(status_code=404, detail="not a basemap resource")
+
     try:
         key = os_maps_key()
     except ConfigError as exc:
@@ -100,6 +107,11 @@ async def proxy(path: str, request: Request) -> Response:
     if "json" in content_type:
         # TileJSON: rewrite OS URLs back through the proxy and strip the key it embedded in them.
         body = _strip_key(upstream.text.replace(_OS_VTS_BASE, _PROXY_BASE))
+        # Belt-and-suspenders: a positive check on the real secret, independent of URL format. If the
+        # key survived the denylist strip (e.g. OS changed its JSON shape), withhold the body.
+        if key in body:
+            log.error("basemap key survived stripping for %s — withholding response", path)
+            raise HTTPException(status_code=502, detail="basemap response withheld")
         return Response(content=body, media_type="application/json")
     # Tiles and glyphs: pass bytes through. Drop content-encoding (httpx already decompressed) and
     # cache hard — basemap tiles are immutable for the life of the key.
