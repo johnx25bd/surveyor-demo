@@ -151,6 +151,9 @@
   padding: 20px 20px 12px;
   display: flex; flex-direction: column; gap: 18px;
 }
+/* Entries keep their natural height and the stream scrolls — without this, flex children compress
+   as the trace fills, squashing the tool steps. */
+.sv-chat-stream > * { flex-shrink: 0; }
 
 /* Empty state */
 .sv-empty { display: flex; flex-direction: column; gap: 24px; padding-top: 12px; }
@@ -242,6 +245,22 @@
   padding: 8px 10px 10px 28px;
   font-family: var(--font-mono); font-size: 11.5px; color: var(--sv-fg-muted);
   border-top: 1px solid var(--sv-border);
+  display: flex; flex-direction: column; gap: 6px;
+  white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+}
+.sv-tool-field { display: flex; gap: 10px; align-items: baseline; }
+.sv-tool-field-key {
+  flex-shrink: 0; min-width: 64px;
+  color: var(--sv-fg-subtle); text-transform: uppercase; font-size: 10px; letter-spacing: .04em;
+}
+.sv-tool-field-val { min-width: 0; flex: 1; color: var(--sv-fg-muted); }
+.sv-tool-arg { display: flex; gap: 8px; }
+.sv-tool-arg-key { color: var(--sv-fg-subtle); flex-shrink: 0; }
+.sv-tool-sample {
+  margin: 0; padding: 6px 8px;
+  background: var(--sv-surface); border-radius: 3px;
+  font-family: var(--font-mono); font-size: 10.5px; line-height: 1.45;
+  white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .sv-tool-skel { color: var(--sv-fg-subtle); }
 
