@@ -86,6 +86,10 @@ async def proxy(path: str, request: Request) -> Response:
 
     params = dict(request.query_params)
     params["key"] = key
+    # MapLibre renders Web Mercator; the OS /vts endpoint defaults to the British National Grid
+    # (EPSG:27700) tile matrix, which MapLibre can't draw. Default to srs=3857 so the TileJSON and
+    # tiles come back in Web Mercator (the rewritten tile URLs already carry srs, so this is idempotent).
+    params.setdefault("srs", "3857")
     try:
         upstream = await _get_client().get(f"{_OS_VTS_BASE}/{path}", params=params)
     except httpx.HTTPError as exc:
