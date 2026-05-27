@@ -56,6 +56,20 @@ function fallbackStyle(mood: Mood): maplibregl.StyleSpecification {
   };
 }
 
+// MapLibre fetches tiles (and glyphs) from a Web Worker, which has no document base URL, so relative
+// proxy URLs fail to parse there ("Failed to construct 'Request'"). Make them absolute against the
+// page origin. (The style, sprite, etc. load on the main thread, so they tolerate relative URLs.)
+function absolutize(style: maplibregl.StyleSpecification): maplibregl.StyleSpecification {
+  const origin = window.location.origin;
+  const abs = (u: string) => (u.startsWith("/") ? origin + u : u);
+  for (const source of Object.values(style.sources ?? {})) {
+    const s = source as { tiles?: string[] };
+    if (Array.isArray(s.tiles)) s.tiles = s.tiles.map(abs);
+  }
+  if (typeof style.glyphs === "string") style.glyphs = abs(style.glyphs);
+  return style;
+}
+
 async function resolveStyle(mood: Mood): Promise<Resolved> {
   // The style document serves without a key; the *tiles* don't. Probe the keyed tile endpoint so a
   // missing/invalid key falls back to a plain background (over which the choropleth still draws)
@@ -64,7 +78,7 @@ async function resolveStyle(mood: Mood): Promise<Resolved> {
     const probe = await fetch("/api/basemap/vts");
     if (probe.ok) {
       const r = await fetch(styleUrl(mood));
-      if (r.ok) return { style: (await r.json()) as maplibregl.StyleSpecification, os: true };
+      if (r.ok) return { style: absolutize((await r.json()) as maplibregl.StyleSpecification), os: true };
     }
   } catch {
     /* basemap unreachable — fall through to the plain background */
