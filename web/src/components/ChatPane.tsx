@@ -128,9 +128,8 @@ function Item({ item }: { item: ChatItem }) {
 
 function ToolEntry({ item }: { item: Extract<ChatItem, { kind: "tool" }> }) {
   const [open, setOpen] = useState(false);
-  const args = Object.entries(item.input)
-    .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
-    .join(", ");
+  const argEntries = Object.entries(item.input);
+  const argSummary = argEntries.map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(", ");
   const statusText =
     item.status === "running" ? "running" : item.status === "error" ? "error" : "done";
 
@@ -147,29 +146,70 @@ function ToolEntry({ item }: { item: Extract<ChatItem, { kind: "tool" }> }) {
         <span className="sv-tool-chevron">{open ? "▾" : "▸"}</span>
         <span className="sv-tool-dot" aria-hidden="true" />
         <span className="sv-tool-name">{item.name}</span>
-        <span className="sv-tool-args">({args})</span>
+        <span className="sv-tool-args">({argSummary})</span>
         <span className="sv-tool-status">{statusText}</span>
       </button>
       {open && (
         <div className="sv-tool-body">
-          {item.status === "error"
-            ? item.error
-            : item.descriptor
-              ? describe(item.descriptor)
-              : "…"}
+          {argEntries.length > 0 && (
+            <Field label="input">
+              {argEntries.map(([k, v]) => (
+                <div key={k} className="sv-tool-arg">
+                  <span className="sv-tool-arg-key">{k}</span>
+                  <span>{typeof v === "string" ? v : JSON.stringify(v)}</span>
+                </div>
+              ))}
+            </Field>
+          )}
+          {item.status === "error" ? (
+            <Field label="error">{item.error}</Field>
+          ) : item.descriptor ? (
+            <DescriptorDetail d={item.descriptor} />
+          ) : (
+            <Field label="result">waiting…</Field>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function describe(d: DatasetDescriptor): string {
-  if (d.kind === "geo") {
-    const bits = [d.handle, "geo", d.geometry_type, `${d.count} features`, d.crs].filter(Boolean);
-    return bits.join("  ·  ");
-  }
-  const cols = d.columns?.join(", ");
-  return [d.handle, "table", `${d.count} rows`, cols && `[${cols}]`].filter(Boolean).join("  ·  ");
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="sv-tool-field">
+      <span className="sv-tool-field-key">{label}</span>
+      <div className="sv-tool-field-val">{children}</div>
+    </div>
+  );
+}
+
+// The full descriptor the model saw, laid out so an expanded step shows every field — not the
+// one-line summary the collapsed head already carries.
+function DescriptorDetail({ d }: { d: DatasetDescriptor }) {
+  const rows: [string, string][] = [
+    ["handle", d.handle],
+    ["kind", d.kind],
+    [d.kind === "geo" ? "features" : "rows", String(d.count)],
+  ];
+  if (d.geometry_type) rows.push(["geometry", d.geometry_type]);
+  if (d.crs) rows.push(["crs", d.crs]);
+  if (d.key_column) rows.push(["key", d.key_column]);
+  if (d.columns?.length) rows.push(["columns", d.columns.join(", ")]);
+  if (d.bbox) rows.push(["bbox", d.bbox.map((n) => n.toFixed(3)).join(", ")]);
+  return (
+    <>
+      {rows.map(([k, v]) => (
+        <Field key={k} label={k}>
+          {v}
+        </Field>
+      ))}
+      {d.sample?.length ? (
+        <Field label="sample">
+          <pre className="sv-tool-sample">{JSON.stringify(d.sample.slice(0, 2), null, 2)}</pre>
+        </Field>
+      ) : null}
+    </>
+  );
 }
 
 function Composer({ onAsk, disabled }: { onAsk(q: string): void; disabled: boolean }) {
