@@ -17,15 +17,16 @@ single-instance by design (§11); a multi-user deployment would key stores by se
 from __future__ import annotations
 
 import asyncio
+import logging
 import queue
 import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 from ..agent import events as ev
 from ..agent import loop as agent_loop
@@ -34,8 +35,20 @@ from ..data.store import DatasetStore
 from .basemap import aclose_client
 from .basemap import router as basemap_router
 
+log = logging.getLogger("surveyor.app")
+
 _ROOT = Path(__file__).resolve().parents[2]  # repo root: surveyor/app/main.py -> ../../
 _WEB_DIST = _ROOT / "web" / "dist"
+
+# Each /api/query spins a live agent run that spends the metered OS NGD and Anthropic keys, so cap
+# concurrent runs and the request size. These are the cheap, in-process backstops for the no-auth
+# posture (docs/02-architecture.md §11); a public deploy still wants per-IP rate limiting and auth.
+MAX_QUESTION_CHARS = 2000
+MAX_QUERY_BODY_BYTES = 64 * 1024
+MAX_CONCURRENT_QUERIES = 4
+
+_inflight = 0
+_inflight_lock = threading.Lock()
 
 
 @asynccontextmanager
@@ -47,12 +60,35 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Surveyor", version="0.1.0", lifespan=lifespan)
 app.include_router(basemap_router)
 
+
+@app.middleware("http")
+async def guard_and_harden(request: Request, call_next):
+    # Reject oversized query bodies before they are read (pydantic validation happens after the read).
+    if request.method == "POST" and request.url.path == "/api/query":
+        length = request.headers.get("content-length")
+        if length and length.isdigit() and int(length) > MAX_QUERY_BODY_BYTES:
+            return JSONResponse({"detail": "request body too large"}, status_code=413)
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    return response
+
+
 # One process, one store. Handles are unique per run; the TTL evicts stale datasets.
 STORE = DatasetStore()
 
 
 class QueryRequest(BaseModel):
-    question: str
+    question: str = Field(min_length=1, max_length=MAX_QUESTION_CHARS)
+
+    @field_validator("question")
+    @classmethod
+    def _strip_and_require(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("question must not be blank")
+        return stripped
 
 
 def _run_agent(question: str, sink: ev.SseSink) -> None:
@@ -65,10 +101,14 @@ def _run_agent(question: str, sink: ev.SseSink) -> None:
     try:
         agent_loop.run(question, sink, store=STORE)
     except ConfigError as exc:
+        # A config error is actionable and carries no secret — surface it to the user.
         sink.emit(ev.ERROR, {"message": str(exc)})
         sink.emit(ev.DONE, {"summary": "Configuration error — the run could not start."})
-    except Exception as exc:  # noqa: BLE001 — top-level guard: report, never leak a traceback
-        sink.emit(ev.ERROR, {"message": f"{type(exc).__name__}: {exc}"})
+    except Exception:  # noqa: BLE001 — top-level guard: log detail server-side, tell the client little
+        # The exception string can carry internal paths or a keyed upstream URL; keep it out of the
+        # response and log it (with traceback) server-side instead.
+        log.exception("agent run failed")
+        sink.emit(ev.ERROR, {"message": "The run failed unexpectedly. Please try again."})
         sink.emit(ev.DONE, {"summary": "The run failed unexpectedly."})
     finally:
         sink.close()
@@ -76,10 +116,18 @@ def _run_agent(question: str, sink: ev.SseSink) -> None:
 
 @app.post("/api/query")
 async def query(req: QueryRequest) -> StreamingResponse:
+    global _inflight
+    # Cap concurrent live runs so a burst can't fan out unbounded metered-API spend and worker threads.
+    with _inflight_lock:
+        if _inflight >= MAX_CONCURRENT_QUERIES:
+            raise HTTPException(status_code=429, detail="Too many queries in flight; try again shortly.")
+        _inflight += 1
+
     sink = ev.SseSink()
     worker = threading.Thread(target=_run_agent, args=(req.question, sink), daemon=True)
 
     async def frames():
+        global _inflight
         worker.start()
         try:
             while True:
@@ -98,6 +146,8 @@ async def query(req: QueryRequest) -> StreamingResponse:
             # cap the wait: don't pin this task for the rest of a multi-call run. On the normal path
             # the worker has already emitted its sentinel and exited, so this returns immediately.
             await asyncio.to_thread(worker.join, 5.0)
+            with _inflight_lock:
+                _inflight -= 1
 
     return StreamingResponse(
         frames(),

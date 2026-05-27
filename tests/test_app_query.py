@@ -46,15 +46,18 @@ def test_config_error_becomes_error_then_done(client, monkeypatch):
     assert "OS_DATA_HUB_KEY" in r.text
 
 
-def test_unexpected_error_is_caught_and_typed(client, monkeypatch):
+def test_unexpected_error_is_generic_not_leaked(client, monkeypatch):
+    # The exception detail can carry internal paths or a keyed URL; it must not reach the client.
     def boom(question, sink, store=None):
-        raise RuntimeError("kaboom")
+        raise RuntimeError("secret-internal-detail-/etc/passwd")
 
     monkeypatch.setattr(main.agent_loop, "run", boom)
     r = client.post("/api/query", json={"question": "x"})
 
     assert "error" in _event_names(r.text)
-    assert "RuntimeError: kaboom" in r.text
+    assert "RuntimeError" not in r.text
+    assert "secret-internal-detail" not in r.text
+    assert "failed unexpectedly" in r.text
 
 
 def test_query_and_datasets_share_one_store(client, monkeypatch):
@@ -81,3 +84,20 @@ def test_query_and_datasets_share_one_store(client, monkeypatch):
 
 def test_missing_question_is_422(client):
     assert client.post("/api/query", json={}).status_code == 422
+
+
+def test_blank_question_is_422(client):
+    assert client.post("/api/query", json={"question": "   "}).status_code == 422
+
+
+def test_overlong_question_is_422(client):
+    assert client.post("/api/query", json={"question": "x" * 5000}).status_code == 422
+
+
+def test_oversized_body_is_413(client):
+    # The body-size guard rejects before the body is read (content-length check).
+    big = "x" * (70 * 1024)
+    r = client.post(
+        "/api/query", content=f'{{"question":"{big}"}}', headers={"content-type": "application/json"}
+    )
+    assert r.status_code == 413
