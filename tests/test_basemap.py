@@ -19,6 +19,20 @@ def test_style_json_leaks_neither_host_nor_key(client):
     assert "/api/basemap" in r.text
 
 
+def test_style_source_uses_explicit_web_mercator_tiles(client):
+    # MapLibre can't consume the OS ESRI endpoint as a TileJSON, so the source must carry an explicit
+    # tiles template (with srs=3857), not a `url`, or no tiles are ever requested.
+    import json as _json
+
+    style = _json.loads(client.get("/api/basemap/style.json").text)
+    sources = [s for s in style["sources"].values() if s.get("type") == "vector"]
+    assert sources, "expected a vector source"
+    for src in sources:
+        assert "url" not in src
+        assert src["tiles"] == ["/api/basemap/vts/tile/{z}/{y}/{x}.pbf?srs=3857"]
+        assert src["maxzoom"] >= 1
+
+
 def test_style_json_themes(client):
     assert client.get("/api/basemap/style.json?theme=light").status_code == 200
     assert client.get("/api/basemap/style.json?theme=night").status_code == 200

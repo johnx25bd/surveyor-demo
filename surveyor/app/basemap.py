@@ -5,13 +5,15 @@ The browser never talks to ``api.os.uk`` directly; it talks to us. We serve a ve
 proxy, and the proxy re-injects the OS Data Hub key on each upstream request. So the paid key never
 appears in anything the browser can see — not the style JSON, not a tile URL, not the network tab.
 
-The OS source is a TileJSON endpoint (``sources.*.url``); MapLibre fetches it through us, we proxy it
-and strip the key from the tile URLs it returns, and MapLibre then fetches tiles and glyphs back
-through us too. Sprites are served from public GitHub in the OS stylesheet, so they need no proxying.
+The served style points its vector source at an explicit tiles template through us (the OS endpoint
+is an ESRI document, not a TileJSON MapLibre can consume — see ``style``); MapLibre then fetches
+tiles and glyphs back through the proxy, which injects the key and requests Web Mercator (srs=3857).
+Sprites are served from public GitHub in the OS stylesheet, so they need no proxying.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from pathlib import Path
@@ -60,19 +62,35 @@ def _strip_key(text: str) -> str:
     return _DANGLING_SEP.sub("", _KEY_PARAM.sub(r"\1", text))
 
 
+# The OS /vts endpoint returns an ESRI VectorTileServer document, not a standard MapLibre TileJSON,
+# so a vector source that points at it via `url` leaves MapLibre unable to derive the tile scheme —
+# it loads the document but never requests tiles. Define the source with an explicit Web Mercator
+# tiles template instead. The OS VTS 3857 product carries data to ~z15; MapLibre over-zooms beyond.
+_TILES_TEMPLATE = f"{_PROXY_BASE}/vts/tile/{{z}}/{{y}}/{{x}}.pbf?srs=3857"
+_TILES_MAXZOOM = 15
+
+
 @router.get("/style.json")
 def style(theme: str = "light") -> Response:
-    """A MapLibre style JSON with OS URLs rewritten to this proxy — no key in the served document.
+    """A MapLibre style JSON, pointed at this proxy — no key in the served document.
 
-    The rewrite is a whole-document host swap so every OS reference (source ``url``/``tiles``,
-    ``glyphs``, and the ``sprite``/``_sprite`` fields) routes back through the proxy; GitHub-hosted
-    sprites are left untouched because they carry no key.
+    Two transforms on the vendored OS stylesheet: rewrite each vector source to an explicit tiles
+    template (see above — the OS endpoint isn't a usable TileJSON for MapLibre), and host-swap the
+    remaining OS URLs (``glyphs``, ``_sprite``) to the proxy. The GitHub-hosted ``sprite`` carries no
+    key and is left untouched.
     """
     fname = _THEMES.get(theme.lower())
     if fname is None:
         raise HTTPException(status_code=404, detail=f"unknown basemap theme: {theme!r}")
-    doc = (_STYLES_DIR / fname).read_text().replace(_OS_VTS_BASE, _PROXY_BASE)
-    return Response(content=doc, media_type="application/json")
+    doc = json.loads((_STYLES_DIR / fname).read_text())
+    for source in doc.get("sources", {}).values():
+        if source.get("type") == "vector":
+            source.pop("url", None)
+            source["tiles"] = [_TILES_TEMPLATE]
+            source["minzoom"] = 0
+            source["maxzoom"] = _TILES_MAXZOOM
+    text = json.dumps(doc).replace(_OS_VTS_BASE, _PROXY_BASE)
+    return Response(content=text, media_type="application/json")
 
 
 @router.get("/{path:path}")
