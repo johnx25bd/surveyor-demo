@@ -51,6 +51,22 @@ _inflight = 0
 _inflight_lock = threading.Lock()
 
 
+def _acquire_slot() -> None:
+    """Reserve a concurrency slot or raise 429. Pairs with _release_slot — every acquire that
+    returns must be matched by exactly one release, on every exit path."""
+    global _inflight
+    with _inflight_lock:
+        if _inflight >= MAX_CONCURRENT_QUERIES:
+            raise HTTPException(status_code=429, detail="Too many queries in flight; try again shortly.")
+        _inflight += 1
+
+
+def _release_slot() -> None:
+    global _inflight
+    with _inflight_lock:
+        _inflight = max(0, _inflight - 1)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
@@ -116,48 +132,47 @@ def _run_agent(question: str, sink: ev.SseSink) -> None:
 
 @app.post("/api/query")
 async def query(req: QueryRequest) -> StreamingResponse:
-    global _inflight
     # Cap concurrent live runs so a burst can't fan out unbounded metered-API spend and worker threads.
-    with _inflight_lock:
-        if _inflight >= MAX_CONCURRENT_QUERIES:
-            raise HTTPException(status_code=429, detail="Too many queries in flight; try again shortly.")
-        _inflight += 1
+    _acquire_slot()
+    try:
+        sink = ev.SseSink()
+        worker = threading.Thread(target=_run_agent, args=(req.question, sink), daemon=True)
 
-    sink = ev.SseSink()
-    worker = threading.Thread(target=_run_agent, args=(req.question, sink), daemon=True)
+        async def frames():
+            worker.start()
+            try:
+                while True:
+                    # Poll with a timeout rather than block forever: if the client disconnects, Starlette
+                    # cancels this generator and we must be at an awaitable cancellation point, not parked
+                    # in an un-interruptible Queue.get on a worker thread.
+                    try:
+                        frame = await asyncio.to_thread(sink.frames.get, True, 1.0)
+                    except queue.Empty:
+                        continue
+                    if frame is None:  # the sentinel from sink.close()
+                        break
+                    yield frame
+            finally:
+                # On disconnect the agent loop can't be interrupted mid-step, but it's a daemon thread, so
+                # cap the wait: don't pin this task for the rest of a multi-call run. On the normal path
+                # the worker has already emitted its sentinel and exited, so this returns immediately.
+                await asyncio.to_thread(worker.join, 5.0)
+                _release_slot()
 
-    async def frames():
-        global _inflight
-        worker.start()
-        try:
-            while True:
-                # Poll with a timeout rather than block forever: if the client disconnects, Starlette
-                # cancels this generator and we must be at an awaitable cancellation point, not parked
-                # in an un-interruptible Queue.get on a worker thread.
-                try:
-                    frame = await asyncio.to_thread(sink.frames.get, True, 1.0)
-                except queue.Empty:
-                    continue
-                if frame is None:  # the sentinel from sink.close()
-                    break
-                yield frame
-        finally:
-            # On disconnect the agent loop can't be interrupted mid-step, but it's a daemon thread, so
-            # cap the wait: don't pin this task for the rest of a multi-call run. On the normal path
-            # the worker has already emitted its sentinel and exited, so this returns immediately.
-            await asyncio.to_thread(worker.join, 5.0)
-            with _inflight_lock:
-                _inflight -= 1
-
-    return StreamingResponse(
-        frames(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # tell nginx-style proxies not to buffer the stream
-        },
-    )
+        return StreamingResponse(
+            frames(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",  # tell nginx-style proxies not to buffer the stream
+            },
+        )
+    except BaseException:
+        # The slot is released in frames()' finally once the stream runs. If we fail before handing the
+        # generator to Starlette (so that finally can never run), release here so the slot can't leak.
+        _release_slot()
+        raise
 
 
 @app.get("/api/datasets/{handle}")
