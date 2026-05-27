@@ -105,3 +105,32 @@ def test_proxy_503_without_a_key(client, monkeypatch):
     monkeypatch.delenv("OS_MAPS_API_KEY", raising=False)
     monkeypatch.delenv("OS_DATA_HUB_KEY", raising=False)
     assert client.get("/api/basemap/vts").status_code == 503
+
+
+def test_proxy_rejects_non_vts_paths(client, monkeypatch):
+    # The allow-list runs before the key check, so a non-basemap OS path is 404, not proxied.
+    monkeypatch.setenv("OS_DATA_HUB_KEY", "SECRETKEY")
+    called = {"hit": False}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        called["hit"] = True
+        return httpx.Response(200, content=b"{}", headers={"content-type": "application/json"})
+
+    _use_mock(monkeypatch, handler)
+    assert client.get("/api/basemap/places/v1/find").status_code == 404
+    assert client.get("/api/basemap/").status_code == 404
+    assert called["hit"] is False  # never reached the upstream
+
+
+def test_proxy_withholds_body_if_key_survives_stripping(client, monkeypatch):
+    # If OS ever echoes the key somewhere _strip_key doesn't match, the positive check still catches it.
+    monkeypatch.setenv("OS_DATA_HUB_KEY", "SECRETKEY")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = '{"note":"quote your key SECRETKEY when contacting support"}'
+        return httpx.Response(200, content=body, headers={"content-type": "application/json"})
+
+    _use_mock(monkeypatch, handler)
+    r = client.get("/api/basemap/vts")
+    assert r.status_code == 502
+    assert "SECRETKEY" not in r.text
