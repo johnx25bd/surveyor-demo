@@ -67,9 +67,24 @@ def test_proxy_injects_key_upstream_and_strips_from_tilejson(client, monkeypatch
 
     assert r.status_code == 200
     assert "key=SECRETKEY" in seen["url"]  # injected on the upstream request
+    assert "srs=3857" in seen["url"]  # default to Web Mercator (OS /vts is BNG by default)
     assert "SECRETKEY" not in r.text  # stripped from what the browser receives
     assert "api.os.uk" not in r.text
     assert "/api/basemap/vts/{z}/{y}/{x}.pbf" in r.text  # rewritten to the proxy
+
+
+def test_proxy_keeps_caller_srs(client, monkeypatch):
+    # A srs already on the request (from the rewritten TileJSON's tile URLs) is preserved, not doubled.
+    monkeypatch.setenv("OS_DATA_HUB_KEY", "SECRETKEY")
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["url"] = str(request.url)
+        return httpx.Response(200, content=b"tile", headers={"content-type": "application/x-protobuf"})
+
+    _use_mock(monkeypatch, handler)
+    client.get("/api/basemap/vts/tile/6/40/30.pbf?srs=3857")
+    assert seen["url"].count("srs=") == 1
 
 
 def test_proxy_passes_tile_bytes_through(client, monkeypatch):
