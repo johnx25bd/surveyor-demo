@@ -34,7 +34,8 @@ Constraints:
   - If a fetch reports over-cap, narrow the bbox or choose a sparser type, and say so in the trace.
   - Every dataset is already WGS84; you never reproject — the operations handle CRS themselves.
   - Attach the ranked result onto the boundaries before rendering the choropleth.
-  - Keep the written answer short and grounded in the numbers you computed."""
+  - Keep the written answer short and grounded in the numbers you computed.
+  - Write in plain prose — do not use emoji."""
 
 
 def build_system_prompt(manifest=None) -> str:
