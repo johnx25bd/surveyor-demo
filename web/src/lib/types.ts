@@ -45,7 +45,7 @@ export type SurveyorEvent =
 
 // ---- View instructions (from the render tools) ---------------------------------------------------
 
-export type ViewKind = "choropleth" | "chart";
+export type ViewKind = "choropleth" | "chart" | "points";
 
 export interface ChoroplethEncoding {
   value_column: string;
@@ -57,11 +57,15 @@ export interface ChartEncoding {
   kind: string;
   title: string;
 }
+export interface PointsEncoding {
+  label_column: string; // feature property to label each point's popup
+  title: string;
+}
 
 export interface ViewSpec {
   kind: ViewKind;
   handle: string;
-  encoding: ChoroplethEncoding | ChartEncoding;
+  encoding: ChoroplethEncoding | ChartEncoding | PointsEncoding;
 }
 
 // ---- Descriptors (the small object the model sees; we get it in tool_result) ---------------------

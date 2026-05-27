@@ -55,6 +55,7 @@ The same agent, printing its trace to the terminal:
 ```bash
 uv sync
 uv run python -m surveyor "How many health centres per 10,000 residents by local authority across Greater Manchester?"
+uv run python -m surveyor "How many health centres in the West Midlands are within 800m of a library?"
 uv run python -m surveyor "Population by local authority in England"
 ```
 
@@ -72,7 +73,7 @@ uv run python -m scripts.try_analysis      # the headline analysis chain, no mod
 ## How it works
 
 - A hand-rolled Anthropic tool-use loop on the raw SDK — no agent framework.
-- The agent has three kinds of tool: **fetch** (boundaries, statistics, OS features), six composable **analysis** operations (filter, aggregate, normalize, rank, relate, attach), and two **render** tools (choropleth, chart). A composable operation set, not a fixed pipeline — the agent assembles the chain that fits the question.
+- The agent has three kinds of tool: **fetch** (boundaries, statistics, OS features), six composable **analysis** operations (filter, aggregate, normalize, rank, relate, attach), and three **render** tools (choropleth, chart, points). A composable operation set, not a fixed pipeline — the agent assembles the chain that fits the question.
 - Tools exchange server-side **dataset handles**, not raw data. The model passes small descriptors around while the heavy GeoJSON and tables stay server-side, fetched only when something needs drawing.
 - Three source clients sit behind the fetch tools: ONS/MHCLG ArcGIS (boundaries), ONS Nomis (statistics), and OS NGD (features).
 - The loop streams its trace through a **swappable event sink**. The CLI sink prints it; the SSE sink streams it to the browser. The loop, tools, and data model are identical either way — only the sink changes.
@@ -81,7 +82,7 @@ For the binding decisions and the reasoning behind them, see [`docs/02-architect
 
 ### The HTTP surface
 
-- `POST /api/query` `{question}` → a `text/event-stream` of the agent's events, one vocabulary shared with the CLI sink: `status`, `message`, `tool_call`, `tool_result`, `view` (a render instruction — a `choropleth` geo handle or a `chart` table handle), `error`, and `done`.
+- `POST /api/query` `{question}` → a `text/event-stream` of the agent's events, one vocabulary shared with the CLI sink: `status`, `message`, `tool_call`, `tool_result`, `view` (a render instruction — a `choropleth` geo handle, a `chart` table handle, or a `points` geo handle drawn as a marker overlay), `error`, and `done`.
 - `GET /api/datasets/{handle}` → the full GeoJSON or table behind a handle, for the map and chart to draw.
 - `GET /api/basemap/*` → the OS Vector Tile proxy, with the key injected server-side.
 

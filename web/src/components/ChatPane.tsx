@@ -7,6 +7,7 @@ import type { DatasetDescriptor } from "../lib/types";
 
 const SUGGESTIONS = [
   "How many health centres per 10,000 residents by local authority across Greater Manchester?",
+  "How many health centres in the West Midlands are within 800m of a library?",
   "Population by local authority in England",
 ];
 

@@ -35,6 +35,7 @@ export default function App() {
         <Suspense fallback={<section className="sv-map" aria-label="Map" />}>
           <MapPane
             choropleth={state.choropleth}
+            points={state.points}
             mood={mood}
             hovered={hovered}
             selected={selected}

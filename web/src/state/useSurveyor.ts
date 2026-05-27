@@ -30,6 +30,7 @@ export interface SurveyorState {
   items: ChatItem[];
   choropleth: ViewSpec | null;
   chart: ViewSpec | null;
+  points: ViewSpec | null; // a reference point overlay (e.g. libraries), drawn over the choropleth
 }
 
 const INITIAL: SurveyorState = {
@@ -39,6 +40,7 @@ const INITIAL: SurveyorState = {
   items: [],
   choropleth: null,
   chart: null,
+  points: null,
 };
 
 type Action = { type: "ask"; question: string } | { type: "event"; event: SurveyorEvent } | { type: "close" };
@@ -108,6 +110,7 @@ function reducer(state: SurveyorState, action: Action): SurveyorState {
     case "view":
       if (data.kind === "choropleth") return { ...state, choropleth: data };
       if (data.kind === "chart") return { ...state, chart: data };
+      if (data.kind === "points") return { ...state, points: data };
       return state; // unknown view kind: ignore rather than mis-route it to the chart
 
     case "error": {
