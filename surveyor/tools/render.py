@@ -98,3 +98,42 @@ class RenderChart:
                 },
             ),
         )
+
+
+class RenderPointsInput(BaseModel):
+    geo_dataset: str = Field(
+        ..., description="Handle of a GeoDataset of features to plot as points, e.g. libraries."
+    )
+    title: str = Field(..., description="Layer title for the legend/popup.")
+    label_column: str = Field(
+        "name1_text",
+        description="Feature property to label each point in its popup (OS NGD name field).",
+    )
+
+
+class RenderPoints:
+    name = "render_points"
+    description = (
+        "Plot a GeoDataset of features as a point overlay on the map (each footprint shown at its "
+        "representative point), drawn on top of any choropleth. Use it to show a reference layer — "
+        "e.g. the libraries a proximity question relates to. Returns an acknowledgement; the "
+        "overlay instruction is emitted to the trace for the client to draw."
+    )
+    Input = RenderPointsInput
+
+    def run(self, ctx: ToolContext, args: RenderPointsInput) -> ToolOutcome:
+        ds = ctx.store.get(args.geo_dataset)
+        if not isinstance(ds, GeoDataset):
+            raise ValueError("render_points needs a geo dataset (e.g. a fetched feature layer)")
+        if not ds.features.get("features"):
+            raise ValueError(
+                "render_points got an empty GeoDataset — nothing to plot; revisit the fetch step"
+            )
+        return ToolOutcome(
+            descriptor={"rendered": True, "handle": args.geo_dataset, "kind": "points"},
+            view=ViewEvent(
+                kind="points",
+                handle=args.geo_dataset,
+                encoding={"label_column": args.label_column, "title": args.title},
+            ),
+        )

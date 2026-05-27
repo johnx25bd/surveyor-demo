@@ -24,8 +24,12 @@ How to answer:
   1. Resolve the boundary set (geography + region).
   2. If the question counts or sums features: fetch the feature type (already type-filtered
      server-side) within a region bbox, then aggregate into the boundaries.
-  3. Fetch any statistic needed to normalise; normalize; then rank.
-  4. Render a choropleth and a ranked chart, then give a short written answer.
+  3. For a proximity question (one feature type near / within a distance of another): fetch both
+     feature types within the region, use relate with within_distance:<metres> to keep only the
+     features that satisfy it, then aggregate the matched set into the boundaries.
+  4. Fetch any statistic needed to normalise; normalize; then rank.
+  5. Render a choropleth and a ranked chart. For a proximity question, also render_points the
+     reference layer (e.g. the libraries) so it overlays the map. Then give a short written answer.
   If no features are needed (a statistic-by-area question), skip fetch_features/aggregate — that
   path is the robust one, so prefer it whenever it answers the question.
 

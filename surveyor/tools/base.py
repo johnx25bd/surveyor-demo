@@ -22,7 +22,7 @@ class EventSink(Protocol):
 
 @dataclass
 class ViewEvent:
-    kind: str  # "choropleth" | "chart"
+    kind: str  # "choropleth" | "chart" | "points"
     handle: str
     encoding: dict[str, Any]
 
