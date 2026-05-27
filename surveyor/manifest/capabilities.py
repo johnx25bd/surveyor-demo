@@ -39,14 +39,27 @@ GEOGRAPHIES: dict[str, Geography] = {
 
 # The ten Greater Manchester metropolitan boroughs, E08000001–E08000010.
 _GM_CODES = [f"E0800000{n}" for n in range(1, 10)] + ["E08000010"]
+# The seven West Midlands metropolitan boroughs, E08000025–E08000031.
+_WM_CODES = [f"E0800002{n}" for n in range(5, 10)] + ["E08000030", "E08000031"]
+
+
+def _in_codes(codes: list[str]) -> str:
+    return "LAD21CD IN (" + ", ".join(f"'{code}'" for code in codes) + ")"
+
 
 REGIONS: dict[str, Region] = {
     "england": Region(label="England", where="LAD21CD LIKE 'E%'"),
     "greater_manchester": Region(
         label="Greater Manchester",
-        where="LAD21CD IN (" + ", ".join(f"'{code}'" for code in _GM_CODES) + ")",
+        where=_in_codes(_GM_CODES),
         lad_codes=tuple(_GM_CODES),
         bbox=(-2.75, 53.32, -1.91, 53.69),
+    ),
+    "west_midlands": Region(
+        label="West Midlands",
+        where=_in_codes(_WM_CODES),
+        lad_codes=tuple(_WM_CODES),
+        bbox=(-2.2069, 52.3477, -1.4239, 52.6627),  # union of the 7 LAD extents (verified live)
     ),
 }
 
@@ -94,5 +107,11 @@ FEATURE_TYPES: dict[str, FeatureType] = {
         cql_filter="description='Health Centre'",
         geometry="MultiPolygon",
         density="sparse",  # ~668 across Greater Manchester — safe for regional aggregation
+    ),
+    "library": FeatureType(
+        collection="lus-fts-site-2",
+        cql_filter="description='Library'",
+        geometry="MultiPolygon",
+        density="sparse",  # ~132 across the West Midlands — safe for regional aggregation
     ),
 }
