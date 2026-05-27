@@ -27,6 +27,11 @@ export type SequentialName = keyof typeof GDV.sequential;
 
 export const DEFAULT_RAMP: SequentialName = "m2";
 
+// Number of choropleth/chart classes, and the colour for areas with no value. One definition so the
+// map and the ranked chart classify identically (rather than each re-deriving breaks and a no-data hex).
+export const CLASSES = 7;
+export const NODATA = "#c9c2b4";
+
 /**
  * Quantile class breaks for a set of values. Returns the inner break points (length = classes - 1),
  * so a 7-colour ramp gets 6 breaks. Honest about ties: duplicate breaks are de-duplicated, which
@@ -53,4 +58,21 @@ export function colourFor(value: number, breaks: number[], ramp: readonly string
   // Spread the (possibly fewer) classes across the full ramp so endpoints stay vivid.
   const idx = breaks.length === 0 ? 0 : Math.round((cls / breaks.length) * (ramp.length - 1));
   return ramp[Math.min(idx, ramp.length - 1)];
+}
+
+/**
+ * Build a value→colour function for a set of records: quantile-classify the finite values onto the
+ * ramp, returning NODATA for missing/non-finite. Shared by the map and the chart so a value gets the
+ * same colour in both.
+ */
+export function classify<T>(
+  records: T[],
+  value: (r: T) => number,
+  ramp: readonly string[] = GDV.sequential[DEFAULT_RAMP],
+): (r: T) => string {
+  const breaks = quantileBreaks(records.map(value).filter(Number.isFinite), CLASSES);
+  return (record) => {
+    const v = value(record);
+    return Number.isFinite(v) ? colourFor(v, breaks, ramp) : NODATA;
+  };
 }
