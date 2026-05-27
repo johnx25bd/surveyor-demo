@@ -41,7 +41,7 @@ Nothing here is filled in yet — that is the point. Check back as the phases la
 
 ## Phase 5 — Build phase 2
 
-- PR: #16
+- PR: #20
 - Clip: TBD
 - Key commits: `8fdc94d` (SseSink), `043479b` (HTTP/SSE query + datasets routes), `443c57a` (OS Vector Tile basemap proxy), `5e15944` (three-pane React UI)
 - Summary: Wired the unchanged phase-1 agent loop to the browser by swapping the event sink. A FastAPI layer streams the agent's trace as Server-Sent Events (`POST /api/query`) and serves the data behind each handle (`GET /api/datasets/{handle}`); a backend proxy fronts the OS Vector Tile API so the metered key stays server-side. The frontend is a Vite + React + TypeScript app built on the Ordnance Survey design system — a three-pane shell (chat / map / evidence rail) that renders the live show-your-work tool trace, an OS-vector-tile choropleth (GeoDataViz ramps, quantile class breaks) with a ranked bar chart, and hover/selection synced across all three panes. The same headline question and national fallback that ran from the CLI in phase 4 now run in the browser, unchanged loop underneath.
