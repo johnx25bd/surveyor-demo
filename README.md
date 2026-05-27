@@ -105,7 +105,3 @@ When this started, what Surveyor *was* had not been decided. That was deliberate
 **General-purpose by design, curated for the demo.** Surveyor is built as an extensible, general-purpose agentic GIS tool: composable fetch and analysis operations over live national data, with no hard-coded pipeline. The v0.1 demo runs that engine on a hand-verified capability manifest — a curated set of places, datasets, fields, and feature types (health-centre provision across Greater Manchester, population by local authority, and more) — which keeps the walkthrough fast and every query valid. Ask outside the curated set and it declines rather than guess. Opening the manifest to the full UK data space — runtime capability discovery, and resolving any place you name — is the planned next step, documented in [#13](https://github.com/johnx25bd/surveyor-demo/issues/13) and [#15](https://github.com/johnx25bd/surveyor-demo/issues/15).
 
 v0.1 is a single-instance prototype — one in-memory dataset store, no auth — and the three-pane layout is built for a wide desktop screen, stacking below ~820px. OS NGD caps feature fetches at 100 per page, which makes feature-aggregation questions regional rather than national; stat-only questions run nationally. See [`docs/05-phase5-review.md`](./docs/05-phase5-review.md) for the full review findings and what's deferred before a public deployment.
-
-## License
-
-See [LICENSE](./LICENSE).
