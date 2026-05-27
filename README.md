@@ -61,3 +61,57 @@ uv run python -m scripts.try_statistic
 uv run python -m scripts.try_features      # needs OS_DATA_HUB_KEY
 uv run python -m scripts.try_analysis      # the headline analysis chain, no model call
 ```
+
+## Running Surveyor (build phase 2 — the browser UI)
+
+Build phase 2 wires the *same* agent loop to a browser: a FastAPI layer streams the agent's trace as Server-Sent Events, and a three-pane web UI renders it live. The loop, tools, and data model are unchanged — only the event sink swaps.
+
+Same keys as above. The map basemap reuses `OS_DATA_HUB_KEY` through a server-side proxy (set `OS_MAPS_API_KEY` only if the OS Vector Tile API sits on a different OS Data Hub project). The frontend needs Node 18+.
+
+**Develop** (two hot-reloading processes — open the Vite URL):
+
+```bash
+./scripts/dev.sh        # uvicorn :8000 + Vite :5173  →  http://localhost:5173
+```
+
+or run them separately:
+
+```bash
+uv run uvicorn surveyor.app.main:app --reload --port 8000
+cd web && npm install && npm run dev
+```
+
+Vite proxies `/api/*` to the backend, so it's one origin in the browser. Ask a question (or pick a suggestion) and watch the trace stream into the chat as the choropleth and ranked chart build.
+
+**Serve as one process** (FastAPI hosts the built frontend):
+
+```bash
+cd web && npm run build                              # emits web/dist
+uv run uvicorn surveyor.app.main:app --port 8000     # serves the API + web/dist at /
+```
+
+The HTTP surface:
+
+- `POST /api/query` `{question}` → a `text/event-stream` of the agent's events. Each frame is a named
+  SSE event with a JSON `data` payload, one vocabulary shared with the CLI sink:
+  - `status` `{state}` — thinking / calling a tool / done
+  - `message` `{text}` — a chunk of streamed assistant reasoning
+  - `tool_call` `{id, name, input}` and `tool_result` `{id, descriptor}` — the visible trace
+  - `view` `{kind, handle, encoding}` — a render instruction; `kind` is `"choropleth"` (a geo handle)
+    or `"chart"` (a table handle)
+  - `error` `{message, tool_id?}` and `done` `{summary}`
+- `GET /api/datasets/{handle}` → the full GeoJSON or table behind a handle, for the map and chart to draw
+- `GET /api/basemap/*` → OS Vector Tile proxy, key injected server-side (restricted to the `vts` path)
+
+The frontend reads the stream with `fetch` + a `ReadableStream` reader (not `EventSource`, which is
+GET-only) and fetches each `view`'s handle to draw it.
+
+**Keys and the basemap.** The basemap reuses `OS_DATA_HUB_KEY` via the proxy; set `OS_MAPS_API_KEY`
+only if the OS Vector Tile API lives on a different OS Data Hub project. Without a working key the
+national stat-only questions still run and the choropleth draws over a plain background — the UI says
+so in the map foot — and the OS vector basemap appears once the key is set.
+
+**Scope.** v0.1 is single-instance (one in-memory dataset store, no auth) and the three-pane layout
+targets a wide screen; it stacks below ~820px but is built for desktop. See
+[`docs/05-phase5-review.md`](./docs/05-phase5-review.md) for the review findings and what's deferred
+before a public deployment.

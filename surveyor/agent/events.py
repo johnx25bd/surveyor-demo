@@ -10,6 +10,8 @@ definition and no import cycle.
 
 from __future__ import annotations
 
+import json
+import queue
 import sys
 from typing import Any
 
@@ -106,10 +108,29 @@ class CliSink:
 
 
 class SseSink:
-    """Phase 2: serialise events onto an SSE stream for FastAPI. Stubbed in phase 1."""
+    """Serialise the agent's events onto a Server-Sent Events stream for the browser (§10).
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        raise NotImplementedError("SseSink lands in build phase 2 (the browser UI)")
+    The loop is synchronous and blocking: it calls ``emit`` from a worker thread while the FastAPI
+    route drains this sink's queue on the event loop and yields each frame. So ``emit`` only formats
+    one SSE frame and enqueues it — no I/O, no blocking — and ``close`` enqueues a sentinel (``None``)
+    that tells the draining side the run is over. The frame shape is the SSE wire format: a named
+    event line plus a single JSON ``data`` line, terminated by a blank line.
+    """
 
-    def emit(self, event: str, data: dict[str, Any]) -> None:  # pragma: no cover
-        raise NotImplementedError
+    SENTINEL = None  # enqueued by close(): signals "stream complete" to the consumer
+
+    def __init__(self, frames: "queue.Queue[str | None]" | None = None) -> None:
+        # An unbounded queue: emit never blocks the agent loop waiting on a slow client.
+        self.frames: queue.Queue[str | None] = frames if frames is not None else queue.Queue()
+
+    def emit(self, event: str, data: dict[str, Any]) -> None:
+        self.frames.put(self._frame(event, data))
+
+    def close(self) -> None:
+        """Mark the end of the stream so the consumer can stop draining."""
+        self.frames.put(self.SENTINEL)
+
+    @staticmethod
+    def _frame(event: str, data: dict[str, Any]) -> str:
+        # default=str keeps a stray non-serialisable value (e.g. a tuple bbox) from killing the run.
+        return f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
