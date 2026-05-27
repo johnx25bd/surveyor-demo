@@ -8,7 +8,7 @@
 
 Surveyor was built live, in the open, at the Geovation AI Agents workshop in May 2026. That makes this repository two things at once, and you can read it as either:
 
-- **As an application** — a working v0.1 you can clone and run. Jump to [Running Surveyor](#running-surveyor).
+- **As an application** — a runnable v0.1 of a general-purpose agentic GIS tool. The demo answers a curated set of questions today — see [Scope and limitations](#scope-and-limitations). Jump to [Running Surveyor](#running-surveyor).
 - **As a build-in-the-open walkthrough** — the whole build, phase by phase, with every brief, mockup, decision, and recorded session preserved. Start with [Follow the build](#follow-the-build).
 
 ## Running Surveyor
@@ -100,6 +100,8 @@ Surveyor is built across eight phases. Each of phases 1 through 6 leaves a durab
 When this started, what Surveyor *was* had not been decided. That was deliberate: the concept, the stack, the UI, and the rough edges all emerged across the phases, captured here as they happened. We record the story; we don't plant it.
 
 ## Scope and limitations
+
+**General-purpose by design, curated for the demo.** Surveyor is built as an extensible, general-purpose agentic GIS tool: composable fetch and analysis operations over live national data, with no hard-coded pipeline. The v0.1 demo runs that engine on a hand-verified capability manifest — a curated set of places, datasets, fields, and feature types (health-centre provision across Greater Manchester, population by local authority, and more) — which keeps the walkthrough fast and every query valid. Ask outside the curated set and it declines rather than guess. Opening the manifest to the full UK data space — runtime capability discovery, and resolving any place you name — is the planned next step, documented in [#13](https://github.com/johnx25bd/surveyor-demo/issues/13) and [#15](https://github.com/johnx25bd/surveyor-demo/issues/15).
 
 v0.1 is a single-instance prototype — one in-memory dataset store, no auth — and the three-pane layout is built for a wide desktop screen, stacking below ~820px. OS NGD caps feature fetches at 100 per page, which makes feature-aggregation questions regional rather than national; stat-only questions run nationally. See [`docs/05-phase5-review.md`](./docs/05-phase5-review.md) for the full review findings and what's deferred before a public deployment.
 
